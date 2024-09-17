@@ -1,5 +1,8 @@
+# erasers_kachaka
+　eR@sers Education 用 Kachaka パッケージ群
+
 ## setup
-　[`kachaka-api`]()
+　[`kachaka-api`](https://github.com/pf-robotics/kachaka-api$0)
 をここにクローンしてください。
 ```
 git clone https://github.com/pf-robotics/kachaka-api.git
@@ -14,7 +17,7 @@ docker compose build kachaka_bridge_main
 
 ```
 ## if not installed venv
-#udo apt update; sudo apt install python3.10-venv -y
+#sudo apt update; sudo apt install python3.10-venv -y
 
 cd ~
 python3 -m venv kachaka
@@ -44,6 +47,10 @@ sudo systemctl restart isc-dhcp-server
 sudo systemctl status isc-dhcp-server
 ```
 ### bashrc
+　`~/.bashrc` を編集する前に、以下のコマンドを実行して `activate` スクリプトを変更してください。
+```bash
+cp customs/activate ~/kachaka/bin/activate
+```
 `~/.bashrc` に以下の情報を追記してください。
 
 > `KACHAKA_WS`と`ER_KACHAKA_PKG`に適切な**絶対パス**を入力してください。
@@ -79,11 +86,14 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 ```
 ros2 launch erasers_kachaka_bringup bringup.launch.py
 ```
+> `bringup.launch.py`の詳しい使い方は
+[**コチラ**](/erasers_kachaka/erasers_kachaka_bringup/README.md)
+を参照してください。
 
 ### trcp kachaka container を作成する
 　以下の手順に従って erasers 用の開発向けコンテナを作成、アップデートする方法します。<br>
 　kachaka-bridge の起動オプションを編集したい場合は
-[`constoms` ディレクトリ](constoms)を参照してください。<br>
+[`customs` ディレクトリ](/customs)を参照してください。<br>
 　カスタムファイルを `kachaka-api` に反映させます。
 ```BASH
 cd kachaka-api
@@ -96,3 +106,8 @@ cp ../customs/robot_description.launch.xml ros2/kachaka_description/launch/robot
 ```bash
 docker buildx build -t asia-northeast1-docker.pkg.dev/kachaka-api/docker/kachaka-grpc-ros2-bridge:trcp --target kachaka-grpc-ros2-bridge -f Dockerfile.ros2 . --build-arg BASE_ARCH=x86_64 --load
 ```
+
+## common api
+　erasers_kachaka では `erasers_kachaka_common` パッケージが提供する **Python API** を用意しています。詳しくは
+[**コチラ**](/erasers_kachaka/erasers_kachaka_common/README.md)
+を参照してください。
