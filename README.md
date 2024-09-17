@@ -90,6 +90,7 @@ cd kachaka-api
 cp ../customs/grpc_ros2_bridge.trcp.launch.xml ros2/kachaka_grpc_ros2_bridge/launch/
 cp ../customs/grpc_ros2_bridge.trcp_devel.launch.xml ros2/kachaka_grpc_ros2_bridge/launch/
 cp ../customs/dynamic_tf_bridge.cpp ros2/kachaka_grpc_ros2_bridge/src/
+cp ../customs/robot_description.launch.xml ros2/kachaka_description/launch/robot_description.launch.xml
 ```
 　次にカスタムオプションを含んだ新規コンテナを作成します。
 ```bash
