@@ -11,6 +11,7 @@ find_package(rosidl_default_generators REQUIRED)
 
 set(srv_files
   "srv/Speaker.srv"
+  "srv/SoundVolume.srv"
 )
 set(msg_files
   "msg/Battery.msg"
