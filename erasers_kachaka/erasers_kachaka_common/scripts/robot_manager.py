@@ -192,8 +192,8 @@ class BatteryManager(Node):
 
             if not charging and percentage < self.param_low_battery_level:
                 text = "バッテリー残量が低下しています。残り%d％です"%percentage
-                self.get_logger().warn(text, wait=False)
-                self.say(text)
+                self.get_logger().warn(text)
+                self.say(text, wait=False)
 
 def battery_manager():
     rclpy.init()
