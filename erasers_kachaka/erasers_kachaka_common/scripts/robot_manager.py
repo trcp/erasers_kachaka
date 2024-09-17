@@ -29,7 +29,7 @@ class EmergencyManager(Node):
         self.say = tts.say
 
         # create service server
-        self.srv = self.create_service(Trigger, "/kachaka/emergency", self.srv_cb)
+        self.srv = self.create_service(Trigger, "/er_kachaka/emergency", self.srv_cb)
 
     def srv_cb(self, req, res):
         self.say("停止", False)
@@ -64,7 +64,7 @@ class RTHManager(Node):
         # Activate kachaka api
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
         # create service server
-        self.srv = self.create_service(SetBool, "/kachaka/rth", self.srv_cb)
+        self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
         # default is disabled
         self.kachaka.set_auto_homing_enabled(False)
 
@@ -102,7 +102,7 @@ class DockingManager(Node):
         # Activate kachaka api
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
         # create service server
-        self.srv = self.create_service(SetBool, "/kachaka/docking", self.srv_cb)
+        self.srv = self.create_service(SetBool, "/er_kachaka/docking", self.srv_cb)
 
     def srv_cb(self, req, res):
         if req.data:
@@ -156,7 +156,7 @@ class BatteryManager(Node):
         self.say = tts.say
 
         # create subscriber
-        self.battery_sub = self.create_subscription(BatteryState, "/kachaka/robot_info/battery_state", self._cb, QOS_PROFILE)
+        self.battery_sub = self.create_subscription(BatteryState, "/er_kachaka/robot_info/battery_state", self._cb, QOS_PROFILE)
 
         # initialize timer
         self.init_time = time.time()

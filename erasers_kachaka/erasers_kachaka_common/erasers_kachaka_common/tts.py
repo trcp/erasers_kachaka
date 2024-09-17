@@ -12,7 +12,7 @@ class TTS(Node):
         super().__init__("client_tts")
 
         # create client
-        self._cli = self.create_client(Speaker, "/kachaka/tts")
+        self._cli = self.create_client(Speaker, "/er_kachaka/tts")
 
         # wait server is avaiable
         while not self._cli.wait_for_service(timeout_sec=timeout):
