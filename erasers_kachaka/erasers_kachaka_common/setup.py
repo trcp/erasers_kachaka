@@ -45,6 +45,7 @@ setup(
             "rth_manager = scripts.robot_manager:rth_manager",
             "docking_manager = scripts.robot_manager:docking_manager",
             "battery_manager = scripts.robot_manager:battery_manager",
+            "sound_manager = scripts.robot_manager:sound_manager",
         ],
     },
 )

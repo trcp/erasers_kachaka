@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from std_srvs.srv import Trigger, SetBool
+from erasers_kachaka_interfaces.srv import SoundVolume
 from sensor_msgs.msg import BatteryState
 from rcl_interfaces.msg import SetParametersResult
 from rcl_interfaces.msg import ParameterDescriptor, IntegerRange
@@ -249,6 +250,69 @@ def battery_manager():
     rclpy.init()
 
     node = BatteryManager()
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.destroy_node()
+
+#################################################################################
+
+class SoundManager(Node):
+    def __init__(self):
+        super().__init__("sound_manager")
+
+        # parameters
+        sound_volume_descriptor = ParameterDescriptor(
+            name="sound_volume",
+            type=rclpy.Parameter.Type.INTEGER,
+            description="Warns when kachaka's battery level falls below a specified value.",
+            integer_range=[IntegerRange(
+                from_value=0,
+                to_value=10,
+                step=1
+            )]
+        )
+        self.declare_parameter("sound_volume", 10, sound_volume_descriptor)
+
+        self.param_sound_volume = self.get_parameter("sound_volume").get_parameter_value().integer_value
+
+        self.add_on_set_parameters_callback(self._params_cb)
+        
+        # Activate kachaka api
+        self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
+        # create service server
+        self.srv = self.create_service(SoundVolume, "/er_kachaka/sound_volume", self.srv_cb)
+        # create client
+        self.cli = self.create_client(SoundVolume, "/er_kachaka/sound_volume")
+        while not self.cli.wait_for_service(timeout_sec=5):
+            self.get_logger().error("service declare error")
+
+    def _params_cb(self, params):
+        req = SoundVolume.Request()
+        for param in params:
+            self.get_logger().info(f"Changed param {param.name} : {param.value}")
+            if param.name == "sound_volume":
+                if param.value >= 0 and param.value <= 100:
+                    req.volume = param.value
+                    future = self.cli.call_async(req)
+                else:
+                    self.get_logger().warn(f"parameter error. can not set param.")
+                
+        return SetParametersResult(successful=True, reason="Changed Params")
+
+    def srv_cb(self, req, res):
+        result = self.kachaka.set_speaker_volume(req.volume)
+        print(result)
+        res.success = bool(result.success)
+
+        return res
+
+
+def sound_manager():
+    rclpy.init()
+
+    node = SoundManager()
 
     try:
         rclpy.spin(node)

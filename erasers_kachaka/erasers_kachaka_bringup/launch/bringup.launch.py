@@ -49,6 +49,11 @@ def generate_launch_description():
         executable="battery_manager",
     )
 
+    sound_manager = Node(
+        package="erasers_kachaka_common",
+        executable="sound_manager",
+    )
+
     map2odom = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -71,6 +76,7 @@ def generate_launch_description():
     ld.add_action(rth_manager)
     ld.add_action(docking_manager)
     ld.add_action(battery_manager)
+    ld.add_action(sound_manager)
     #ld.add_action(map2odom)
     ld.add_action(startup_sound_command)
 
