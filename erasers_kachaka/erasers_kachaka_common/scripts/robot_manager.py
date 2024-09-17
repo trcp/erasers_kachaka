@@ -100,10 +100,38 @@ def rth_manager():
 class DockingManager(Node):
     def __init__(self):
         super().__init__("docking_manager")
+        # parameters
+        docking_descriptor = ParameterDescriptor(
+            name="docking",
+            type=rclpy.Parameter.Type.BOOL,
+            description="Defines the interval at which low-voltage warnings are notified.",
+            additional_constraints="Allowed values: Docking Undocking"
+        )
+        
+        self.declare_parameter("docking", False, docking_descriptor)
+
+        self.param_docking_descriptor = self.get_parameter("docking").get_parameter_value().bool_value
+
+        self.add_on_set_parameters_callback(self._params_cb)
+        
         # Activate kachaka api
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
         # create service server
         self.srv = self.create_service(SetBool, "/er_kachaka/docking", self.srv_cb)
+        # create client
+        self.cli = self.create_client(SetBool, "/er_kachaka/docking")
+        while not self.cli.wait_for_service(timeout_sec=5):
+            self.get_logger().error("service declare error")
+
+    def _params_cb(self, params):
+        req = SetBool.Request()
+        for param in params:
+            self.get_logger().info(f"Changed param {param.name} : {param.value}")
+            if param.name == "docking":
+                req.data = param.value
+                future = self.cli.call_async(req)
+                
+        return SetParametersResult(successful=True, reason="Changed Params")
 
     def srv_cb(self, req, res):
         if req.data:
