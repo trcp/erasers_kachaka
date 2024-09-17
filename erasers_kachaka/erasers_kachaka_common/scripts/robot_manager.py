@@ -2,6 +2,7 @@
 from std_srvs.srv import Trigger, SetBool
 from sensor_msgs.msg import BatteryState
 from rcl_interfaces.msg import SetParametersResult
+from rcl_interfaces.msg import ParameterDescriptor, IntegerRange
 
 from erasers_kachaka_common.tts import TTS
 
@@ -141,8 +142,29 @@ class BatteryManager(Node):
         super().__init__("battery_manager")
 
         # parameters
-        self.declare_parameter("low_battery_level", 10)
-        self.declare_parameter("nofitication_late",300)
+        low_battery_level_descriptor = ParameterDescriptor(
+            name="low_battery_level",
+            type=rclpy.Parameter.Type.INTEGER,
+            description="Warns when kachaka's battery level falls below a specified value.",
+            integer_range=[IntegerRange(
+                from_value=0,
+                to_value=100,
+                step=1
+            )]
+        )
+        nofitication_late_descriptor = ParameterDescriptor(
+            name="nofitication_late",
+            type=rclpy.Parameter.Type.INTEGER,
+            description="Defines the interval at which low-voltage warnings are notified.",
+            integer_range=[IntegerRange(
+                from_value=10,
+                to_value=1000,
+                step=1
+            )]
+        )
+        
+        self.declare_parameter("low_battery_level", 10, low_battery_level_descriptor)
+        self.declare_parameter("nofitication_late",300, nofitication_late_descriptor)
 
         self.param_low_battery_level = self.get_parameter("low_battery_level").get_parameter_value().integer_value
         self.param_nofitication_late = self.get_parameter("nofitication_late").get_parameter_value().integer_value
