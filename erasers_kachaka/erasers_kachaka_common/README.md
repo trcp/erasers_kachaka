@@ -45,7 +45,7 @@ print("saying Hello world!")
 ```
 `TTS`モジュールを使用するには ROS2 Python API `rclpy`を事前に初期化する必要があります。必ず事前に`rclpy`をインポートし、`rclpy.init()`を行ってください。
 ```python
-Import rclpy
+import rclpy
 ...
 rclpy.init()
 ```
