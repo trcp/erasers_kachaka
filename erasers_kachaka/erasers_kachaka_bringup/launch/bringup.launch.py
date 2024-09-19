@@ -17,6 +17,7 @@ def generate_launch_description():
     # launch configurations
     LaunchConfiguration("provide_map")
     LaunchConfiguration("show_rviz")
+    LaunchConfiguration("use_emc")
 
     # map
     map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
@@ -34,12 +35,16 @@ def generate_launch_description():
     declare_show_rviz = DeclareLaunchArgument("show_rviz",
                                                 default_value="false",
                                                 description="Whether to display Rviz2")
+    declare_use_emc = DeclareLaunchArgument("use_emc",
+                                                default_value="true",
+                                                description="Whether to display Rviz2")
 
     # include launch
     teleop_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [control_pkg_prefix, "/launch/joy_teleop.launch.py"]
         ),
+        launch_arguments={"use_emc": LaunchConfiguration("use_emc")}.items(),
     )
 
     # include node
@@ -99,6 +104,7 @@ def generate_launch_description():
     # add actions
     ld.add_action(declare_provide_map)
     ld.add_action(declare_show_rviz)
+    ld.add_action(declare_use_emc)
     ld.add_action(teleop_launch)
     ld.add_action(service_tts)
     ld.add_action(emergency_manager)
