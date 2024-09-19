@@ -37,7 +37,7 @@ def generate_launch_description():
                                                 description="Whether to display Rviz2")
     declare_use_emc = DeclareLaunchArgument("use_emc",
                                                 default_value="true",
-                                                description="Whether to display Rviz2")
+                                                description="use emergency button")
 
     # include launch
     teleop_launch = IncludeLaunchDescription(
