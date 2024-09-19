@@ -104,7 +104,7 @@ class DockingManager(Node):
         # parameters
         docking_descriptor = ParameterDescriptor(
             name="docking",
-            type=rclpy.Parameter.Type.BOOL,
+            type=rclpy.Parameter.Type.BOOL.value,
             description="Defines the interval at which low-voltage warnings are notified.",
             additional_constraints="Allowed values: Docking Undocking"
         )
@@ -173,7 +173,7 @@ class BatteryManager(Node):
         # parameters
         low_battery_level_descriptor = ParameterDescriptor(
             name="low_battery_level",
-            type=rclpy.Parameter.Type.INTEGER,
+            type=rclpy.Parameter.Type.INTEGER.value,
             description="Warns when kachaka's battery level falls below a specified value.",
             integer_range=[IntegerRange(
                 from_value=0,
@@ -183,7 +183,7 @@ class BatteryManager(Node):
         )
         nofitication_late_descriptor = ParameterDescriptor(
             name="nofitication_late",
-            type=rclpy.Parameter.Type.INTEGER,
+            type=rclpy.Parameter.Type.INTEGER.value,
             description="Defines the interval at which low-voltage warnings are notified.",
             integer_range=[IntegerRange(
                 from_value=10,
@@ -265,7 +265,7 @@ class SoundManager(Node):
         # parameters
         sound_volume_descriptor = ParameterDescriptor(
             name="sound_volume",
-            type=rclpy.Parameter.Type.INTEGER,
+            type=rclpy.Parameter.Type.INTEGER.value,
             description="Warns when kachaka's battery level falls below a specified value.",
             integer_range=[IntegerRange(
                 from_value=0,
