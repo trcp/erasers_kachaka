@@ -22,7 +22,7 @@ class TTS(Node):
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
 
         # create service server
-        self.srv = self.create_service(Speaker, "/kachaka/tts", self.srv_cb)
+        self.srv = self.create_service(Speaker, "/er_kachaka/tts", self.srv_cb)
 
     def srv_cb(self, req, res):
         try:

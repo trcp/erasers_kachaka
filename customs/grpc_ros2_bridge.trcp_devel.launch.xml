@@ -47,7 +47,7 @@
                  value="false" />
     </composable_node>
     <!-- disable when use ros2 navigation pkgs -->
-    <composable_node pkg="kachaka_grpc_ros2_bridge"
+    <!-- composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::GoalPoseComponent"
                      name="goal_pose"
                      namespace="$(var namespace)">
@@ -55,7 +55,7 @@
              to="/goal_pose" />
       <extra_arg name="use_intra_process_comms"
                  value="false" />
-    </composable_node >
+    </composable_node -->
     <composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::ImuComponent"
                      name="imu"

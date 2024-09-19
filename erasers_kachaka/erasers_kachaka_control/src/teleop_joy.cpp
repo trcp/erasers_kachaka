@@ -10,8 +10,8 @@ public:
     JoyTranslate() : Node("joy_translate_node")
     {
         // パブリッシャーとサブスクライバーの作成
-        pub = this->create_publisher<geometry_msgs::msg::Twist>("/kachaka/manual_control/cmd_vel", 10);
-        sub = this->create_subscription<sensor_msgs::msg::Joy>("joy", 10, std::bind(&JoyTranslate::callback, this, std::placeholders::_1));
+        pub = this->create_publisher<geometry_msgs::msg::Twist>("/er_kachaka/manual_control/cmd_vel", 10);
+        sub = this->create_subscription<sensor_msgs::msg::Joy>("/er_kachaka/joy", 10, std::bind(&JoyTranslate::callback, this, std::placeholders::_1));
     }
 
     void callback(const sensor_msgs::msg::Joy::SharedPtr sub_joy)
