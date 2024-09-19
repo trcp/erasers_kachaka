@@ -19,9 +19,17 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
 - **`provide_map`**<br>
         デフォルト値 : $`\text{True}`$<br>
         **map_frame** を配信するか否かを設定する引数。デフォルトの場合 map_frame を配信します。これにより kachaka の TF ツリーがデフォルトで展開されます。$`\text{False}`$ に設定すると起動時に map_frame は配信されなくなり、kachaka の TF ツリーを購読することができなくなります。<br>
-        この引数を起動するには、launch 起動コマンドの末尾にオプション `provide_map:=true` を追加します。以下が起動時に map_frame の配信を無効化させるコマンドです。
+        この引数を起動するには、launch 起動コマンドの末尾にオプション `provide_map:=false` を追加します。以下が起動時に map_frame の配信を無効化させるコマンドです。
         ```bash
         ros2 launch erasers_kachaka_bringup bringup.launch.py provide_map:=false
+        ```
+
+- **`use_emc`**<br>
+        デフォルト値 : $`\text{True}`$<br>
+        緊急停止ボタン使用するかを設定する引数。デフォルトの場合緊急停止ボタンが接続されていることを前提に起動します。これにより kachaka を緊急停止ボタン経由で停止することができるようになります。もし緊急停止ボタンを接続していない状態で起動すると、**ジョイスティックで kachaka を制御することができなくなります。** $`\text{False}`$ に設定すると緊急停止ボタンが接続されていない前提で起動します。**緊急停止ボタンを接続した状態だとジョイスティックで kachaka を制御することができなくなります。**<br>
+        この引数を起動するには、launch 起動コマンドの末尾にオプション `use_emc:=false` を追加します。以下が緊急停止ボタンを使用しない状態で起動させるコマンドです。
+        ```bash
+        ros2 launch erasers_kachaka_bringup bringup.launch.py use_emc:=false
         ```
 
 ### bringup.launch.py の起動時に起動される rviz の設定ファイルを指定したい場合
