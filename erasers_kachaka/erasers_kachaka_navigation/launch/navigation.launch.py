@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
+from launch_ros.actions import Node, SetRemap
+from launch.actions import (
+    IncludeLaunchDescription, 
+    ExecuteProcess, 
+    DeclareLaunchArgument, 
+    GroupAction,
+)
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -31,6 +36,15 @@ def generate_launch_description():
                     }.items(),
                 )
 
-    ld.add_action(nav_launch)
+    nav2_include = GroupAction(
+        actions=[
+            SetRemap(src='/cmd_vel',dst='/er_kachaka/manual_control/cmd_vel'),
+            SetRemap(src='/odom',dst='/kachaka/odometry/odometry'),
+            SetRemap(src='/scan',dst='/kachaka/lidar/scan'),
+            nav_launch
+        ]
+    )
+
+    ld.add_action(nav2_include)
 
     return ld
