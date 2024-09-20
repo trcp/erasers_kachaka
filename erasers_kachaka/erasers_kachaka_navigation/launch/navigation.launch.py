@@ -10,7 +10,7 @@ from launch.actions import (
 from launch.event_handlers import OnProcessExit
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from ament_index_python.packages import get_package_share_directory
 import os
 
@@ -25,8 +25,22 @@ def generate_launch_description():
     ## configuration
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
     params_file = LaunchConfiguration('params_file', default=param_file_path)
+    
+    ## arg
+    declare_map_file = DeclareLaunchArgument(
+        "map_file",
+        default_value=os.path.join(
+            get_package_share_directory('erasers_kachaka_navigation'),
+            'map',
+            'map.yaml'
+        )
+    )
+    declare_slam_mode = DeclareLaunchArgument(
+        "slam_mode",
+        default_value="false"
+    )
 
-    nav_launch = IncludeLaunchDescription(
+    nav_launch_slam = IncludeLaunchDescription(
                     PythonLaunchDescriptionSource([
                         get_package_share_directory("nav2_bringup"), '/launch/navigation_launch.py'
                     ]),
@@ -34,6 +48,18 @@ def generate_launch_description():
                         'params_file': params_file,
                         'use_sim_time': use_sim_time
                     }.items(),
+                    condition=IfCondition(LaunchConfiguration('slam_mode'))
+                )
+    nav_launch = IncludeLaunchDescription(
+                    PythonLaunchDescriptionSource([
+                        get_package_share_directory("nav2_bringup"), '/launch/navigation_launch.py'
+                    ]),
+                    launch_arguments={
+                        'params_file': params_file,
+                        'use_sim_time': use_sim_time,
+                        'map': LaunchConfiguration('map_file'),
+                    }.items(),
+                    condition=UnlessCondition(LaunchConfiguration('slam_mode'))
                 )
 
     nav2_include = GroupAction(
@@ -41,6 +67,9 @@ def generate_launch_description():
             SetRemap(src='/cmd_vel',dst='/er_kachaka/manual_control/cmd_vel'),
             SetRemap(src='/odom',dst='/kachaka/odometry/odometry'),
             SetRemap(src='/scan',dst='/kachaka/lidar/scan'),
+            declare_map_file,
+            declare_slam_mode,
+            nav_launch_slam,
             nav_launch
         ]
     )
