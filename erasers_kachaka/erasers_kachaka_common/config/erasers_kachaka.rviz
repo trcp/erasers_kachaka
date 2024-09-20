@@ -10,6 +10,7 @@ Panels:
         - /DepthCloud1/Auto Size1
         - /DepthCloud1/Autocompute Value Bounds1
         - /CostMap1/Position1
+        - /Map1
       Splitter Ratio: 0.5
     Tree Height: 846
   - Class: rviz_common/Selection
@@ -291,6 +292,27 @@ Visualization Manager:
         Value: /er_kachaka/lidar/scan
       Use Fixed Frame: true
       Use rainbow: true
+      Value: true
+    - Alpha: 0.10000000149011612
+      Class: rviz_default_plugins/Map
+      Color Scheme: costmap
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /global_costmap/costmap
+      Update Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /global_costmap/costmap_updates
+      Use Timestamp: false
       Value: true
   Enabled: true
   Global Options:
