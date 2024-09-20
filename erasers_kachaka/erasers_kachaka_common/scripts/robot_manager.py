@@ -36,6 +36,7 @@ class EmergencyManager(Node):
     def srv_cb(self, req, res):
         self.say("停止", False)
 
+        self.kachaka.cancel_command()
         result = self.kachaka.set_emergency_stop()
 
         res.success = bool(result)
