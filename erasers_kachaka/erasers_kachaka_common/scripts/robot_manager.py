@@ -63,13 +63,16 @@ def emergency_manager():
 
 class RTHManager(Node):
     def __init__(self):
-        super().__init__("rth_manager")
-        # Activate kachaka api
-        self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
-        # create service server
-        self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
-        # default is disabled
-        self.kachaka.set_auto_homing_enabled(False)
+        try:
+            super().__init__("rth_manager")
+            # Activate kachaka api
+            self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
+            # create service server
+            self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
+            # default is disabled
+            self.kachaka.set_auto_homing_enabled(False)
+        except:
+            self.get_logger().fatal("Kachaka Connection failure !!!!")
 
     def srv_cb(self, req, res):
         result = self.kachaka.set_auto_homing_enabled(req.data)
