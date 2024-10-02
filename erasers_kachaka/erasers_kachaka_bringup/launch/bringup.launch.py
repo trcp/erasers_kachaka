@@ -78,6 +78,11 @@ def generate_launch_description():
         executable="sound_manager",
     )
 
+    voicevox = Node(
+        package="voicevox_ros2",
+        executable="voicevox_ros2_core",
+    )
+
     map2odom = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -114,6 +119,7 @@ def generate_launch_description():
     ld.add_action(sound_manager)
     ld.add_action(map2odom)
     ld.add_action(startup_sound_command)
+    ld.add_action(voicevox)
     ld.add_action(rviz)
 
     # include and execute

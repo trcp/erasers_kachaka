@@ -17,6 +17,7 @@
   <depend>erasers_kachaka_control</depend>
   <depend>erasers_kachaka_common</depend>
   <depend>erasers_kachaka_interfaces</depend>
+  <depend>voicevox_ros2</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
