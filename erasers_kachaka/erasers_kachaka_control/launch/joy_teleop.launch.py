@@ -11,17 +11,20 @@ def generate_launch_description():
 
     print(use_emc)
 
+    """
+    device_id の確認は `ros2 run joy joy_enumerate_devices` で確認すること
+    """
     joy_emc = Node(package="joy",
                        executable="joy_node",
                        name="emc_joy_node",
                        namespace="er_kachaka_emc",
-                       parameters=[{'device_id': 0}]
+                       parameters=[{'device_id': 1}]
                    )
     joy_with_emc = Node(package="joy",
                        executable="joy_node",
                        name="joy_node",
                        namespace="er_kachaka",
-                       parameters=[{'device_id': 1}]
+                       parameters=[{'device_id': 0}]
                    )
     emc_joy = Node(package="erasers_kachaka_control", 
                   executable="emc_joy"
