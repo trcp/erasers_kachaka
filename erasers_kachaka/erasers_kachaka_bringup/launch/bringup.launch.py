@@ -16,8 +16,9 @@ def generate_launch_description():
 
     # launch configurations
     LaunchConfiguration("provide_map")
-    LaunchConfiguration("show_rviz")
-    LaunchConfiguration("use_emc")
+    show_rviz = LaunchConfiguration("show_rviz")
+    use_emc = LaunchConfiguration("use_emc")
+    use_xtion = LaunchConfiguration("use_xtion")
 
     # map
     map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
@@ -25,6 +26,7 @@ def generate_launch_description():
     # pkg prefix
     control_pkg_prefix = get_package_share_directory("erasers_kachaka_control")
     common_pkg_prefix = get_package_share_directory("erasers_kachaka_common")
+    vision_pkg_prefix = get_package_share_directory("erasers_kachaka_vision")
     rviz_name = "erasers_kachaka.rviz"
     rviz_prefix = os.path.join(common_pkg_prefix, "config", rviz_name)
 
@@ -38,13 +40,23 @@ def generate_launch_description():
     declare_use_emc = DeclareLaunchArgument("use_emc",
                                                 default_value="true",
                                                 description="use emergency button")
+    declare_use_xtion = DeclareLaunchArgument("use_xtion",
+                                                default_value="true",
+                                                description="use Xtion camera")
 
     # include launch
     teleop_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [control_pkg_prefix, "/launch/joy_teleop.launch.py"]
         ),
-        launch_arguments={"use_emc": LaunchConfiguration("use_emc")}.items(),
+        launch_arguments={"use_emc": use_emc}.items(),
+    )
+
+    xtion_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [vision_pkg_prefix, "/launch/xtion.launch.py"]
+        ),
+        condition=IfCondition(use_xtion)
     )
 
     # include node
@@ -88,7 +100,7 @@ def generate_launch_description():
     rviz = Node(
         package = "rviz2",
         executable = "rviz2",
-        condition=IfCondition(LaunchConfiguration('show_rviz')),
+        condition=IfCondition(show_rviz),
         arguments=["-d", rviz_prefix]
     )
 
@@ -105,7 +117,9 @@ def generate_launch_description():
     ld.add_action(declare_provide_map)
     ld.add_action(declare_show_rviz)
     ld.add_action(declare_use_emc)
+    ld.add_action(declare_use_xtion)
     ld.add_action(teleop_launch)
+    ld.add_action(xtion_launch)
     ld.add_action(service_tts)
     ld.add_action(emergency_manager)
     ld.add_action(rth_manager)
