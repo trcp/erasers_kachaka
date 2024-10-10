@@ -77,7 +77,7 @@ def generate_launch_description():
                 condition=IfCondition(LaunchConfiguration('debug')),
                 arguments=[
                     '-d', os.path.join(
-                    get_package_share_directory('erasers_kachaka__vision'),
+                    get_package_share_directory('erasers_kachaka_vision'),
                     'rviz', 'xtion_cameraview.rviz'
                 )]
             ),
