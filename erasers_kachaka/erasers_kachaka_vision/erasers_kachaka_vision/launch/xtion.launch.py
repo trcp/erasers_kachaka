@@ -55,10 +55,9 @@ def generate_launch_description():
     description = IncludeLaunchDescription(
         XMLLaunchDescriptionSource([
             ThisLaunchFileDir(), 
-            '/xtion_description.launch'
+            '/xtion_debug_description.launch'
         ]),
-        launch_arguments={'debug': LaunchConfiguration('debug')}.items(),
-        condition=IfCondition(LaunchConfiguration('debug'))
+        condition=IfCondition(debug)
     )
 
     return launch.LaunchDescription([
@@ -71,6 +70,16 @@ def generate_launch_description():
                 'debug',
                 default_value='false',
                 description='If true, use the debug version of the xtion_description.launch file'
+            ),
+            launch_ros.actions.Node(
+                package='rviz2',
+                executable='rviz2',
+                condition=IfCondition(LaunchConfiguration('debug')),
+                arguments=[
+                    '-d', os.path.join(
+                    get_package_share_directory('erasers_kachaka__vision'),
+                    'rviz', 'xtion_cameraview.rviz'
+                )]
             ),
             container,
             description

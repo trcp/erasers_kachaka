@@ -12,6 +12,7 @@ install(DIRECTORY
   launch
   urdf
   config
+  rviz
   DESTINATION share/${PROJECT_NAME}/
 )
 
