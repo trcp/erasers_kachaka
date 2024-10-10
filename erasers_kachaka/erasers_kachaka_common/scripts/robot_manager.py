@@ -62,13 +62,30 @@ def emergency_manager():
 
 class RTHManager(Node):
     def __init__(self):
-        super().__init__("rth_manager")
-        # Activate kachaka api
-        self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
-        # create service server
-        self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
-        # default is disabled
-        self.kachaka.set_auto_homing_enabled(False)
+        try:
+            super().__init__("rth_manager")
+            # Activate kachaka api
+            self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
+            # create service server
+            self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
+            # default is disabled
+            self.kachaka.set_auto_homing_enabled(False)
+        except:
+            self.get_logger().fatal(""" CONNECTION ERROR IS OCCURED !!!!!!!!
+=======================================
+FATAL CONNECTION TO KACHAKA !
+PLEASE CHECK CONNECTION NOW !!!!!
+
+1. CHECK DHCP TO THIS COMMAND
+    sudo systemctl status isc-dhcp-server
+
+2. IF ERROR IS OCCURED IN DHCP SERVER CHECK NETWORK SETTING
+
+3. CHECK THE NETOWORK SETTING, AFTER TRY THIS.
+    sudo systemctl restart isc-dhcp-server
+
+=======================================
+            """)
 
     def srv_cb(self, req, res):
         result = self.kachaka.set_auto_homing_enabled(req.data)
