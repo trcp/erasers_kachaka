@@ -35,13 +35,13 @@ def generate_launch_description():
                                                 default_value="true",
                                                 description="Whether to deliver a map frame from the host")
     declare_show_rviz = DeclareLaunchArgument("show_rviz",
-                                                default_value="false",
+                                                default_value="true",
                                                 description="Whether to display Rviz2")
     declare_use_emc = DeclareLaunchArgument("use_emc",
                                                 default_value="true",
                                                 description="use emergency button")
     declare_use_xtion = DeclareLaunchArgument("use_xtion",
-                                                default_value="true",
+                                                default_value="false",
                                                 description="use Xtion camera")
 
     # include launch
