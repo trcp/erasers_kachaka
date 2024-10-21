@@ -22,6 +22,7 @@ def generate_launch_description():
 
     # map
     map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
+    odom2foot_pose = ["0", "0", "0", "0", "0", "0", "odom", "base_footprint"]
 
     # pkg prefix
     control_pkg_prefix = get_package_share_directory("erasers_kachaka_control")
@@ -97,6 +98,13 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('provide_map')),
     )
 
+    odom2foot = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=odom2foot_pose,
+        condition=IfCondition(LaunchConfiguration('provide_map')),
+    )
+
     rviz = Node(
         package = "rviz2",
         executable = "rviz2",
@@ -127,6 +135,7 @@ def generate_launch_description():
     ld.add_action(battery_manager)
     ld.add_action(sound_manager)
     ld.add_action(map2odom)
+    ld.add_action(odom2foot)
     ld.add_action(startup_sound_command)
     ld.add_action(rviz)
 
