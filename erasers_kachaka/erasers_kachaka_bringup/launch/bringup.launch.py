@@ -110,7 +110,7 @@ def generate_launch_description():
             'ros2 service call /er_kachaka/tts erasers_kachaka_interfaces/srv/Speaker "{text: erasersカチャカ、スタート}"'
         ],
         shell=True,
-        output="both",
+        output="own_log",
     )
 
     # add actions
