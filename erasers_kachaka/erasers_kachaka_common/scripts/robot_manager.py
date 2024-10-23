@@ -72,7 +72,21 @@ class RTHManager(Node):
             # default is disabled
             self.kachaka.set_auto_homing_enabled(False)
         except:
-            self.get_logger().fatal("Kachaka Connection failure !!!!")
+            self.get_logger().fatal(""" CONNECTION ERROR IS OCCURED !!!!!!!!
+=======================================
+FATAL CONNECTION TO KACHAKA !
+PLEASE CHECK CONNECTION NOW !!!!!
+
+1. CHECK DHCP TO THIS COMMAND
+    sudo systemctl status isc-dhcp-server
+
+2. IF ERROR IS OCCURED IN DHCP SERVER CHECK NETWORK SETTING
+
+3. CHECK THE NETOWORK SETTING, AFTER TRY THIS.
+    sudo systemctl restart isc-dhcp-server
+
+=======================================
+            """)
 
     def srv_cb(self, req, res):
         result = self.kachaka.set_auto_homing_enabled(req.data)
@@ -196,7 +210,7 @@ class BatteryManager(Node):
             )]
         )
         
-        self.declare_parameter("low_battery_level", 10, low_battery_level_descriptor)
+        self.declare_parameter("low_battery_level", 30, low_battery_level_descriptor)
         self.declare_parameter("nofitication_late",300, nofitication_late_descriptor)
 
         self.param_low_battery_level = self.get_parameter("low_battery_level").get_parameter_value().integer_value

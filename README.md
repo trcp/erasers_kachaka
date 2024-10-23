@@ -26,9 +26,9 @@ source ~/kachaka/bin/activate
 仮想環境を構築したら、このリポジトリに戻り、以下の手順で kachaka-api とその依存するパッケージをインストールします。
 ```
 cd kachaka-api/python/demos/
+pip3 install setuptools==58.2.0
 pip3 install -r requirements.txt
 pip3 install catkin_pkg empy lark colcon-common-extensions opencv-python
-pip3 install setuptools==58.2.0
 python3 -m grpc_tools.protoc -I../../protos --python_out=. --pyi_out=. --grpc_python_out=. ../../protos/kachaka-api.proto
 ```
 ### ネットワークの構築

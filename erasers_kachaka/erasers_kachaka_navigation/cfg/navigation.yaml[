@@ -228,7 +228,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: odom
+      robot_base_frame: base_footprint
       use_sim_time: False
       robot_radius: 0.22
       resolution: 0.025

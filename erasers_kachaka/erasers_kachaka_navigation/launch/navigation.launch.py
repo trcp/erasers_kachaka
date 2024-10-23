@@ -21,19 +21,21 @@ def generate_launch_description():
         get_package_share_directory('erasers_kachaka_navigation'),
         'cfg', 'navigation.yaml'
     )
+    map_path = os.path.join(
+        get_package_share_directory('erasers_kachaka_navigation'),
+        'map',
+        'map.yaml'
+    )
 
     ## configuration
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     params_file = LaunchConfiguration('params_file', default=param_file_path)
+    slam_mode = LaunchConfiguration('slam_mode')
     
     ## arg
     declare_map_file = DeclareLaunchArgument(
         "map_file",
-        default_value=os.path.join(
-            get_package_share_directory('erasers_kachaka_navigation'),
-            'map',
-            'map.yaml'
-        )
+        default_value=map_path
     )
     declare_slam_mode = DeclareLaunchArgument(
         "slam_mode",
@@ -70,7 +72,7 @@ def generate_launch_description():
             declare_map_file,
             declare_slam_mode,
             nav_launch_slam,
-            nav_launch
+            nav_launch,
         ]
     )
 
