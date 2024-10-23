@@ -12,10 +12,13 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
+  <depend>rqt_tf_tree</depend>
+
   <depend>kachaka_interfaces</depend>
   <depend>kachaka_description</depend>
   <depend>erasers_kachaka_control</depend>
   <depend>erasers_kachaka_common</depend>
+  <depend>erasers_kachaka_cartographer</depend>
   <depend>erasers_kachaka_navigation</depend>
   <depend>erasers_kachaka_vision</depend>
   <depend>erasers_kachaka_interfaces</depend>
