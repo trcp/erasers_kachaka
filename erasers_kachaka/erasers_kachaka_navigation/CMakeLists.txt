@@ -7,22 +7,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-
-add_executable(map_saver src/map_saver.cpp)
-ament_target_dependencies(map_saver rclcpp)
-
-install(TARGETS
-  map_saver
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(DIRECTORY
-  launch
-  cfg
-  map
-  DESTINATION share/${PROJECT_NAME}/
-)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
