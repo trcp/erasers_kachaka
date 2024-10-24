@@ -11,6 +11,8 @@ from ament_index_python.packages import get_package_share_directory
 
 import os
 
+NAMESPACE = "er_kachaka"
+
 def generate_launch_description():
     ld = LaunchDescription()
 
@@ -19,6 +21,7 @@ def generate_launch_description():
     show_rviz = LaunchConfiguration("show_rviz")
     use_emc = LaunchConfiguration("use_emc")
     use_xtion = LaunchConfiguration("use_xtion")
+    ns = LaunchConfiguration("namespace", default=NAMESPACE)
 
     # map
     map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
@@ -50,45 +53,53 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             [control_pkg_prefix, "/launch/joy_teleop.launch.py"]
         ),
-        launch_arguments={"use_emc": use_emc}.items(),
+        launch_arguments={"use_emc": use_emc,
+                          "_namespace": ns}.items(),
     )
 
     xtion_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [vision_pkg_prefix, "/launch/xtion.launch.py"]
         ),
-        condition=IfCondition(use_xtion)
+        condition=IfCondition(use_xtion),
+        launch_arguments={"_namespace": ns}.items(),
     )
 
     # include node
     service_tts = Node(
         package="erasers_kachaka_common",
         executable="service_tts",
+        namespace=ns
     )
 
     emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
+        namespace=ns
     )
 
     rth_manager = Node(
         package="erasers_kachaka_common",
         executable="rth_manager",
+        namespace=ns
     )
 
     docking_manager = Node(
         package="erasers_kachaka_common",
         executable="docking_manager",
+        namespace=ns
     )
 
     battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
+        namespace=ns
     )
 
     sound_manager = Node(
         package="erasers_kachaka_common",
         executable="sound_manager",
+        namespace=ns
     )
 
     map2odom = Node(
@@ -115,7 +126,7 @@ def generate_launch_description():
     # launch message
     startup_sound_command = ExecuteProcess(
         cmd=[
-            'ros2 service call /er_kachaka/tts erasers_kachaka_interfaces/srv/Speaker "{text: erasersカチャカ、スタート}"'
+            'ros2 service call /%s/tts erasers_kachaka_interfaces/srv/Speaker "{text: erasersカチャカ、スタート}"'%NAMESPACE
         ],
         shell=True,
         output="own_log",

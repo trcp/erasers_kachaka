@@ -31,7 +31,7 @@ class EmergencyManager(Node):
         self.say = tts.say
 
         # create service server
-        self.srv = self.create_service(Trigger, "/er_kachaka/emergency", self.srv_cb)
+        self.srv = self.create_service(Trigger, "emergency", self.srv_cb)
 
     def srv_cb(self, req, res):
         self.say("停止", False)
@@ -68,7 +68,7 @@ class RTHManager(Node):
             # Activate kachaka api
             self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
             # create service server
-            self.srv = self.create_service(SetBool, "/er_kachaka/rth", self.srv_cb)
+            self.srv = self.create_service(SetBool, "rth", self.srv_cb)
             # default is disabled
             self.kachaka.set_auto_homing_enabled(False)
         except:
@@ -136,9 +136,9 @@ class DockingManager(Node):
         # Activate kachaka api
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
         # create service server
-        self.srv = self.create_service(SetBool, "/er_kachaka/docking", self.srv_cb)
+        self.srv = self.create_service(SetBool, "docking", self.srv_cb)
         # create client
-        self.cli = self.create_client(SetBool, "/er_kachaka/docking")
+        self.cli = self.create_client(SetBool, "docking")
         while not self.cli.wait_for_service(timeout_sec=5):
             self.get_logger().error("service declare error")
 
@@ -225,7 +225,7 @@ class BatteryManager(Node):
         self.say = tts.say
 
         # create subscriber
-        self.battery_sub = self.create_subscription(BatteryState, "/er_kachaka/robot_info/battery_state", self._cb, QOS_PROFILE)
+        self.battery_sub = self.create_subscription(BatteryState, "robot_info/battery_state", self._cb, QOS_PROFILE)
 
         # initialize timer
         self.init_time = time.time()
@@ -300,9 +300,9 @@ class SoundManager(Node):
         # Activate kachaka api
         self.kachaka = kachaka_api.KachakaApiClient(f"{KACHAKA_IP}:26400")
         # create service server
-        self.srv = self.create_service(SoundVolume, "/er_kachaka/sound_volume", self.srv_cb)
+        self.srv = self.create_service(SoundVolume, "sound_volume", self.srv_cb)
         # create client
-        self.cli = self.create_client(SoundVolume, "/er_kachaka/sound_volume")
+        self.cli = self.create_client(SoundVolume, "sound_volume")
         while not self.cli.wait_for_service(timeout_sec=5):
             self.get_logger().error("service declare error")
 

@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch_ros.actions import Node, PushRosNamespace
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import IfCondition, UnlessCondition
 from launch.actions import GroupAction
@@ -8,8 +8,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     use_emc = LaunchConfiguration("use_emc", default="false")
-
-    print(use_emc)
+    namespace = LaunchConfiguration("_namespace", default="er_kachaka")
 
     """
     device_id の確認は `ros2 run joy joy_enumerate_devices` で確認すること
@@ -17,22 +16,29 @@ def generate_launch_description():
     joy_emc = Node(package="joy",
                        executable="joy_node",
                        name="emc_joy_node",
-                       namespace="er_kachaka_emc",
+                       namespace="emc",
                        parameters=[{'device_id': 0}]
                    )
     joy_with_emc = Node(package="joy",
                        executable="joy_node",
                        name="joy_node",
-                       namespace="er_kachaka",
+                       namespace=namespace,
                        parameters=[{'device_id': 1}]
                    )
     emc_joy = Node(package="erasers_kachaka_control", 
-                  executable="emc_joy"
+                  executable="emc_joy",
+                  namespace=namespace,
              )
+    emc_button = GroupAction(
+        actions=[
+            PushRosNamespace(namespace), joy_emc
+        ]
+    )
+    
     joy_with_emc_group = GroupAction(
         condition=IfCondition(use_emc),
         actions=[
-            joy_emc,
+            emc_button,
             joy_with_emc,
             emc_joy
         ]
@@ -40,13 +46,14 @@ def generate_launch_description():
     joy_without_emc = Node(package="joy",
                        executable="joy_node",
                        name="joy_node",
-                       namespace="er_kachaka",
+                       namespace=namespace,
                        condition=UnlessCondition(use_emc),
                        parameters=[{'device_id': 0}]
                    )
 
     teleop = Node(package="erasers_kachaka_control", 
-                  executable="teleop_joy"
+                  executable="teleop_joy",
+                  namespace=namespace
              )
 
     ld.add_action(joy_with_emc_group)
