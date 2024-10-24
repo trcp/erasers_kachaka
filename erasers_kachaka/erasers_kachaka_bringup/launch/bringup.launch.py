@@ -16,15 +16,18 @@ def generate_launch_description():
 
     # launch configurations
     LaunchConfiguration("provide_map")
-    LaunchConfiguration("show_rviz")
-    LaunchConfiguration("use_emc")
+    show_rviz = LaunchConfiguration("show_rviz")
+    use_emc = LaunchConfiguration("use_emc")
+    use_xtion = LaunchConfiguration("use_xtion")
 
     # map
     map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
+    odom2foot_pose = ["0", "0", "0", "0", "0", "0", "odom", "base_footprint"]
 
     # pkg prefix
     control_pkg_prefix = get_package_share_directory("erasers_kachaka_control")
     common_pkg_prefix = get_package_share_directory("erasers_kachaka_common")
+    vision_pkg_prefix = get_package_share_directory("erasers_kachaka_vision")
     rviz_name = "erasers_kachaka.rviz"
     rviz_prefix = os.path.join(common_pkg_prefix, "config", rviz_name)
 
@@ -33,18 +36,28 @@ def generate_launch_description():
                                                 default_value="true",
                                                 description="Whether to deliver a map frame from the host")
     declare_show_rviz = DeclareLaunchArgument("show_rviz",
-                                                default_value="false",
+                                                default_value="true",
                                                 description="Whether to display Rviz2")
     declare_use_emc = DeclareLaunchArgument("use_emc",
                                                 default_value="true",
                                                 description="use emergency button")
+    declare_use_xtion = DeclareLaunchArgument("use_xtion",
+                                                default_value="false",
+                                                description="use Xtion camera")
 
     # include launch
     teleop_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             [control_pkg_prefix, "/launch/joy_teleop.launch.py"]
         ),
-        launch_arguments={"use_emc": LaunchConfiguration("use_emc")}.items(),
+        launch_arguments={"use_emc": use_emc}.items(),
+    )
+
+    xtion_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            [vision_pkg_prefix, "/launch/xtion.launch.py"]
+        ),
+        condition=IfCondition(use_xtion)
     )
 
     # include node
@@ -85,10 +98,17 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('provide_map')),
     )
 
+    odom2foot = Node(
+        package="tf2_ros",
+        executable="static_transform_publisher",
+        arguments=odom2foot_pose,
+        condition=IfCondition(LaunchConfiguration('provide_map')),
+    )
+
     rviz = Node(
         package = "rviz2",
         executable = "rviz2",
-        condition=IfCondition(LaunchConfiguration('show_rviz')),
+        condition=IfCondition(show_rviz),
         arguments=["-d", rviz_prefix]
     )
 
@@ -98,14 +118,16 @@ def generate_launch_description():
             'ros2 service call /er_kachaka/tts erasers_kachaka_interfaces/srv/Speaker "{text: erasersカチャカ、スタート}"'
         ],
         shell=True,
-        output="both",
+        output="own_log",
     )
 
     # add actions
     ld.add_action(declare_provide_map)
     ld.add_action(declare_show_rviz)
     ld.add_action(declare_use_emc)
+    ld.add_action(declare_use_xtion)
     ld.add_action(teleop_launch)
+    ld.add_action(xtion_launch)
     ld.add_action(service_tts)
     ld.add_action(emergency_manager)
     ld.add_action(rth_manager)
@@ -113,6 +135,7 @@ def generate_launch_description():
     ld.add_action(battery_manager)
     ld.add_action(sound_manager)
     ld.add_action(map2odom)
+    ld.add_action(odom2foot)
     ld.add_action(startup_sound_command)
     ld.add_action(rviz)
 

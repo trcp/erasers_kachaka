@@ -36,6 +36,7 @@ class EmergencyManager(Node):
     def srv_cb(self, req, res):
         self.say("停止", False)
 
+        self.kachaka.cancel_command()
         result = self.kachaka.set_emergency_stop()
 
         res.success = bool(result)
@@ -209,7 +210,7 @@ class BatteryManager(Node):
             )]
         )
         
-        self.declare_parameter("low_battery_level", 10, low_battery_level_descriptor)
+        self.declare_parameter("low_battery_level", 30, low_battery_level_descriptor)
         self.declare_parameter("nofitication_late",300, nofitication_late_descriptor)
 
         self.param_low_battery_level = self.get_parameter("low_battery_level").get_parameter_value().integer_value

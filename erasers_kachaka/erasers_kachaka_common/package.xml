@@ -13,6 +13,8 @@
   <test_depend>python3-pytest</test_depend>
 
   <depend>erasers_kachaka_interfaces</depend>
+  <depend>erasers_kachaka_navigation</depend>
+  <depend>tf_transformations</depend>
 
   <export>
     <build_type>ament_python</build_type>

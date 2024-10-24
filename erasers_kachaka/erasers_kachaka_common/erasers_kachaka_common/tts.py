@@ -5,7 +5,7 @@ from rclpy.node import Node
 import rclpy
 
 import traceback
-
+import time
 
 class TTS(Node):
     def __init__(self, timeout=10):
@@ -30,6 +30,7 @@ class TTS(Node):
         if wait:
             rclpy.spin_until_future_complete(self, future)
             result = future.result()
+            time.sleep(1)
             return result.success
         else:
             return True
