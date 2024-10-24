@@ -8,11 +8,11 @@ public:
     EmcJoyNode() : Node("emc_joy"), button_pressed_(false)  // メンバー変数の初期化　初期状態はfalse
     {
         // サービスクライアントを作成
-        emergency_client_ = this->create_client<std_srvs::srv::Trigger>("/er_kachaka/emergency");
+        emergency_client_ = this->create_client<std_srvs::srv::Trigger>("emergency");
 
         // Joyトピックのサブスクライバを作成
         joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(
-            "/er_kachaka_emc/joy", 10,
+            "emc/joy", 10,
             std::bind(&EmcJoyNode::joy_callback, this, std::placeholders::_1));
     }
 
