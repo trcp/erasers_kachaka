@@ -99,7 +99,8 @@ def generate_launch_description():
     sound_manager = Node(
         package="erasers_kachaka_common",
         executable="sound_manager",
-        namespace=ns
+        namespace=ns,
+        output="own_log"
     )
 
     map2odom = Node(
