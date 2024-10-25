@@ -47,6 +47,7 @@ setup(
             "docking_manager = scripts.robot_manager:docking_manager",
             "battery_manager = scripts.robot_manager:battery_manager",
             "sound_manager = scripts.robot_manager:sound_manager",
+            "object_detection_publisher = scripts.object_detection_publisher:main",
         ],
     },
 )
