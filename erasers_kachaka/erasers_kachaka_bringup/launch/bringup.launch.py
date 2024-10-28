@@ -103,6 +103,13 @@ def generate_launch_description():
         output="own_log"
     )
 
+    object_detection_publisher = Node(
+        package="erasers_kachaka_common",
+        executable="object_detection_publisher",
+        namespace=ns,
+        output="own_log"
+    )
+
     map2odom = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
@@ -146,6 +153,7 @@ def generate_launch_description():
     ld.add_action(docking_manager)
     ld.add_action(battery_manager)
     ld.add_action(sound_manager)
+    ld.add_action(object_detection_publisher)
     ld.add_action(map2odom)
     ld.add_action(odom2foot)
     ld.add_action(startup_sound_command)

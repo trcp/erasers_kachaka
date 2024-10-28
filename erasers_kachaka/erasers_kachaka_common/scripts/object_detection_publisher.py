@@ -23,14 +23,16 @@ class ObjectDetectionPublisher(Node):
             reliability=QoSReliabilityPolicy.BEST_EFFORT
             )
 
+        self.pub = self.create_publisher(Image, "object_detection/image_raw", qos)
+
         self.frontcamera_sub = Subscriber(
             self, Image,
-            "image_raw",
+            "front_camera/image_raw",
             qos_profile=qos
         )
         self.detectresult_sub = Subscriber(
             self, ObjectDetectionListStamped,
-            "result",
+            "object_detection/result",
             qos_profile=qos
         )
 
@@ -88,8 +90,7 @@ class ObjectDetectionPublisher(Node):
                     2
                  )
 
-        cv2.imshow("test", image)
-        cv2.waitKey(1)
+        self.pub.publish(CB.cv2_to_imgmsg(image, "bgr8"))
 
 def main():
     rclpy.init()
