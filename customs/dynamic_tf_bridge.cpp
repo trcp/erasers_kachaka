@@ -31,9 +31,9 @@ bool ConvertGrpcTfToRosTf(
         transform_grpc.header(), &(transform_ros.header));
 
     // skipper
-    if (transform_ros.header.frame_id == "map") {
-      continue;
-    }
+    //if (transform_ros.header.frame_id == "map") {
+    //  continue;
+    //}
 
     transform_ros.child_frame_id = transform_grpc.child_frame_id();
     transform_ros.transform.translation.x = transform_grpc.translation().x();
