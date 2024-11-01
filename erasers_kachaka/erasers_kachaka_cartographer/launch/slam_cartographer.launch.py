@@ -21,7 +21,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time", default="false")
     configuration_directory = LaunchConfiguration("configuration_directory", default=param_dir)
     configuration_basename = LaunchConfiguration("configuration_basename", default=param_file)
-    resolution = LaunchConfiguration("resolution", default="0.05")
+    resolution = LaunchConfiguration("resolution", default="0.025")
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
 
     ### declare argument
@@ -58,7 +58,8 @@ def generate_launch_description():
         arguments=['-configuration_directory', param_dir,
                    '-configuration_basename', param_file],
         remappings=[('scan', 'lidar/scan'),
-                    ('odom', 'odometry/odometry')],
+                    ('odom', 'odometry/odometry'),
+                    ('imu', 'imu/imu')],
     )
     occupancy_grid_node = Node(
         package='cartographer_ros',
