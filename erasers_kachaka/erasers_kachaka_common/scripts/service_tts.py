@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from erasers_kachaka_interfaces.srv import Speaker
+from std_msgs.msg import String
 
 from rclpy.node import Node
 import rclpy
@@ -24,6 +25,9 @@ class TTS(Node):
         # create service server
         self.srv = self.create_service(Speaker, "tts", self.srv_cb)
 
+        # create subscriber
+        self.sub = self.create_subscription(String, "tts", self.sub_cb, 10)
+
     def srv_cb(self, req, res):
         try:
             print(f"get request: {req.text}")
@@ -34,6 +38,12 @@ class TTS(Node):
             res.success = False
         finally:
             return res
+
+    def sub_cb(self, msg):
+        text = msg.data
+
+        self.get_logger().info(f"Get string message: {text}")
+        self.kachaka.speak(text)
 
 def main():
     rclpy.init()
