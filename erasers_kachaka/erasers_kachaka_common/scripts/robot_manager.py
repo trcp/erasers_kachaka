@@ -34,7 +34,7 @@ class EmergencyManager(Node):
         self.srv = self.create_service(Trigger, "emergency", self.srv_cb)
 
     def srv_cb(self, req, res):
-        self.say("停止", False)
+        self.say("停止", True)
 
         self.kachaka.cancel_command()
         result = self.kachaka.set_emergency_stop()
