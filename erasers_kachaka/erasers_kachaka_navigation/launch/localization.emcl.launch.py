@@ -19,6 +19,7 @@ def generate_launch_description():
     params_file = LaunchConfiguration("params_file")
     map_yaml_file = LaunchConfiguration("map", default=MAP)
     use_sim_time = LaunchConfiguration("use_sim_time", default=False)
+    log = LaunchConfiguration("log", default="screen")
 
     declare_params_file = DeclareLaunchArgument(
         "params_file",
@@ -42,7 +43,7 @@ def generate_launch_description():
                 name="map_server",
                 namespace="/er_kachaka/navigation",
                 parameters=[{"yaml_filename": map_yaml_file}],
-                output="screen",
+                output=log,
             ),
             Node(
                 name="emcl2",
@@ -58,7 +59,7 @@ def generate_launch_description():
                 executable="lifecycle_manager",
                 name="lifecycle_manager_localization",
                 namespace="/er_kachaka/navigation",
-                output="screen",
+                output=log,
                 parameters=[{"autostart": True}, {"node_names": lifecycle_nodes}],
             ),
         ]

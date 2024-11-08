@@ -27,6 +27,7 @@ def generate_launch_description():
     container_name = LaunchConfiguration("container_name")
     use_respawn = LaunchConfiguration("use_respawn")
     log_level = LaunchConfiguration("log_level")
+    log = LaunchConfiguration("log")
     container_name_full = (namespace, "/", container_name)
 
     lifecycle_nodes = [
@@ -110,6 +111,10 @@ def generate_launch_description():
         "log_level", default_value="info", description="log level"
     )
 
+    declare_log_cmd = DeclareLaunchArgument(
+        "log", default_value="screen", description="log"
+    )
+
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(["not ", use_composition])),
         actions=[
@@ -117,7 +122,7 @@ def generate_launch_description():
                 package="nav2_controller",
                 executable="controller_server",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -129,7 +134,7 @@ def generate_launch_description():
                 executable="smoother_server",
                 name="smoother_server",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -141,7 +146,7 @@ def generate_launch_description():
                 executable="planner_server",
                 name="planner_server",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -153,7 +158,7 @@ def generate_launch_description():
                 executable="behavior_server",
                 name="behavior_server",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -165,7 +170,7 @@ def generate_launch_description():
                 executable="bt_navigator",
                 name="bt_navigator",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -177,7 +182,7 @@ def generate_launch_description():
                 executable="waypoint_follower",
                 name="waypoint_follower",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -189,7 +194,7 @@ def generate_launch_description():
                 executable="velocity_smoother",
                 name="velocity_smoother",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -202,7 +207,7 @@ def generate_launch_description():
                 executable="lifecycle_manager",
                 name="lifecycle_manager_navigation",
                 namespace=namespace,
-                output="screen",
+                output=log,
                 arguments=["--ros-args", "--log-level", log_level],
                 parameters=[
                     {"use_sim_time": use_sim_time},
@@ -306,6 +311,7 @@ def generate_launch_description():
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
     ld.add_action(declare_log_level_cmd)
+    ld.add_action(declare_log_cmd)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)
     ld.add_action(load_composable_nodes)

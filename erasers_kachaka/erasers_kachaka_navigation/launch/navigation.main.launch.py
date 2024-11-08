@@ -6,19 +6,37 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition, UnlessCondition
 
 from ament_index_python import get_package_share_directory
+import os
+
+## 使用したいマップ yaml 名を指定してください
+MAP="220-2024tecnofesta.yaml" # 2024 テクノフェスタ
+
 
 def generate_launch_description():
     ld = LaunchDescription()
 
     # prefix
     navigation_prefix = get_package_share_directory("erasers_kachaka_navigation")
+    cartographer_prefix = get_package_share_directory("erasers_kachaka_cartographer")
 
     use_localization = LaunchConfiguration("use_localization")
+    map = LaunchConfiguration("map")
+    log = LaunchConfiguration("log")
 
     declare_use_localization = DeclareLaunchArgument(
         "use_localization",
         default_value="false",
         description="ローカリゼーションを他で使用する場合は True にしてください"
+    )
+    declare_map = DeclareLaunchArgument(
+        "map",
+        default_value=os.path.join(cartographer_prefix, "map", MAP),
+        description="使用したいマップYAMLの絶対パスを指定してください"
+    )
+    declare_log = DeclareLaunchArgument(
+        "log",
+        default_value="screen",
+        description="ログ出力を指定します。"
     )
 
     launch_emcl2_localization = TimerAction(
@@ -31,7 +49,11 @@ def generate_launch_description():
                         navigation_prefix,
                         "/launch/localization.emcl.launch.py"
                     ]
-                )
+                ),
+                launch_arguments={
+                    "map": map,
+                    "log":log
+                }.items()
             )
         ]
     )
@@ -44,7 +66,8 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "namespace":"/er_kachaka/navigation"
+            "namespace":"/er_kachaka/navigation",
+            "log":log
         }.items(),
         condition=UnlessCondition(use_localization)
     )
@@ -57,12 +80,15 @@ def generate_launch_description():
             ]
         ),
         launch_arguments={
-            "namespace":"/er_kachaka/localization"
+            "namespace":"/er_kachaka/localization",
+            "log":log
         }.items(),
         condition=IfCondition(use_localization)
     )
 
     ld.add_action(declare_use_localization)
+    ld.add_action(declare_map)
+    ld.add_action(declare_log)
     ld.add_action(launch_emcl2_localization)
     ld.add_action(launch_navigation2_via_localization)
     ld.add_action(launch_navigation2_via_navigation)
