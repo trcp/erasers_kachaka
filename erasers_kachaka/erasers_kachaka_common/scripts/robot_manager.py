@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from std_srvs.srv import Trigger, SetBool
 from erasers_kachaka_interfaces.srv import SoundVolume
+from std_msgs.msg import Float32
 from sensor_msgs.msg import BatteryState
 from rcl_interfaces.msg import SetParametersResult
 from rcl_interfaces.msg import ParameterDescriptor, IntegerRange
@@ -230,6 +231,10 @@ class BatteryManager(Node):
         # create subscriber
         self.battery_sub = self.create_subscription(BatteryState, "robot_info/battery_state", self._cb, QOS_PROFILE)
 
+        # create publisher
+        self.battery_pub = self.create_publisher(Float32, "robot_info/battery", 10)
+        self.battery = Float32()
+
         # initialize timer
         self.init_time = time.time()
 
@@ -254,7 +259,8 @@ class BatteryManager(Node):
         return SetParametersResult(successful=True, reason="Changed Params")
 
     def _cb(self, msg):
-        percentage = int(msg.percentage * 100)
+        self.battery.data = round(msg.percentage * 100, 1)
+        percentage = int(self.battery.data)
         charging = True if msg.power_supply_status==1 else False
 
         #print(self.param_nofitication_late, self.param_low_battery_level)
@@ -274,6 +280,8 @@ Charging: {charging}
                 text = "バッテリー残量が低下しています。残り%d％です"%percentage
                 self.get_logger().warn(text)
                 self.say(text, wait=False)
+
+        self.battery_pub.publish(self.battery)
 
 def battery_manager():
     rclpy.init()

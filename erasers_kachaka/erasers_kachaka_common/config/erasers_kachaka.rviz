@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /Battery1
         - /DepthCloud1/Auto Size1
         - /DepthCloud1/Autocompute Value Bounds1
         - /Front Camera1/Topic1
@@ -50,6 +51,34 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
+    - Class: rviz_2d_overlay_plugins/PieChartOverlay
+      Enabled: true
+      Name: Battery
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /er_kachaka/robot_info/battery
+      Value: true
+      auto color change: true
+      background color: 0; 0; 0
+      backround alpha: 0.10000000149011612
+      clockwise rotate direction: false
+      foreground alpha: 0.699999988079071
+      foreground alpha 2: 0.4000000059604645
+      foreground color: 25; 255; 240
+      left: 8
+      max color: 26; 95; 180
+      max color change threthold: 0
+      max value: 100
+      med color: 255; 0; 0
+      med color change threthold: 0
+      min value: 0
+      show caption: true
+      size: 128
+      text size: 14
+      top: 0
     - Class: rviz_default_plugins/TF
       Enabled: false
       Frame Timeout: 15
@@ -401,10 +430,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5597963333129883
+      Pitch: 1.5697963237762451
       Target Frame: imu_link
       Value: ThirdPersonFollower (rviz_default_plugins)
-      Yaw: 3.1953909397125244
+      Yaw: 3.250394105911255
     Saved: ~
 Window Geometry:
   Back Camera:

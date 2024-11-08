@@ -13,6 +13,7 @@
   <test_depend>ament_lint_common</test_depend>
 
   <depend>rqt_tf_tree</depend>
+  <depend>rviz_2d_overlay_plugins</depend>
 
   <depend>kachaka_interfaces</depend>
   <depend>kachaka_description</depend>
@@ -22,7 +23,7 @@
   <depend>erasers_kachaka_navigation</depend>
   <depend>erasers_kachaka_vision</depend>
   <depend>erasers_kachaka_interfaces</depend>
-
+  
   <export>
     <build_type>ament_cmake</build_type>
   </export>
