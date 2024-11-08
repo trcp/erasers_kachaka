@@ -224,6 +224,9 @@ class BatteryManager(Node):
         tts = TTS()
         self.say = tts.say
 
+        # declare first battery status flag
+        self.declare_flag = False
+
         # create subscriber
         self.battery_sub = self.create_subscription(BatteryState, "robot_info/battery_state", self._cb, QOS_PROFILE)
 
@@ -254,7 +257,15 @@ class BatteryManager(Node):
         percentage = int(msg.percentage * 100)
         charging = True if msg.power_supply_status==1 else False
 
-        print(self.param_nofitication_late, self.param_low_battery_level)
+        #print(self.param_nofitication_late, self.param_low_battery_level)
+        if not self.declare_flag:
+            self.get_logger().info(f"""
+=========================
+Battery: {percentage} %
+Charging: {charging}
+=========================
+            """)
+            self.declare_flag = True
 
         if time.time() - self.init_time > self.param_nofitication_late:
             self.init_time = time.time()
