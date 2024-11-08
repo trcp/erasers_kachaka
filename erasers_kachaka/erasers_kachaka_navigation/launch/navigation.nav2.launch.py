@@ -3,43 +3,31 @@ import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
-    IncludeLaunchDescription,
     DeclareLaunchArgument,
     GroupAction,
     SetEnvironmentVariable,
+    GroupAction
 )
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression
-from launch_ros.actions import LoadComposableNodes, Node
+from launch_ros.actions import LoadComposableNodes, Node, PushRosNamespace
 from launch_ros.descriptions import ComposableNode
 from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
+    # Get the launch directory
     bringup_dir = get_package_share_directory("erasers_kachaka_navigation")
-    #bringup_dir = get_package_share_directory("kachaka_nav2_bringup")
-    nav_bringup_dir = get_package_share_directory('nav2_bringup')
-    launch_dir = os.path.join(nav_bringup_dir, 'launch')
 
-    default_map_dir = os.path.join(
-        get_package_share_directory("erasers_kachaka_cartographer"), "map"
-    )
-    default_map_name = "220-20241101.yaml"
-    default_map_prefix = os.path.join(default_map_dir, default_map_name)
-    default_params_prefix = os.path.join(bringup_dir, "param", "nav2_params.yaml")
-
-    namespace = LaunchConfiguration("namespace", default="er_kachaka")
-    use_sim_time = LaunchConfiguration("use_sim_time")
+    namespace = LaunchConfiguration("namespace")
+    use_sim_time = LaunchConfiguration("use_sim_time", default=False)
     autostart = LaunchConfiguration("autostart")
     params_file = LaunchConfiguration("params_file")
     use_composition = LaunchConfiguration("use_composition")
     container_name = LaunchConfiguration("container_name")
-    container_name_full = (namespace, "/", container_name)
     use_respawn = LaunchConfiguration("use_respawn")
     log_level = LaunchConfiguration("log_level")
-    map_yaml_file = LaunchConfiguration('map')
-    slam = LaunchConfiguration('slam')
+    container_name_full = (namespace, "/", container_name)
 
     lifecycle_nodes = [
         "controller_server",
@@ -49,24 +37,15 @@ def generate_launch_description():
         "bt_navigator",
         "waypoint_follower",
         "velocity_smoother",
-        #"map_server",
-        #"amcl"
     ]
 
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
-    # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
+
     remappings = [
-        ("/tf", "tf"),
-        ("/tf_static", "tf_static"),
-        ("/odom", "/kachaka/odometry/odometry"),
-        ("/scan", "/kachaka/lidar/scan"),
-        ("/cmd_vel", "/kachaka/manual_control/cmd_vel"),
-        ("/goal_pose", "/ros/goal_pose"),
-        #("/map", "/kachaka/map"),
+        ("odom", "/er_kachaka/odometry/odometry"),
+        ("scan", "/er_kachaka/lidar/scan"),
+        ("cmd_vel", "/er_kachaka/manual_control/cmd_vel"),
+        ("goal_pose", "/er_kachaka/goal_pose"),
+        ("map", "/er_kachaka/localization/map"),
     ]
 
     # Create our own temporary YAML files that include substitutions
@@ -84,7 +63,11 @@ def generate_launch_description():
     )
 
     declare_namespace_cmd = DeclareLaunchArgument(
-        "namespace", default_value="", description="Top-level namespace"
+        "namespace", default_value="/er_kachaka/navigation", description="Top-level namespace"
+    )
+
+    declare_use_namespace_cmd = DeclareLaunchArgument(
+        "use_namespace", default_value="true", description="Top-level namespace"
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -95,7 +78,7 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         "params_file",
-        default_value=os.path.join(bringup_dir, "param", "nav2_params.yaml"),
+        default_value=os.path.join(bringup_dir, "params", "nav2_params.yaml"),
         description="Full path to the ROS2 parameters file to use for all launched nodes",
     )
 
@@ -107,7 +90,7 @@ def generate_launch_description():
 
     declare_use_composition_cmd = DeclareLaunchArgument(
         "use_composition",
-        default_value="True",
+        default_value="False",
         description="Use composed bringup if True",
     )
 
@@ -127,23 +110,14 @@ def generate_launch_description():
         "log_level", default_value="info", description="log level"
     )
 
-    declare_map_cmd = DeclareLaunchArgument(
-        "map", default_value=default_map_prefix, description="use map file"
-    )
-
-    declare_slam_cmd = DeclareLaunchArgument(
-        'slam',
-        default_value='False',
-        description='Whether run a SLAM')
-
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(["not ", use_composition])),
         actions=[
             Node(
                 package="nav2_controller",
                 executable="controller_server",
-                output="screen",
                 namespace=namespace,
+                output="screen",
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
@@ -247,6 +221,7 @@ def generate_launch_description():
                 package="nav2_controller",
                 plugin="nav2_controller::ControllerServer",
                 name="controller_server",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings + [("cmd_vel", "cmd_vel_nav")],
             ),
@@ -254,6 +229,7 @@ def generate_launch_description():
                 package="nav2_smoother",
                 plugin="nav2_smoother::SmootherServer",
                 name="smoother_server",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings,
             ),
@@ -261,6 +237,7 @@ def generate_launch_description():
                 package="nav2_planner",
                 plugin="nav2_planner::PlannerServer",
                 name="planner_server",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings,
             ),
@@ -268,6 +245,7 @@ def generate_launch_description():
                 package="nav2_behaviors",
                 plugin="behavior_server::BehaviorServer",
                 name="behavior_server",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings,
             ),
@@ -275,6 +253,7 @@ def generate_launch_description():
                 package="nav2_bt_navigator",
                 plugin="nav2_bt_navigator::BtNavigator",
                 name="bt_navigator",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings,
             ),
@@ -282,6 +261,7 @@ def generate_launch_description():
                 package="nav2_waypoint_follower",
                 plugin="nav2_waypoint_follower::WaypointFollower",
                 name="waypoint_follower",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings,
             ),
@@ -289,6 +269,7 @@ def generate_launch_description():
                 package="nav2_velocity_smoother",
                 plugin="nav2_velocity_smoother::VelocitySmoother",
                 name="velocity_smoother",
+                namespace=namespace,
                 parameters=[configured_params],
                 remappings=remappings
                 + [("cmd_vel", "cmd_vel_nav"), ("cmd_vel_smoothed", "cmd_vel")],
@@ -297,6 +278,7 @@ def generate_launch_description():
                 package="nav2_lifecycle_manager",
                 plugin="nav2_lifecycle_manager::LifecycleManager",
                 name="lifecycle_manager_navigation",
+                namespace=namespace,
                 parameters=[
                     {
                         "use_sim_time": use_sim_time,
@@ -308,66 +290,6 @@ def generate_launch_description():
         ],
     )
 
-    load_localization_nodes = GroupAction(
-        actions=[
-            Node(
-                package='nav2_map_server',
-                executable='map_server',
-                name='map_server',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
-            Node(
-                package='nav2_amcl',
-                executable='amcl',
-                name='amcl',
-                output='screen',
-                respawn=use_respawn,
-                respawn_delay=2.0,
-                parameters=[configured_params],
-                arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
-            Node(
-                package='nav2_lifecycle_manager',
-                executable='lifecycle_manager',
-                name='lifecycle_manager_localization',
-                output='screen',
-                arguments=['--ros-args', '--log-level', log_level],
-                parameters=[{'use_sim_time': use_sim_time},
-                            {'autostart': autostart},
-                            {'node_names': lifecycle_nodes}])
-        ]
-    )
-
-    load_localization_composable_nodes = LoadComposableNodes(
-        condition=IfCondition(use_composition),
-        target_container=container_name_full,
-        composable_node_descriptions=[
-            ComposableNode(
-                package='nav2_map_server',
-                plugin='nav2_map_server::MapServer',
-                name='map_server',
-                parameters=[configured_params],
-                remappings=remappings),
-            ComposableNode(
-                package='nav2_amcl',
-                plugin='nav2_amcl::AmclNode',
-                name='amcl',
-                parameters=[configured_params],
-                remappings=remappings),
-            ComposableNode(
-                package='nav2_lifecycle_manager',
-                plugin='nav2_lifecycle_manager::LifecycleManager',
-                name='lifecycle_manager_localization',
-                parameters=[{'use_sim_time': use_sim_time,
-                             'autostart': autostart,
-                             'node_names': lifecycle_nodes}]),
-        ],
-    )
-
     # Create the launch description and populate
     ld = LaunchDescription()
 
@@ -376,19 +298,16 @@ def generate_launch_description():
 
     # Declare the launch options
     ld.add_action(declare_namespace_cmd)
+    ld.add_action(declare_use_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
-    ld.add_action(declare_map_cmd)
-    ld.add_action(declare_slam_cmd)
     ld.add_action(declare_log_level_cmd)
     # Add the actions to launch all of the navigation nodes
     ld.add_action(load_nodes)
     ld.add_action(load_composable_nodes)
-    #ld.add_action(load_localization_nodes)
-    #ld.add_action(load_localization_composable_nodes)
 
     return ld

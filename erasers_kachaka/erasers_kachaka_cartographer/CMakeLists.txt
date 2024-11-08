@@ -7,6 +7,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+
+add_executable(auto_map_saver src/auto_map_saver.cpp)
+ament_target_dependencies(auto_map_saver rclcpp)
+
+install(TARGETS
+  auto_map_saver
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY
   launch
