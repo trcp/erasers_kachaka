@@ -47,6 +47,11 @@ def generate_launch_description():
         ("cmd_vel", "/er_kachaka/manual_control/cmd_vel"),
         ("goal_pose", "/er_kachaka/goal_pose"),
         ("map", "/er_kachaka/localization/map"),
+        ("navigate_to_pose/_action/feedback", "/er_kachaka/navigate_to_pose/_action/feedback"),
+        ("navigate_to_pose/_action/status", "/er_kachaka/navigate_to_pose/_action/status"),
+        ("navigate_to_pose/_action/cancel_goal", "/er_kachaka/navigate_to_pose/_action/cancel_goal"),
+        ("navigate_to_pose/_action/get_result", "/er_kachaka/navigate_to_pose/_action/get_result"),
+        ("navigate_to_pose/_action/send_goal", "/er_kachaka/navigate_to_pose/_action/send_goal"),
     ]
 
     # Create our own temporary YAML files that include substitutions
