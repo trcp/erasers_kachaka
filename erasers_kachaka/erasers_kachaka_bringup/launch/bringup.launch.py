@@ -21,6 +21,7 @@ def generate_launch_description():
     show_rviz = LaunchConfiguration("show_rviz")
     use_emc = LaunchConfiguration("use_emc")
     use_xtion = LaunchConfiguration("use_xtion")
+    use_navigation = LaunchConfiguration("use_navigation")
     ns = LaunchConfiguration("namespace", default=NAMESPACE)
 
     # map
