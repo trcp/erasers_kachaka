@@ -4,7 +4,6 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Battery1
         - /DepthCloud1/Auto Size1
         - /DepthCloud1/Autocompute Value Bounds1
         - /Front Camera1/Topic1
@@ -53,7 +52,7 @@ Visualization Manager:
       Value: true
     - Class: rviz_2d_overlay_plugins/PieChartOverlay
       Enabled: true
-      Name: Battery
+      Name: KachakaBattery
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -63,11 +62,11 @@ Visualization Manager:
       Value: true
       auto color change: true
       background color: 0; 0; 0
-      backround alpha: 0.10000000149011612
+      backround alpha: 0
       clockwise rotate direction: false
       foreground alpha: 0.699999988079071
       foreground alpha 2: 0.4000000059604645
-      foreground color: 25; 255; 240
+      foreground color: 0; 255; 17
       left: 8
       max color: 26; 95; 180
       max color change threthold: 0
@@ -76,8 +75,8 @@ Visualization Manager:
       med color change threthold: 0
       min value: 0
       show caption: true
-      size: 128
-      text size: 14
+      size: 200
+      text size: 20
       top: 0
     - Class: rviz_default_plugins/TF
       Enabled: false
@@ -415,7 +414,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/ThirdPersonFollower
-      Distance: 19.171972274780273
+      Distance: 16.979290008544922
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -433,7 +432,7 @@ Visualization Manager:
       Pitch: 1.5697963237762451
       Target Frame: imu_link
       Value: ThirdPersonFollower (rviz_default_plugins)
-      Yaw: 3.250394105911255
+      Yaw: 3.5753962993621826
     Saved: ~
 Window Geometry:
   Back Camera:
