@@ -254,4 +254,4 @@ if __name__ == "__main__":
 
     sn = SimpleNavigator()
 
-    sn.go_rlt(yaw=3.14)
+    sn.go_abs()
