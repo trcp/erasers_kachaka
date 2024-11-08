@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # message
-from geometry_msgs.msg import PoseStamped
+from geometry_msgs.msg import PoseStamped, Twist
 from nav2_msgs.action import NavigateToPose
 
 # TF
@@ -18,11 +18,14 @@ import rclpy
 import math
 import time
 import signal
+import sys
 
 class SimpleNavigator(Node):
     def __init__(self):
         super().__init__('er_kachaka_simple_navigator')
-        self._action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        self._action_client = ActionClient(self, NavigateToPose, '/er_kachaka/navigate_to_pose')
+
+        self.twist_pub = self.create_publisher(Twist, "/er_kachaka/manual_control/cmd_vel", 10)
 
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
@@ -87,7 +90,7 @@ class SimpleNavigator(Node):
             self.get_logger().warn('No active goal to cancel')
 
         if signum and frame:
-            self.destroy_node()
+            sys.exit()
 
     def get_current_pose(self, xyy=False):
         while rclpy.ok():
@@ -141,30 +144,18 @@ class SimpleNavigator(Node):
         # degrees が True なら yaw を弧度法に変換
         if degrees:
             yaw = math.radians(yaw)
-        p = self.get_current_pose()
+        
+        current_pose = self.get_current_pose(xyy=True)
 
-        px = p.transform.translation.x
-        py = p.transform.translation.y
-
-        e = euler_from_quaternion((p.transform.rotation.x,
-                                   p.transform.rotation.y,
-                                   p.transform.rotation.z,
-                                   p.transform.rotation.w))
-        pyaw = e[2]
-
-        # 相対座標を回転を考慮して計算
-        x_new = px + (x * math.cos(pyaw) - y * math.sin(pyaw))
-        y_new = py + (x * math.sin(pyaw) + y * math.cos(pyaw))
-        yaw_new = pyaw + yaw
-
-        q = quaternion_from_euler(0.0, 0.0, yaw_new)
+        # 常に前方を向くようにする        
+        q = quaternion_from_euler(0.0, 0.0, yaw)
 
         # 目標座標を設定
         pose = PoseStamped()
-        pose.header.frame_id = 'map'
+        pose.header.frame_id = 'base_footprint'
         pose.header.stamp = self.get_clock().now().to_msg()
-        pose.pose.position.x = x_new
-        pose.pose.position.y = y_new
+        pose.pose.position.x = float(x)
+        pose.pose.position.y = float(y)
         pose.pose.orientation.x = q[0]
         pose.pose.orientation.y = q[1]
         pose.pose.orientation.z = q[2]
@@ -191,7 +182,7 @@ class SimpleNavigator(Node):
 
         # 目標座標を設定
         pose = PoseStamped()
-        pose.header.frame_id = 'map'
+        pose.header.frame_id = 'base_footprint'
         pose.header.stamp = self.get_clock().now().to_msg()
         pose.pose.position.x = 0.
         pose.pose.position.y = 0.
@@ -201,3 +192,66 @@ class SimpleNavigator(Node):
         pose.pose.orientation.w = q[3]
 
         return self.__send_action(pose, wait=wait)
+
+    def forward(self, distance, speed=0.1):
+        p = self.get_current_pose()
+
+        px = p.transform.translation.x
+        py = p.transform.translation.y
+
+        e = euler_from_quaternion((p.transform.rotation.x,
+                                   p.transform.rotation.y,
+                                   p.transform.rotation.z,
+                                   p.transform.rotation.w))
+        pyaw = e[2]
+
+        # 相対座標を回転を考慮して計算
+        x_new = px + (distance * math.cos(pyaw) - 0. * math.sin(pyaw))
+        y_new = py + (distance * math.sin(pyaw) + 0. * math.cos(pyaw))
+
+        twist = Twist()
+        twist.linear.x = speed
+
+        while rclpy.ok():
+            c = self.get_current_pose(xyy=True)
+            val = math.sqrt(abs(c[0]-x_new)**2 + abs(c[1]-y_new)**2)
+            print(val)
+            if val > 0.05:
+                self.twist_pub.publish(twist)
+            else:
+                break
+    
+    def back(self, distance, speed=0.1):
+        p = self.get_current_pose()
+
+        px = p.transform.translation.x
+        py = p.transform.translation.y
+
+        e = euler_from_quaternion((p.transform.rotation.x,
+                                   p.transform.rotation.y,
+                                   p.transform.rotation.z,
+                                   p.transform.rotation.w))
+        pyaw = e[2]
+
+        # 相対座標を回転を考慮して計算
+        x_new = px + (-distance * math.cos(pyaw) - 0. * math.sin(pyaw))
+        y_new = py + (-distance * math.sin(pyaw) + 0. * math.cos(pyaw))
+
+        twist = Twist()
+        twist.linear.x = -speed
+
+        while rclpy.ok():
+            c = self.get_current_pose(xyy=True)
+            val = math.sqrt(abs(c[0]-x_new)**2 + abs(c[1]-y_new)**2)
+            print(val)
+            if val > 0.05:
+                self.twist_pub.publish(twist)
+            else:
+                break
+
+if __name__ == "__main__":
+    rclpy.init()
+
+    sn = SimpleNavigator()
+
+    sn.go_rlt(yaw=3.14)
