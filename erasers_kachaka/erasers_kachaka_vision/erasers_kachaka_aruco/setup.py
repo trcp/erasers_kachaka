@@ -24,7 +24,6 @@ def package_files(directory, data_files):
     return data_files
 
 # Add directories
-data_files = package_files("scripts", data_files)
 data_files = package_files("launch", data_files)
 
 setup(
