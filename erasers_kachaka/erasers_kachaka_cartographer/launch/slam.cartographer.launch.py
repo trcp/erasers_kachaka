@@ -10,6 +10,9 @@ from ament_index_python.packages import get_package_share_directory
 
 import os
 
+# erasers_kachaka_cartographer の絶対パスを記述
+SAVE_MAP_PATH = "/home/roboworks/education_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_cartographer/map"
+
 def generate_launch_description():
     ld = LaunchDescription()
 
@@ -27,6 +30,8 @@ def generate_launch_description():
     publish_period_sec = LaunchConfiguration('publish_period_sec', default='1.0')
     use_navigation = LaunchConfiguration("use_navigation")
     auto_map_save = LaunchConfiguration("auto_map_save")
+    map_name = LaunchConfiguration("map_name")
+    map_save_path = LaunchConfiguration("map_save_path")
 
     ### declare argument
     declare_configuration_directory = DeclareLaunchArgument(
@@ -53,6 +58,14 @@ def generate_launch_description():
         "auto_map_save", default_value="true",
         description="自動的にマップを保存します。"
     )
+    declare_map_name = DeclareLaunchArgument(
+        "map_name", default_value="map",
+        description="自動保存されるマップの名前を定義します。"
+    )
+    declare_map_save_path = DeclareLaunchArgument(
+        "map_save_path", default_value=SAVE_MAP_PATH,
+        description="自動保存されるマップの保存先を定義します。"
+    )
 
     ld.add_action(declare_configuration_directory)
     ld.add_action(declare_configuration_basename)
@@ -60,6 +73,8 @@ def generate_launch_description():
     ld.add_action(declare_publish_period_sec)
     ld.add_action(declare_use_navigation)
     ld.add_action(declare_auto_map_save)
+    ld.add_action(declare_map_name)
+    ld.add_action(declare_map_save_path)
 
     ### execute navigation
     launch_navigation = IncludeLaunchDescription(
@@ -105,6 +120,10 @@ def generate_launch_description():
         package="erasers_kachaka_cartographer",
         executable="auto_map_saver",
         namespace=namespace,
+        parameters=[
+            {"map_save_path": map_save_path},
+            {"map_name": map_name},
+        ],
         condition=IfCondition(auto_map_save)
     )
 
