@@ -124,3 +124,49 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
 ```bash
 ros2 launch erasers_kachaka_bringup bringup.launch.py use_emc:=false
 ```
+
+## 地図を作る
+　地図を作る前に、erasers_kachaka_cartographer/launch/slam.cartographer.launch.py を編集しなければなりません。まず erasers_kachaka_cartographer/map まで移動して、`pwd` コマンドなどを使い cartographer の launch ディレクトリまでの絶対パスを取得してください。取得したパスはコピーして控えてください。<br>
+　次に slam.cartographer.launch.py を開いて、変数 `SAVE_MAP_PATH` に文字列でコピーした絶対パスを指定してください。
+```python
+# erasers_kachaka_cartographer の絶対パスを記述
+SAVE_MAP_PATH = "/home/roboworks/education_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_cartographer/map"
+```
+
+---
+
+　erasers_kachaka_bringup bringup.launch.py が起動している状態で、新たなターミナルを起動してください。<br>
+　新しいターミナルで `kachaka_mode` を実行してから以下のコマンドを実行してマップの作成を行います。
+```bash
+ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py
+```
+すると Rviz2 上でマップが生成されているのを確認することができます。<br>
+　Rviz2 の 2D Nav Pose で目標地点を定義することでカチャカがマップを作成しながら移動を開始します。<br>
+　固有のマップ名を指定したい場合は先程のコマンドに引数 map_name を追加してください。以下のように記述すると `my_room` という名前でマップが作成されます。
+```bash
+ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py map_name=my_room
+```
+　デフォルトでは自動的にマップが保存されるようになっていますが、マップを保存せずに SLAM を実行したい場合は以下のように引数 auto_map_save を False にします。
+```bash
+ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py auto_map_save:=false
+```
+　デフォルトでは SLAM 中でもナビゲーションが有効になり、自立走行が可能になります。SLAM 中のナビゲーションを無効にしたい場合は引数 use_navigation を False にします。
+```bash
+ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py use_navigation:=false
+```
+
+---
+
+　マップの作成が完了したら cartographer launch を終了しましょう。そしてワークスペース直下で erasers_kachaka_cartographer をビルドしてください。
+```bash
+# YOUR_WS
+colcon build --symlink-install --packages-select erasers_kachaka_cartographer && . install/setup.bash
+```
+　
+## ナビゲーションをつかう
+　マップを作ったら bringup.launch.py を終了してください。そして引数 use_navigation に True を指定してサイド起動してください。
+```bash
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_navigation:=true
+```
+　起動させたらすぐにカチャカをコントローラーで軽く動かすか、手でカチャカを動かしてください。すると Rviz2 上に作成したマップが読み込まれます。<br>
+Nav 2D Pose を使い任意の場所へロボットを自律走行させることができます。
