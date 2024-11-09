@@ -15,6 +15,10 @@ public:
         this->get_parameter("map_name", map_name_);
         this->get_parameter("save_late", save_late_);
 
+        RCLCPP_INFO(this->get_logger(), "Map save path: %s", map_save_path_.c_str());
+        RCLCPP_INFO(this->get_logger(), "Map name: %s", map_name_.c_str());
+        RCLCPP_INFO(this->get_logger(), "Save late: %d", save_late_);
+
         namespace_ = this->get_namespace();
 
         timer_ = this->create_wall_timer(
