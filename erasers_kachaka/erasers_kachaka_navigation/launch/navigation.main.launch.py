@@ -1,16 +1,12 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.substitutions import LaunchConfiguration
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, TimerAction
+from launch.substitutions import LaunchConfiguration, PythonExpression, PathJoinSubstitution
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, TimerAction, LogInfo
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.conditions import IfCondition, UnlessCondition
 
 from ament_index_python import get_package_share_directory
 import os
-
-## 使用したいマップ yaml 名を指定してください
-MAP="220-2024tecnofesta.yaml" # 2024 テクノフェスタ
-
 
 def generate_launch_description():
     ld = LaunchDescription()
@@ -18,20 +14,25 @@ def generate_launch_description():
     # prefix
     navigation_prefix = get_package_share_directory("erasers_kachaka_navigation")
     cartographer_prefix = get_package_share_directory("erasers_kachaka_cartographer")
+    map_dir_prefix = os.path.join(cartographer_prefix, "map")
 
     use_localization = LaunchConfiguration("use_localization")
-    map = LaunchConfiguration("map")
+    map_name = LaunchConfiguration("map_name")
     log = LaunchConfiguration("log")
 
+    map_yaml = PythonExpression(["'", LaunchConfiguration("map_name"), "' + '.yaml'"])
+    map = PathJoinSubstitution([cartographer_prefix, "map", map_yaml])
+
+    logger = LogInfo(msg=map)
     declare_use_localization = DeclareLaunchArgument(
         "use_localization",
         default_value="false",
         description="ローカリゼーションを他で使用する場合は True にしてください"
     )
-    declare_map = DeclareLaunchArgument(
-        "map",
-        default_value=os.path.join(cartographer_prefix, "map", MAP),
-        description="使用したいマップYAMLの絶対パスを指定してください"
+    declare_map_name = DeclareLaunchArgument(
+        "map_name",
+        default_value="map",
+        description="使用したいマップ名を指定してくだい。"
     )
     declare_log = DeclareLaunchArgument(
         "log",
@@ -87,8 +88,9 @@ def generate_launch_description():
     )
 
     ld.add_action(declare_use_localization)
-    ld.add_action(declare_map)
+    ld.add_action(declare_map_name)
     ld.add_action(declare_log)
+    ld.add_action(logger)
     ld.add_action(launch_emcl2_localization)
     ld.add_action(launch_navigation2_via_localization)
     ld.add_action(launch_navigation2_via_navigation)

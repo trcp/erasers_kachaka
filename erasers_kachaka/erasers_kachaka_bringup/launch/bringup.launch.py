@@ -16,7 +16,8 @@ NAMESPACE = "/er_kachaka"
 # 起動時の発話メッセージを指定します。黙らせたい場合は空の文字列
 DECLARE_BOOT_MESSAGE = "erasers カチャカ、スタート！"
 # 使用するマップファイル名
-MAP = "220-2024tecnofesta.yaml"
+#MAP = "220-2024tecnofesta.yaml"
+MAP = "map.yaml"
 
 def generate_launch_description():
     ld = LaunchDescription()
@@ -27,6 +28,7 @@ def generate_launch_description():
     use_emc = LaunchConfiguration("use_emc")
     use_xtion = LaunchConfiguration("use_xtion")
     use_navigation = LaunchConfiguration("use_navigation")
+    map_name = LaunchConfiguration("map_name")
     log = LaunchConfiguration("log")
     ns = LaunchConfiguration("_namespace", default=NAMESPACE)
 
@@ -40,8 +42,6 @@ def generate_launch_description():
     common_pkg_prefix = get_package_share_directory("erasers_kachaka_common")
     vision_pkg_prefix = get_package_share_directory("erasers_kachaka_vision")
     navigation_pkg_prefix = get_package_share_directory("erasers_kachaka_navigation")
-    cartographer_pkg_prefix = get_package_share_directory("erasers_kachaka_cartographer")
-    map_prefix = os.path.join(cartographer_pkg_prefix, "map", MAP)
     rviz_prefix = os.path.join(common_pkg_prefix, "config", rviz_name)
 
     # declare arguments
@@ -58,8 +58,11 @@ def generate_launch_description():
                                                 default_value="false",
                                                 description="Xtion を使用する場合は True にしてください。")
     declare_use_navigation = DeclareLaunchArgument("use_navigation",
-                                                default_value="true",
+                                                default_value="false",
                                                 description="ナビゲーションを有効にします。")
+    declare_map_name = DeclareLaunchArgument("map_name",
+                                                default_value=MAP,
+                                                description="ナビゲーションで使うマップを指定します。")
     declare_log = DeclareLaunchArgument("log",
                                                 default_value="own_log",
                                                 description="デバックまたは詳細なログを表示したい場合は screen にしてください。")
@@ -69,6 +72,7 @@ def generate_launch_description():
     ld.add_action(declare_use_emc)
     ld.add_action(declare_use_xtion)
     ld.add_action(declare_use_navigation)
+    ld.add_action(declare_map_name)
     ld.add_action(declare_log)
 
     # include launch
@@ -94,7 +98,7 @@ def generate_launch_description():
         ),
         condition=IfCondition(use_navigation),
         launch_arguments={
-            "map":map_prefix,
+            "map_name":map_name,
             "log":log,
         }.items(),
     )
