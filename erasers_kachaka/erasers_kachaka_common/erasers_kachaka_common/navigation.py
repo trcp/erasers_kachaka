@@ -92,7 +92,7 @@ class SimpleNavigator(Node):
         if signum and frame:
             sys.exit()
 
-    def get_current_pose(self, xyy=False):
+    def get_current_pose(self, xyy: bool=False):
         while rclpy.ok():
             rclpy.spin_once(self)
             try:
@@ -115,9 +115,20 @@ class SimpleNavigator(Node):
                 pass
 
 
-    def go_abs(self, x=0.0, y=0.0, yaw=0.0, degrees=False, wait=True):
-        """
-        絶対座標でロボットの目標地点を指定
+    def go_abs(self, x: float=0, y: float=0, yaw: float=0, degrees: bool=False, wait: bool=True):
+        """go to target pose via absolute.
+
+        map base navigation
+
+        Args:
+            x (float, optional): x pose ( m ). Defaults to 0.0 m.
+            y (float, optional): y pose ( m ). Defaults to 0.0 m.
+            yaw (float, optional): orientation yaw (radians or degrees). Defaults to 0. radians.
+            degrees (bool, optional): change yaw unit to degrees. Defaults to False.
+            wait (bool, optional): _description_. Defaults to True.
+
+        Returns:
+            bool: result
         """
         # degrees が True なら yaw を弧度法に変換
         if degrees:
@@ -137,25 +148,31 @@ class SimpleNavigator(Node):
 
         return self.__send_action(p, wait=wait)
 
-    def go_rlt(self, x=0, y=0, yaw=0, degrees=False, wait=True):
+    def go_rlt(self, x: float=0., y: float=0., yaw: float=0., degrees: bool=False, wait: bool=True) -> bool:
+        """go to target pose via relitive.
+
+        footprint base navigation
+
+        Args:
+            x (float, optional): x pose ( m ). Defaults to 0.0 m.
+            y (float, optional): y pose ( m ). Defaults to 0.0 m.
+            yaw (float, optional): orientation yaw (radians or degrees). Defaults to 0. radians.
+            degrees (bool, optional): change yaw unit to degrees. Defaults to False.
+            wait (bool, optional): _description_. Defaults to True.
+
+        Returns:
+            bool: result
         """
-        相対座標でロボットの目標地点を指定
-        """
-        # degrees が True なら yaw を弧度法に変換
         if degrees:
             yaw = math.radians(yaw)
-        
-        current_pose = self.get_current_pose(xyy=True)
-
-        # 常に前方を向くようにする        
         q = quaternion_from_euler(0.0, 0.0, yaw)
 
         # 目標座標を設定
         pose = PoseStamped()
         pose.header.frame_id = 'base_footprint'
         pose.header.stamp = self.get_clock().now().to_msg()
-        pose.pose.position.x = float(x)
-        pose.pose.position.y = float(y)
+        pose.pose.position.x = x
+        pose.pose.position.y = y
         pose.pose.orientation.x = q[0]
         pose.pose.orientation.y = q[1]
         pose.pose.orientation.z = q[2]
@@ -254,4 +271,4 @@ if __name__ == "__main__":
 
     sn = SimpleNavigator()
 
-    sn.go_abs()
+    sn.go_abs(x=1.0, y=1.0)
