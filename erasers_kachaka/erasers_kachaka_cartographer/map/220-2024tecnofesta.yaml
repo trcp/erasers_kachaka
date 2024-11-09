@@ -1,7 +1,0 @@
-image: 220-2024tecnofesta.pgm
-mode: trinary
-resolution: 0.025
-origin: [-10.2, -12.3, 0]
-negate: 0
-occupied_thresh: 0.65
-free_thresh: 0.25
