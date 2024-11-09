@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /KachakaBattery1
         - /DepthCloud1/Auto Size1
         - /DepthCloud1/Autocompute Value Bounds1
         - /Front Camera1/Topic1
@@ -69,29 +70,95 @@ Visualization Manager:
       foreground color: 0; 255; 17
       left: 8
       max color: 26; 95; 180
-      max color change threthold: 0
+      max color change threthold: 80
       max value: 100
       med color: 255; 0; 0
-      med color change threthold: 0
+      med color change threthold: 30
       min value: 0
       show caption: true
       size: 200
       text size: 20
       top: 0
     - Class: rviz_default_plugins/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
+        base_l_drive_wheel_link:
+          Value: true
+        base_link:
+          Value: true
+        base_r_drive_wheel_link:
+          Value: true
+        camera_back:
+          Value: true
+        camera_back_link:
+          Value: true
+        camera_front:
+          Value: true
+        camera_front_link:
+          Value: true
+        docking_link:
+          Value: true
+        imu_link:
+          Value: true
+        laser_frame:
+          Value: true
+        laser_link:
+          Value: true
+        lidar_center_frame:
+          Value: true
+        local_map-grid-base:
+          Value: true
+        local_map-lidar-map-grid-base:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+        tof_camera:
+          Value: true
+        tof_link:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        map:
+          odom:
+            base_footprint:
+              base_link:
+                base_l_drive_wheel_link:
+                  {}
+                base_r_drive_wheel_link:
+                  {}
+                camera_back_link:
+                  camera_back:
+                    {}
+                camera_front_link:
+                  camera_front:
+                    {}
+                docking_link:
+                  {}
+                imu_link:
+                  {}
+                laser_link:
+                  laser_frame:
+                    lidar_center_frame:
+                      {}
+                tof_link:
+                  tof_camera:
+                    {}
+            local_map-grid-base:
+              {}
+            local_map-lidar-map-grid-base:
+              {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
@@ -177,9 +244,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 1016
+      Max Intensity: 194
       Min Color: 0; 0; 0
-      Min Intensity: 1008
+      Min Intensity: 9
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -236,6 +303,26 @@ Visualization Manager:
       Use rainbow: true
       Value: false
     - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /er_kachaka/goal_pose
+      Value: true
+    - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
       Color: 25; 255; 0
@@ -245,7 +332,7 @@ Visualization Manager:
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: Path
+      Name: Navigation Path
       Offset:
         X: 0
         Y: 0
@@ -261,7 +348,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /plan
+        Value: /er_kachaka/navigation/plan
       Value: true
     - Class: rviz_default_plugins/Image
       Enabled: false
@@ -351,7 +438,7 @@ Visualization Manager:
       Class: rviz_default_plugins/Map
       Color Scheme: costmap
       Draw Behind: false
-      Enabled: false
+      Enabled: true
       Name: CostMap
       Topic:
         Depth: 5
@@ -367,7 +454,7 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /er_kachaka/navigation/global_costmap/costmap_updates
       Use Timestamp: false
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 246; 245; 244
@@ -414,25 +501,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/ThirdPersonFollower
-      Distance: 16.979290008544922
+      Distance: 7.9616594314575195
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -4.344534397125244
-        Y: -2.7603464126586914
-        Z: -0.05146000161767006
+        X: -1.1673940420150757
+        Y: 2.9088945388793945
+        Z: -0.05152914300560951
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.544796347618103
       Target Frame: imu_link
       Value: ThirdPersonFollower (rviz_default_plugins)
-      Yaw: 3.5753962993621826
+      Yaw: 1.0603877305984497
     Saved: ~
 Window Geometry:
   Back Camera:
