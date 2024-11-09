@@ -22,6 +22,7 @@
   <depend>erasers_kachaka_cartographer</depend>
   <depend>erasers_kachaka_navigation</depend>
   <depend>erasers_kachaka_vision</depend>
+  <depend>erasers_kachaka_aruco</depend>
   <depend>erasers_kachaka_interfaces</depend>
   <depend>erasers_kachaka_samples</depend>
   
