@@ -77,7 +77,7 @@ controller_server:
       debug_trajectory_details: True
       min_vel_x: 0.0
       min_vel_y: 0.0
-      max_vel_x: 0.1
+      max_vel_x: 0.3
       max_vel_y: 0.0
       max_vel_theta: 1.0
       min_speed_xy: 0.0
@@ -127,8 +127,8 @@ local_costmap:
       rolling_window: true
       width: 3
       height: 3
-      resolution: 0.05
-      robot_radius: 0.345
+      resolution: 0.025
+      robot_radius: 0.25
       plugins: ["voxel_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
@@ -139,13 +139,13 @@ local_costmap:
         enabled: True
         publish_voxel_map: True
         origin_z: 0.0
-        z_resolution: 0.05
+        z_resolution: 0.025
         z_voxels: 16
         max_obstacle_height: 2.0
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /er_kachaka/lidar/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -172,8 +172,8 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_link
       use_sim_time: True
-      robot_radius: 0.345
-      resolution: 0.05
+      robot_radius: 0.25
+      resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
       obstacle_layer:
@@ -196,7 +196,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.55
+        inflation_radius: 0.45
       always_send_full_costmap: True
   global_costmap_client:
     ros__parameters:
