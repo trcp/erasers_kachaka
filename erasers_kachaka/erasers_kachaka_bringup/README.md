@@ -105,10 +105,10 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py use_navigation:=true
 起動するノードのログ設定を行う引数です。デフォルトは `own_log` です。デフォルト値ではターミナルにログは出力されません。<br>
 以下のオプションを引数に与えることができ、それ以外の文字列を代入するとエラーになります。
 
-- $`\text{screen}`$
-- $`\text{log}`$
-- $`\text{both}`$
-- $`\text{own_log}`$
+- $`\text{screen}`$<br>
+- $`\text{log}`$<br>
+- $`\text{both}`$<br>
+- $`\text{own\_log}`$<br>
 
 起動ノードのログをすべて表示したい場合は引数の値を `screen` にしてください。
 
