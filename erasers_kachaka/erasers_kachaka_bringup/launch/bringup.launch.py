@@ -15,9 +15,8 @@ NAMESPACE = "/er_kachaka"
 
 # 起動時の発話メッセージを指定します。黙らせたい場合は空の文字列
 DECLARE_BOOT_MESSAGE = "erasers カチャカ、スタート！"
-# 使用するマップファイル名
-#MAP = "220-2024tecnofesta.yaml"
-MAP = "map.yaml"
+# 使用するマップ名
+MAP = "2024-220-tecnofesta"
 
 def generate_launch_description():
     ld = LaunchDescription()
