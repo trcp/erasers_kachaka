@@ -8,7 +8,7 @@ import traceback
 import time
 
 class TTS(Node):
-    def __init__(self, timeout: float=10) -> None:
+    def __init__(self, timeout: float=10.) -> None:
         super().__init__("client_tts")
 
         # create client
