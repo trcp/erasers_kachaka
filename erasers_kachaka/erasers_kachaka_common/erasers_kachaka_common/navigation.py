@@ -21,10 +21,9 @@ import signal
 import sys
 
 class SimpleNavigator(Node):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__('er_kachaka_simple_navigator')
         self._action_client = ActionClient(self, NavigateToPose, '/er_kachaka/navigate_to_pose')
-
         self.twist_pub = self.create_publisher(Twist, "/er_kachaka/manual_control/cmd_vel", 10)
 
         self.tf_buffer = Buffer()
@@ -37,7 +36,7 @@ class SimpleNavigator(Node):
         signal.signal(signal.SIGINT, self.stop_navigation)
         #self.destroy_node()
 
-    def __send_action(self, pose, wait):
+    def __send_action(self, pose: PoseStamped, wait: bool) -> bool:
         """
         位置情報を送信
         """
@@ -77,7 +76,7 @@ class SimpleNavigator(Node):
             self.get_logger().error('Failure. some error is occured')
             return False
 
-    def stop_navigation(self, signum=None, frame=None):
+    def stop_navigation(self, signum=None, frame=None) -> None:
         """
         ナビゲーションを停止
         """
@@ -180,7 +179,7 @@ class SimpleNavigator(Node):
 
         return self.__send_action(pose, wait=wait)
 
-    def rotate(self, yaw, degrees=False, wait=True):
+    def rotate(self, yaw: float, degree: bools=False, wai: boolt=True) -> None:
         """
         ロボットを旋回させる
         """

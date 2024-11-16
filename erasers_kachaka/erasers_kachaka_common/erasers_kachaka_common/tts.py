@@ -8,7 +8,7 @@ import traceback
 import time
 
 class TTS(Node):
-    def __init__(self, timeout=10):
+    def __init__(self, timeout: float=10.) -> None:
         super().__init__("client_tts")
 
         # create client
@@ -23,8 +23,9 @@ class TTS(Node):
         self.req = Speaker.Request()
 
     def say(
-        self, text="引数テキストに発話させたい文字列を代入してください。", wait=True
-    ):
+        self, text: str="引数テキストに発話させたい文字列を代入してください。", 
+        wait: bool=True
+    ) -> bool:
         self.req.text = text
         future = self._cli.call_async(self.req)
         if wait:

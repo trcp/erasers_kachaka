@@ -1,42 +1,118 @@
 # erasers_kachaka_bringup
 　erasers_kachaka を起動するパッケージです。
 
-## `bringup.launch.py`
-　この起動ファイルを実行すると、erasers_kachaka を利用するのに必要なパッケージが起動します。以下のコマンドは最もシンプルに erasers_kachaka を起動する方法です。
+以下の launch ファイルを起動します。
+```bash
+bringup.launch.py
+```
+起動コマンド
 ```bash
 ros2 launch erasers_kachaka_bringup bringup.launch.py
 ```
-　`bringup.launch.py` は以下の **launch 引数** があります。
-
-- **`show_rviz`**<br>
-        デフォルト値 : $`\text{False}`$<br>
-        **rviz** を表示するか否かを設定する引数。デフォルトの場合は rviz は表示されません。$`\text{True}`$ に設定すると起動時に rviz が起動します。<br>
-        この引数を起動するには、launch 起動コマンドの末尾にオプション `show_rviz:=true` を追加します。以下が起動時に rviz を起動させるコマンドです。
-        ```bash
-        ros2 launch erasers_kachaka_bringup bringup.launch.py show_rviz:=true
-        ```
-
-- **`provide_map`**<br>
-        デフォルト値 : $`\text{True}`$<br>
-        **map_frame** を配信するか否かを設定する引数。デフォルトの場合 map_frame を配信します。これにより kachaka の TF ツリーがデフォルトで展開されます。$`\text{False}`$ に設定すると起動時に map_frame は配信されなくなり、kachaka の TF ツリーを購読することができなくなります。<br>
-        この引数を起動するには、launch 起動コマンドの末尾にオプション `provide_map:=false` を追加します。以下が起動時に map_frame の配信を無効化させるコマンドです。
-        ```bash
-        ros2 launch erasers_kachaka_bringup bringup.launch.py provide_map:=false
-        ```
-
-- **`use_emc`**<br>
-        デフォルト値 : $`\text{True}`$<br>
-        緊急停止ボタン使用するかを設定する引数。デフォルトの場合緊急停止ボタンが接続されていることを前提に起動します。これにより kachaka を緊急停止ボタン経由で停止することができるようになります。もし緊急停止ボタンを接続していない状態で起動すると、**ジョイスティックで kachaka を制御することができなくなります。** $`\text{False}`$ に設定すると緊急停止ボタンが接続されていない前提で起動します。**緊急停止ボタンを接続した状態だとジョイスティックで kachaka を制御することができなくなります。**<br>
-        この引数を起動するには、launch 起動コマンドの末尾にオプション `use_emc:=false` を追加します。以下が緊急停止ボタンを使用しない状態で起動させるコマンドです。
-        ```bash
-        ros2 launch erasers_kachaka_bringup bringup.launch.py use_emc:=false
-        ```
-
-### bringup.launch.py の起動時に起動される rviz の設定ファイルを指定したい場合
-　この機能は今後 LaunchConfiguration に統合する予定ですが、ここでは [`bringup.launch.py`](./launch/bringup.launch.py)
-を編集して設定ファイルを指定する方法を解説します。<br>
-　bringup.launch.py の 28 行目の
-```python
-rviz_prefix = os.path.join(common_pkg_prefix, "config", rviz_name)
+launch ファイルの引数を参照したい場合は起動コマンドに `--show-args` オプションをつけてください。
+```bash
+ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
 ```
-に rviz の設定ファイルパスを指定しているので、ここを編集してください。
+
+## 引数一覧
+### provide_map
+|Type|Default value|
+|:---:|:---|
+|bool|$`\text{True}`$|
+
+TF フレーム `map` を発行する引数です。デフォルトでは True になっており、`map` フレームを発行します。`map` フレームを発行しないようにするにはこの引数に False を代入してください。
+```bash
+# map フレームを発行させない
+ros2 launch erasers_kachaka_bringup bringup.launch.py provide_map:=false
+```
+
+### show_rviz
+|Type|Default value|
+|:---:|:---|
+|bool|$`\text{True}`$|
+
+bringup 起動時に Rviz2 を表示させる引数です。デフォルトでは True になっており、Rviz2 を表示します。Rviz2 を表示しないようにするにはこの引数に False を代入してください。
+
+> 起動する Rviz2 は [erasers_kachaka_common/config](../erasers_kachaka_common/config) に保存された rviz ファイルを使用します。
+
+```bash
+# Rviz2 を表示させない
+ros2 launch erasers_kachaka_bringup bringup.launch.py show_rviz:=false
+```
+
+### use_emc
+|Type|Default value|
+|:---:|:---|
+|bool|$`\text{True}`$|
+
+緊急停止ボタンを使用する引数です。デフォルトでは True になっており、緊急停止ボタンがコンピューターに接続されていることを前提に bringup を移動させます。
+
+- 緊急停止ボタンを接続していない
+- 緊急停止ボタンとコントローラを接続していない
+
+この場合はこの引数を False にしてください。
+
+```bash
+# 緊急停止ボタンを無効にする
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_emc:=false
+```
+
+### use_xtion
+|Type|Default value|
+|:---:|:---|
+|bool|$`\text{False}`$|
+
+Xtion カメラを起動させる引数です。デフォルトでは False になっており、Xtion カメラは起動しません。Xtion カメラを使用したい場合は True を代入してください。
+```bash
+# xtion カメラを起動する
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_xtion:=true
+```
+
+### use_navigation
+|Type|Default value|
+|:---:|:---|
+|bool|$`\text{False}`$|
+
+Navigation を起動させる引数です。デフォルトでは False になっており、Navigation は起動しません。Navigation は
+
+- マップの読み込み
+- 自己位置推定
+- ナビゲーション
+
+の3つのシステムを起動させます。Navigation を使う場合は引数に True を代入してください。しかし、マップを作成したい場合はこの引数を False にしてください。
+```bash
+# Navigation を起動する
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_navigation:=true
+```
+
+### map_name
+|Type|Default value|
+|:---:|:---|
+|String|`2024-220-tecnofesta`|
+
+Navigation 起動時に読み込まれるマップ名を指定する引数です。デフォルトでは `2024-220-tecnofesta` という名前のマップが読み込まれますが、[bringup.launch.py](launch/bringup.launch.py) の **`MAP`** 変数を変えることでデフォルトで読み込まれるマップ名が変化します。
+
+```bash
+# xtion カメラを起動する
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_navigation:=true
+```
+
+### log
+|Type|Default value|
+|:---:|:---|
+|String|`own_log`|
+
+起動するノードのログ設定を行う引数です。デフォルトは `own_log` です。デフォルト値ではターミナルにログは出力されません。<br>
+以下のオプションを引数に与えることができ、それ以外の文字列を代入するとエラーになります。
+
+- $`\text{screen}`$<br>
+- $`\text{log}`$<br>
+- $`\text{both}`$<br>
+- $`\text{own\_log}`$<br>
+
+起動ノードのログをすべて表示したい場合は引数の値を `screen` にしてください。
+
+```bash
+# 全てのログを表示させる
+ros2 launch erasers_kachaka_bringup bringup.launch.py log:=screen
+```
