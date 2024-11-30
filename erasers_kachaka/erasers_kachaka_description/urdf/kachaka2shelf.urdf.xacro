@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<robot name="body_shelf" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- Kachaka -->
+  <xacro:include filename="$(find kachaka_description)/robot/kachaka.urdf.xacro" />
+  <!-- Kachaka Shelf -->
+  <xacro:include filename="$(find kachaka_shelf_description)/urdf/shelf_description.urdf.xacro" />
+
+  <!-- Parameter -->
+  <xacro:property name="distance" value="0.135"/>
+
+  <!-- Add ASUS Xtion PROカメラ -->
+  <joint name="base_link_to_shelf" type="fixed">
+    <parent link="base_link"/>
+    <child link="shelf_base_link"/>
+    <origin xyz="0 0 ${distance}"/> <!-- Z軸方向に0.15m上 -->
+  </joint>
+  
+</robot>
