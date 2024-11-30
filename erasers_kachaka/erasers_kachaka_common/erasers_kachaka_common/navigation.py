@@ -54,7 +54,7 @@ class SimpleNavigator(Node):
             if not self.current_goal_handle.accepted:
                 self.get_logger().info('Goal rejected :(')
                 return
-            self.get_logger().info('Goal accepted :)')
+            #self.get_logger().info('Goal accepted :)')
 
             if not wait:
                 return True
@@ -65,9 +65,9 @@ class SimpleNavigator(Node):
 
             time.sleep(1)
 
-            # ナビゲーションの成功・失敗を判断
+            # ナビゲーションの成功・失敗を判go_rlt断
             if self.current_goal_handle.status == 4:  # 成功の場合のステータスコード（通常は4）
-                self.get_logger().info('Reached Goal')
+                #self.get_logger().info('Reached Goal')
                 return True
             else:
                 self.get_logger().error('Failure ... status code : %d'%self.current_goal_handle.status)
@@ -179,7 +179,7 @@ class SimpleNavigator(Node):
 
         return self.__send_action(pose, wait=wait)
 
-    def rotate(self, yaw: float, degree: bools=False, wai: boolt=True) -> None:
+    def rotate(self, yaw: float, degrees: bool=False, wait: bool=True) -> None:
         """
         ロボットを旋回させる
         """
@@ -209,61 +209,6 @@ class SimpleNavigator(Node):
 
         return self.__send_action(pose, wait=wait)
 
-    def forward(self, distance, speed=0.1):
-        p = self.get_current_pose()
-
-        px = p.transform.translation.x
-        py = p.transform.translation.y
-
-        e = euler_from_quaternion((p.transform.rotation.x,
-                                   p.transform.rotation.y,
-                                   p.transform.rotation.z,
-                                   p.transform.rotation.w))
-        pyaw = e[2]
-
-        # 相対座標を回転を考慮して計算
-        x_new = px + (distance * math.cos(pyaw) - 0. * math.sin(pyaw))
-        y_new = py + (distance * math.sin(pyaw) + 0. * math.cos(pyaw))
-
-        twist = Twist()
-        twist.linear.x = speed
-
-        while rclpy.ok():
-            c = self.get_current_pose(xyy=True)
-            val = math.sqrt(abs(c[0]-x_new)**2 + abs(c[1]-y_new)**2)
-            print(val)
-            if val > 0.05:
-                self.twist_pub.publish(twist)
-            else:
-                break
-    
-    def back(self, distance, speed=0.1):
-        p = self.get_current_pose()
-
-        px = p.transform.translation.x
-        py = p.transform.translation.y
-
-        e = euler_from_quaternion((p.transform.rotation.x,
-                                   p.transform.rotation.y,
-                                   p.transform.rotation.z,
-                                   p.transform.rotation.w))
-        pyaw = e[2]
-
-        # 相対座標を回転を考慮して計算
-        x_new = px + (-distance * math.cos(pyaw) - 0. * math.sin(pyaw))
-        y_new = py + (-distance * math.sin(pyaw) + 0. * math.cos(pyaw))
-
-        twist = Twist()
-        twist.linear.x = -speed
-
-        while rclpy.ok():
-            c = self.get_current_pose(xyy=True)
-            val = math.sqrt(abs(c[0]-x_new)**2 + abs(c[1]-y_new)**2)
-            print(val)
-            if val > 0.05:
-                self.twist_pub.publish(twist)
-            else:
-                break
 
 if __name__ == "__main__":
     rclpy.init()
