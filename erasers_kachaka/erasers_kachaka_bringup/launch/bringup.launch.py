@@ -166,7 +166,7 @@ def generate_launch_description():
         executable="static_transform_publisher",
         arguments=map2odom_pose,
         output="own_log",
-        condition=UnlessCondition(LaunchConfiguration('use_navigation')),
+        #condition=UnlessCondition(LaunchConfiguration('use_navigation')),
     )
 
     odom2foot = Node(
@@ -174,7 +174,7 @@ def generate_launch_description():
         executable="static_transform_publisher",
         arguments=odom2foot_pose,
         output="own_log",
-        condition=UnlessCondition(LaunchConfiguration('use_navigation')),
+        #condition=UnlessCondition(LaunchConfiguration('use_navigation')),
     )
 
     rviz = Node(
