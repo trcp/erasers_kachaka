@@ -17,13 +17,13 @@ def generate_launch_description():
                        executable="joy_node",
                        name="emc_joy_node",
                        namespace="emc",
-                       parameters=[{'device_id': 1}]
+                       parameters=[{'device_id': 0}]
                    )
     joy_with_emc = Node(package="joy",
                        executable="joy_node",
                        name="joy_node",
                        namespace=namespace,
-                       parameters=[{'device_id': 0}]
+                       parameters=[{'device_id': 1}]
                    )
     emc_joy = Node(package="erasers_kachaka_control", 
                   executable="emc_joy",
@@ -48,7 +48,7 @@ def generate_launch_description():
                        name="joy_node",
                        namespace=namespace,
                        condition=UnlessCondition(use_emc),
-                       parameters=[{'device_id': 0}]
+                       parameters=[{'device_id': 0      }]
                    )
 
     teleop = Node(package="erasers_kachaka_control", 
