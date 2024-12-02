@@ -177,6 +177,7 @@ position:
             return "failure"
         return "success"
 
+
 def demo():
     from erasers_kachaka_common.tts import TTS
     from erasers_kachaka_common.navigation import SimpleNavigator
