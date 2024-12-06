@@ -183,5 +183,5 @@ if __name__ == "__main__":
     node = Node("sample_object_detection")
 
     object_detect = ObjectDetect(node)
-    object_pose = object_detect.get_object_infomation(classes=['red_cube'], predict=0.01)
+    object_pose = object_detect.get_object_infomation(classes=['red_cube'], predict=0.5)
     print(object_pose)
