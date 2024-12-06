@@ -7,6 +7,7 @@ git clone https://github.com/ros2/cartographer.git
 git clone https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git
 git clone https://github.com/teamspatzenhirn/rviz_2d_overlay_plugins.git
 git clone https://github.com/GAI-313/kachaka_shelf_description.git
+git clone https://github.com/GAI-313/yolo_world_ros2.git
 ```
 
 ## venv 作成
