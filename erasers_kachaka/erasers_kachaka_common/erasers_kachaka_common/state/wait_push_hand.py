@@ -83,9 +83,13 @@ class WaitPushHand(smach.State):
                         joint_status_sub.destroy()
                         return 'timeout'
                     
-                joint_status_sub.destroy()
                 if self.success_msg:
                     self.say_fn(self.success_msg, False)
+                    trans_push_hand = self.controller.goal_state('home', 1.0)
+                    if not trans_push_hand:
+                        self.node.get_logger().info('Failure translate push hand pose ...')
+                        return "failure"
+
                 return 'push'
         except:
             rclpy.logging.get_logger('wait_push_hand').error(traceback.format_exc())
