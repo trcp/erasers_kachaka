@@ -145,10 +145,12 @@ class ObjectDetect():
             self.set_predict(predict)
             self.set_execute(True)
 
-            list_object_pose:list = []
+            get_list_object_pose = ObjectPoseArray()
+            get_object_pose = ObjectPose()
+
             object_pose:ObjectPose
 
-            while rclpy.ok() and len(list_object_pose) == 0:
+            while rclpy.ok() and len(get_list_object_pose.poses) == 0:
                 rclpy.spin_once(self.node)
                 if self.object_poses is not None:
                     for object_pose in self.object_poses:
@@ -160,16 +162,16 @@ class ObjectDetect():
                         ref_pose.pose.orientation.w = 1.0
 
                         try:
-                            trans_pose = self.tf_buffer.transform(ref_pose, ref_frame)
-                            list_object_pose.append((
-                                trans_pose.pose.position.x,
-                                trans_pose.pose.position.y,
-                                trans_pose.pose.position.z,
-                            ))
+                            get_object_pose = object_pose
+                            get_object_pose.pose = self.tf_buffer.transform(ref_pose, ref_frame).pose.position
+                            get_list_object_pose.poses.append(get_object_pose)
+                            get_list_object_pose.header = ref_pose.header
+                            get_list_object_pose.header.frame_id = ref_frame
+                            
                         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
                             self.node.get_logger().error(f'TF lookup failed: {e}')
             
-            return list_object_pose
+            return get_list_object_pose
 
         except:
             self.node.get_logger().error(traceback.format_exc())
