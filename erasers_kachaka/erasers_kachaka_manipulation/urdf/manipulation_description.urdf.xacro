@@ -92,11 +92,11 @@
 
   <xacro:property name="JOINT_VELOCITY_LIMIT" value="4.81710873"/>
   <xacro:property name="JOINT_1_LOWER_LIMIT" value="${radians(-157)}"/>
-  <xacro:property name="JOINT_1_UPPER_LIMIT" value="${radians(157)}"/>
+  <xacro:property name="JOINT_1_UPPER_LIMIT" value="${radians(90)}"/>
   <xacro:property name="JOINT_2_LOWER_LIMIT" value="${radians(-90)}"/>
   <xacro:property name="JOINT_2_UPPER_LIMIT" value="${radians(90)}"/>
-  <xacro:property name="JOINT_3_LOWER_LIMIT" value="${radians(-157)}"/>
-  <xacro:property name="JOINT_3_UPPER_LIMIT" value="${radians(157)}"/>
+  <xacro:property name="JOINT_3_LOWER_LIMIT" value="${radians(-45)}"/>
+  <xacro:property name="JOINT_3_UPPER_LIMIT" value="${radians(45)}"/>
   <!-- JOINT_4はサーボ可動範囲を超えやすいため、LOWER_LIMITをサーボのリミット値より小さくする -->
   <xacro:property name="JOINT_4_LOWER_LIMIT" value="${radians(-159)}"/>
   <!-- Gazeboの挙動がlimit付近で不安定なためUPPER_LIMITをサーボのリミット値より大きくする -->
@@ -106,8 +106,8 @@
   <xacro:property name="JOINT_5_UPPER_LIMIT" value="${radians(157)}"/>
   <xacro:property name="JOINT_6_LOWER_LIMIT" value="${radians(-90)}"/>
   <xacro:property name="JOINT_6_UPPER_LIMIT" value="${radians(90)}"/>
-  <xacro:property name="JOINT_7_LOWER_LIMIT" value="${radians(-167)}"/>
-  <xacro:property name="JOINT_7_UPPER_LIMIT" value="${radians(167)}"/>
+  <xacro:property name="JOINT_7_LOWER_LIMIT" value="${radians(-90)}"/>
+  <xacro:property name="JOINT_7_UPPER_LIMIT" value="${radians(90)}"/>
   <xacro:property name="JOINT_HAND_LOWER_LIMIT" value="${radians(-5)}"/>
   <xacro:property name="JOINT_HAND_UPPER_LIMIT" value="${radians(90)}"/>
 
