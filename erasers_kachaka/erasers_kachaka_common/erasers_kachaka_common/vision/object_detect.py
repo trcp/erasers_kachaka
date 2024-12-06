@@ -171,6 +171,7 @@ class ObjectDetect():
                         except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
                             self.node.get_logger().error(f'TF lookup failed: {e}')
             
+            self.set_execute(False)
             return get_list_object_pose
 
         except:
