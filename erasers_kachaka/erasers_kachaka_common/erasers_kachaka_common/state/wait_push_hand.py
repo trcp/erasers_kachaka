@@ -103,11 +103,11 @@ if __name__ == '__main__':
     controller = SimpleArmController()
 
     with sm:
-        smach.StateMachine.add('WAIT_PUSH_HAND', WaitPushHand(node, controller, 120),
+        smach.StateMachine.add('WAIT_PUSH_HAND', WaitPushHand(node, controller, 120, 0.3, None, "僕の手をプッシュしてください", "おしてくれてありがとう！"),
                                transitions={'push':'success',
                                             'timeout':'failure',
                                             'failure':'failure'})
-    
+     
     outcomes = sm.execute()
     controller.goal_state('home', 1.0)
 
