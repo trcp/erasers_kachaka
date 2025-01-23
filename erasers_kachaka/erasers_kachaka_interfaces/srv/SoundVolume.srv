@@ -1,7 +1,0 @@
-# kachaka's speaker volume
-
-int8 volume 10
-
----
-
-bool success

@@ -1,7 +1,0 @@
-# speaker interfaces
-
-string text "こんにちは。カチャカです"  # TTS text prompt
-
----
-
-bool success                            # tts processing result
