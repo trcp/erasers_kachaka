@@ -13,6 +13,7 @@
   <test_depend>ament_lint_common</test_depend>
 
   <depend>erasers_kachaka_teleop</depend>
+  <depend>erasers_kachaka_common</depend>
   
   <export>
     <build_type>ament_cmake</build_type>
