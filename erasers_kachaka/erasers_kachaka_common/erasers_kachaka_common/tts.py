@@ -1,50 +1,38 @@
 #!/usr/bin/env python3
-from erasers_kachaka_interfaces.srv import Speaker
+from kachaka_interfaces.action import ExecKachakaCommand
+from kachaka_interfaces.msg import KachakaCommand
 
+# rcl
+from rclpy.action import ActionClient
 from rclpy.node import Node
 import rclpy
 
-import traceback
-import time
+import os
 
-class TTS(Node):
-    def __init__(self, timeout: float=10.) -> None:
-        super().__init__("client_tts")
 
-        # create client
-        self._cli = self.create_client(Speaker, "/er_kachaka/tts")
+NS = os.environ.get("KACHAKA_NAME")
 
-        # wait server is avaiable
-        while not self._cli.wait_for_service(timeout_sec=timeout):
-            # rclpy.spin_once(self)
-            self.get_logger().error("Service service_tts is not working !")
+class TTS():
+    def __init__(self, node:Node, wait_time=10):
+        self.__node = node
 
-        # create field
-        self.req = Speaker.Request()
+        self.__action_client = ActionClient(self.__node, ExecKachakaCommand, "/%s/kachaka_command/execute"%NS)
 
-    def say(
-        self, text: str="引数テキストに発話させたい文字列を代入してください。", 
-        wait: bool=True
-    ) -> bool:
-        self.req.text = text
-        future = self._cli.call_async(self.req)
+        if not self.__action_client.wait_for_server(timeout_sec=wait_time):
+            self.__node.get_logger().fatail("May be KACHAKA is not running ...")
+        
+        # create command and action field
+        self.__cmd = KachakaCommand()
+        self.__cmd.command_type = KachakaCommand.SPEAK_COMMAND
+
+        self.__goal_msg = ExecKachakaCommand.Goal()
+    
+
+    def say(self, text:str, wait=True):
+        self.__cmd.speak_command_text = text
+        self.__goal_msg.kachaka_command = self.__cmd
+        
+        future = self.__action_client.send_goal_async(self.__goal_msg)
+        
         if wait:
-            rclpy.spin_until_future_complete(self, future)
-            result = future.result()
-            time.sleep(1)
-            return result.success
-        else:
-            return True
-
-def __sample():
-    rclpy.init()
-
-    tts = TTS()
-
-    tts.say(
-        "しゃっと、言ってよ！"
-    )
-
-
-if __name__ == "__main__":
-    __sample()
+            rclpy.spin_until_future_complete(self.__node, future)
