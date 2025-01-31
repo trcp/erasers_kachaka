@@ -1,21 +1,56 @@
 # erasers_kachaka
 ## セットアップ方法
-### 1. kachaka-api のダウンロード
-　ホームディレクトリに移動して kachaka-api をダウンロードします。
+
+### 1. ワークスペースの作成
+　以下のコマンドを実行してホームディレクトリに `colcon_ws` ディレクトリを作成します。
 ```bash
-git clone https://github.com/pf-robotics/kachaka-api.git
+cd && mkdir -p colcon_ws/src
 ```
 
-### ros2_bridge コンテナのビルド
-　erasers_kachaka ディレクトリに移動して kachaka-api に以下のファイルをコピーしてください。
+### 2. リポジトリ erasers_kachaka のダウンロード
+　以下のコマンドを実行して`colcon_ws/src` ディレクトリに移動します。
 ```bash
-cp docker/Dockerfile.erk ~/kachaka-api/
-cp customs/grpc_ros2_bridge.trcp.launch.xml ~/kachaka-api/ros2/kachaka_grpc_ros2_bridge/launch/
+cd colcon_ws/src
+```
+　以下のコマンドを実行して erasers_kachaka をダウンロードします。
+```bash
+git clone https://github.com/trcp/erasers_kachaka.git
+```
+
+### 3. 必要なパッケージをダウンロード
+　以下のコマンドを実行し、`colcon_ws` ディレクトリに移動します。
+```bash
+cd ~/colcon_ws
+```
+　以下のコマンドを実行し、erasers_kachaka をビルドするために必要なパッケージを src ディレクトリにダウンロードします。
+```bash
+vcs import src < ~/colcon_ws/src/erasers_kachaka/setup.repos
+```
+　このコマンドを実行すると、以下のパッケージが src ディレクトリにダウンロードされます。
+
+- [**kachaka-api**](https://github.com/pf-robotics/kachaka-api.git)
+- [kachaka shelf description](https://github.com/GAI-313/kachaka_shelf_description.git)
+- [rclpy_util](git@github.com:GAI-313/rclpy_util.git)
+
+### 4, ros2_bridge コンテナのビルド
+　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
+
+```bash
+cd ~/colcon_ws/src/erasers_kachaka
+```　
+　以下のコマンドを実行して kachaka-api に必要なファイルをコピーします。
+```bash
+cp docker/Dockerfile.erk ../kachaka-api/
+cp customs/grpc_ros2_bridge.trcp.launch.xml ../kachaka-api/ros2/kachaka_grpc_ros2_bridge/launch/
 ```
 
 ---
 
-　kachaka-api ディレクトリに移動して、コンテナをビルドしてください。
+　以下のコマンドを実行して `kachaka-api` ディレクトリに移動します。
+```bash
+cd ../kachaka-api
+```
+以下のコマンドを実行してコンテナをビルドしてください。
 初めてコンテナをビルドするととても長い時間がかかります。
 ```bash
 docker buildx build -t kachaka-api:erasers --target kachaka-grpc-ros2-bridge -f Dockerfile.erk . --build-arg BASE_ARCH=x86_64 --load
@@ -46,9 +81,6 @@ pip install --break-system-packages --extra-index-url https://pf-robotics.github
 python3 -c "import kachaka_api"
 ```
 
-### 必要なパッケージの用意
- kachaka interfaces kachaka description
-
 ### 環境変数の設定
 　~/.bashrc を開き、以下のコードを下に追加してください。
 ```bash
@@ -60,3 +92,13 @@ export GRPC_PORT=26400
 export API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
 ```
 　KACHAKA_IP は実際のカチャカのIPアドレスを指定してください。
+
+### ビルド
+　`~/colcon_ws` ディレクトリに移動します。
+```bash
+cd ~/colcon_ws
+```
+　以下のコマンドを実行してワークスペース内のパッケージをビルドします。
+```bash
+colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
+```
