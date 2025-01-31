@@ -21,6 +21,7 @@ class TTS():
         if not self.__action_client.wait_for_server(timeout_sec=wait_time):
             self.__node.get_logger().fatal("May be KACHAKA is not running ...")
         
+        self.__node.get_logger().info("TTS start")
         # create command and action field
         self.__cmd = KachakaCommand()
         self.__cmd.command_type = KachakaCommand.SPEAK_COMMAND
