@@ -41,7 +41,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'kachaka_speak_subscriber = scripts.kachaka_speaker_subscriber:main'
+            'kachaka_speak_subscriber = scripts.kachaka_speaker_subscriber:main',
+            'emergency_manager = scripts.emergency_manager:main'
         ],
     },
 )
