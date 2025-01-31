@@ -28,4 +28,8 @@ def main():
     rclpy.init()
 
     node = KachakaSpeakerSubscriber()
-    rclpy.spin(node)
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.destroy_node()
