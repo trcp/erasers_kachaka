@@ -27,8 +27,16 @@ def generate_launch_description():
         executable="kachaka_speak_subscriber",
         namespace=KACHAKA_NAME
     )
+    node_emergency_manager = Node(
+        package="erasers_kachaka_common",
+        executable="emergency_manager",
+        output="screen",
+        namespace=KACHAKA_NAME
+    )
+
 
     ld.add_action(node_kachaka_speak_subscriber)
+    ld.add_action(node_emergency_manager)
 
 
     # PROCESS

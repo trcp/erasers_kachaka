@@ -34,6 +34,11 @@ class EmergencyManager(Node):
         self.kachaka.cancel_command()
         self.kachaka.set_emergency_stop()
 
+        res.message = "emergecy stop ! Please push power button when restart."
+        res.success = True
+
+        self.get_logger().errror(res.message)
+
         return res
 
 
