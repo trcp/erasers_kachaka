@@ -37,7 +37,7 @@ class EmergencyManager(Node):
         res.message = "emergecy stop ! Please push power button when restart."
         res.success = True
 
-        self.get_logger().errror(res.message)
+        self.get_logger().error(res.message)
 
         return res
 
