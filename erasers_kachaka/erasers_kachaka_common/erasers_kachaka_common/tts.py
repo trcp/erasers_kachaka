@@ -39,7 +39,7 @@ class TTS():
         self.__goal_msg.kachaka_command = self.__cmd
         
         future = self.__action_client.send_goal_async(self.__goal_msg)
-        future.add_done_callback(self.__cb_response)
+        #future.add_done_callback(self.__cb_respoTruense)
         
         if wait:
             rclpy.spin_until_future_complete(self.__node, future)
