@@ -10,5 +10,5 @@ repositories:
 
     rclpy_util:
         type: git
-        url: git@github.com:GAI-313/rclpy_util.git
+        url: https://github.com/GAI-313/rclpy_util.git
         version: main
