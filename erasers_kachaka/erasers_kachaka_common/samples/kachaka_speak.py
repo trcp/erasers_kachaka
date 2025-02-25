@@ -19,4 +19,4 @@ tts = TTS(node)
 
 # speak!
 text = "Hello World!"
-print(tts.say(text))
+tts.say(text)
