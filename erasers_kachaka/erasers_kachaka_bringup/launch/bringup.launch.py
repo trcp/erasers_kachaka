@@ -33,10 +33,16 @@ def generate_launch_description():
         output="screen",
         namespace=KACHAKA_NAME
     )
-
+    node_lidar_observer = Node(
+        package="erasers_kachaka_common",
+        executable="lidar_observer",
+        output="screen",
+        namespace=KACHAKA_NAME
+    )
 
     ld.add_action(node_kachaka_speak_subscriber)
     ld.add_action(node_emergency_manager)
+    ld.add_action(node_lidar_observer)
 
 
     # PROCESS
