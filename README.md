@@ -34,10 +34,9 @@ vcs import src < ~/colcon_ws/src/erasers_kachaka/setup.repos
 
 ### 4, ros2_bridge コンテナのビルド
 　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
-
 ```bash
 cd ~/colcon_ws/src/erasers_kachaka
-```　
+```
 　以下のコマンドを実行して kachaka-api に必要なファイルをコピーします。
 ```bash
 cp docker/Dockerfile.erk ../kachaka-api/
