@@ -30,7 +30,10 @@ vcs import src < ~/colcon_ws/src/erasers_kachaka/setup.repos
 
 - [**kachaka-api**](https://github.com/pf-robotics/kachaka-api.git)
 - [kachaka shelf description](https://github.com/GAI-313/kachaka_shelf_description.git)
-- [rclpy_util](git@github.com:GAI-313/rclpy_util.git)
+- [rclpy_util](https://github.com/GAI-313/rclpy_util.git)
+- [cartographer](https://github.com/ros2/cartographer.git)
+- [cartographer_ros_kachaka](https://github.com/GAI-313/cartographer_ros_kachaka.git)
+- [emcl2](https://github.com/GAI-313/emcl2_for_kachaka.git)
 
 ### 4, ros2_bridge コンテナのビルド
 　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
