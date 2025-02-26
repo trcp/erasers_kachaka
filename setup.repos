@@ -12,3 +12,16 @@ repositories:
         type: git
         url: https://github.com/GAI-313/rclpy_util.git
         version: main
+
+    cartographer:
+        type: git
+        url: https://github.com/ros2/cartographer.git
+        version: ros2
+    cartographer_ros_kachaka:
+        type: git
+        url: https://github.com/GAI-313/cartographer_ros_kachaka.git
+        version: ros2
+    emcl2:
+        type: git
+        url: https://github.com/GAI-313/emcl2_for_kachaka.git
+        version: main
