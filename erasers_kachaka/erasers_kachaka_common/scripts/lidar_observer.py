@@ -27,14 +27,18 @@ class LasesObserver(Node):
     def main(self):
         twist = Twist()
 
-        while rclpy.ok():
-            rclpy.spin_once(self, timeout_sec=0.25)
+        try:
+            while rclpy.ok():
+                rclpy.spin_once(self, timeout_sec=0.25)
 
-            if not self.flag:
-                #self.get_logger().info("Lidar reboot ...")
-                self.pub.publish(twist)
+                if not self.flag:
+                    #self.get_logger().info("Lidar reboot ...")
+                    self.pub.publish(twist)
 
-            self.flag = False
+                self.flag = False
+        
+        except KeyboardInterrupt:
+            pass
 
 
 def main():
