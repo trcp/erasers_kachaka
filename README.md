@@ -1,4 +1,7 @@
 # erasers_kachaka
+
+<img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
+
 ## セットアップ方法
 
 ### 1. ワークスペースの作成
@@ -110,3 +113,8 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 ### コード修正
 - [cartographer_launch.py](erasers_kachaka/erasers_kachaka_cartographer/launch/cartographer_launch.py) の変数 **`default_map_dir`** の絶対パスを実際のコンピューターの環境に合わせてください。パスの位置はパッケージ erasers_cartographer 内の map ディレクトリの位置にしてください。
 - [navigation_launch.py](erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py) の変数 **`default_map`** の絶対パスを実際のコンピューターの環境に合わせてください。パスの位置はパッケージ erasers_cartographer 内の map ディレクトリの位置にしてください。`test_field.yaml` はそのままで大丈夫です。
+
+## 起動方法
+　ロボットの起動方法は
+ [こちら](/erasers_kachaka/erasers_kachaka_bringup/README.md)
+ を参照してください。
