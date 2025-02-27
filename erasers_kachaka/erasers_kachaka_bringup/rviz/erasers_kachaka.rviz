@@ -118,7 +118,10 @@ Visualization Manager:
                   camera_front:
                     {}
                 docking_link:
-                  {}
+                  shelf_base_link:
+                    shelf_middle_plate_link:
+                      shelf_top_plate_link:
+                        {}
                 imu_link:
                   {}
                 laser_link:
@@ -131,10 +134,6 @@ Visualization Manager:
             local_map-grid-base:
               {}
             local_map-lidar-map-grid-base:
-              {}
-        shelf_base_link:
-          shelf_middle_plate_link:
-            shelf_top_plate_link:
               {}
       Update Interval: 0
       Value: true
@@ -182,7 +181,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /test_kachaka/robot_description
+        Value: /robot_description
       Enabled: true
       Links:
         All Links Enabled: true
@@ -230,6 +229,21 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        shelf_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shelf_middle_plate_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shelf_top_plate_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         tof_link:
           Alpha: 1
           Show Axes: false
@@ -244,8 +258,8 @@ Visualization Manager:
       Visual Enabled: true
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Background Color: 255; 255; 255
+    Fixed Frame: map
     Frame Rate: 30
   Name: root
   Tools:
@@ -288,7 +302,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 4.823968887329102
+      Distance: 9.954691886901855
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -303,10 +317,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5697963237762451
+      Pitch: 1.5647963285446167
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 3.1953959465026855
+      Yaw: 3.0853967666625977
     Saved: ~
 Window Geometry:
   Displays:
