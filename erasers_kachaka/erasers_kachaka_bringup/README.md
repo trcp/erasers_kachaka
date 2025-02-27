@@ -28,7 +28,7 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
   |Type| Bool |
   |Default| True |
   
-  Robot description にシェルフを含めるかどうか選択する引数です。デフォルトでは起動時にシェルフがつきます。（左図）カチャカ単体（左図）が表示されるようにしたいならば `False` を与えてください。
+  Robot description にシェルフを含めるかどうか選択する引数です。デフォルトでは起動時にシェルフがつきます。（左図）カチャカ単体（右図）が表示されるようにしたいならば `False` を与えてください。
 
   <img src="/imgs/erasers_kachaka_description.png" width=25% /><img src="/imgs/erasers_kachaka_without_shelf_description.png" width=25% />
 
