@@ -6,6 +6,9 @@
        default="false" />
   <arg name="namespace"
        default="$(env KACHAKA_NAME)" />
+  <arg name="frame_prefix"
+       default="$(env FRAME_PREFIX)" /> <!-- frame_prefixを追加 -->
+
   <node_container pkg="rclcpp_components"
                   exec="component_container_mt"
                   name="grpc_ros2_bridge_container"
@@ -25,6 +28,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -43,6 +48,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -62,6 +69,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -72,6 +81,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -81,6 +92,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -100,6 +113,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -130,6 +145,8 @@
              value="$(var server_uri)" />
       <param name="publish_wheel_odometry"
              value="$(var publish_wheel_odometry)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -139,6 +156,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -158,6 +177,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -168,6 +189,8 @@
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
+      <param name="frame_prefix"
+             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -176,6 +199,7 @@
     <arg name="namespace"
          value="$(var namespace)" />
     <arg name="frame_prefix"
-         value="$(var frame_prefix)" />
+         value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
   </include>
 </launch>
+
