@@ -202,4 +202,3 @@
          value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
   </include>
 </launch>
-
