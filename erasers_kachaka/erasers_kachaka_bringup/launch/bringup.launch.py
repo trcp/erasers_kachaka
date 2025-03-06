@@ -6,7 +6,7 @@ from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.conditions import IfCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -23,6 +23,7 @@ def generate_launch_description():
 
     prefix_erk_teleop = get_package_share_directory("erasers_kachaka_teleop")
     prefix_erk_description = get_package_share_directory("erasers_kachaka_description")
+    prefix_erk_manipulation = get_package_share_directory("erasers_kachaka_manipulation")
     prefix_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
         "rviz", "erasers_kachaka.rviz"
@@ -31,7 +32,7 @@ def generate_launch_description():
 
     # config
     config_use_rviz = LaunchConfiguration("use_rviz")
-    config_use_shelf = LaunchConfiguration("use_shelf")
+    config_shelf_type = LaunchConfiguration("shelf_type")
 
 
     # declare arguments
@@ -39,13 +40,13 @@ def generate_launch_description():
         "use_rviz", default_value="True",
         description="Rviz2 を起動します"
     )
-    declare_use_shelf = DeclareLaunchArgument(
-        "use_shelf", default_value="True",
-        description="シェルフが搭載されているなら True にしてください。"
+    declare_shelf_type = DeclareLaunchArgument(
+        "shelf_type", default_value="1",
+        description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
     )
 
     ld.add_action(declare_use_rviz)
-    ld.add_action(declare_use_shelf)
+    ld.add_action(declare_shelf_type)
 
 
     # NODES
@@ -118,12 +119,31 @@ def generate_launch_description():
 
 
     # LAUNCHERS
-    launch_description = IncludeLaunchDescription(
+    launch_short_shelf_description = IncludeLaunchDescription(
         XMLLaunchDescriptionSource([
             prefix_erk_description,
             "/launch/erasers_kachaka_description.launch"
-        ])
+        ]),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 1",
+                " or ",
+                config_shelf_type, " == 2",
+            ])
+        )
     )
+    launch_manipulation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            prefix_erk_manipulation,
+            "/launch/manipulation_launch.py"
+        ]),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 2"
+            ])
+        )
+    )
+
     launch_teleop = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             prefix_erk_teleop,
@@ -131,7 +151,8 @@ def generate_launch_description():
         ])
     )
 
-    ld.add_action(launch_description)
+    ld.add_action(launch_short_shelf_description)
+    ld.add_action(launch_manipulation)
     ld.add_action(launch_teleop)
 
 
