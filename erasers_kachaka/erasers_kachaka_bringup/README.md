@@ -22,19 +22,27 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
   ```
 
 
-- **use_shelf**<br>
+- **shelf_type**<br>
   |||
   |:---:|:---:|
-  |Type| Bool |
-  |Default| True |
+  |Type| Int |
+  |Default| $1$ |
   
-  Robot description にシェルフを含めるかどうか選択する引数です。デフォルトでは起動時にシェルフがつきます。（左図）カチャカ単体（右図）が表示されるようにしたいならば `False` を与えてください。
+  erasers_kachaka に搭載しているシェルフの種類を選択する引数です。デフォルトでは起動時に２段のシェルフがつきます。（左図）マニピュレーターを搭載したシェルフ（中央図）を使用する場合はこの引数に $2$ を与えてください。カチャカのみ（右図）使用する場合この引数に $1$ を与えてください。
 
-  <img src="/imgs/erasers_kachaka_description.png" width=25% /><img src="/imgs/erasers_kachaka_without_shelf_description.png" width=25% />
+  <img src="/imgs/erasers_kachaka_description.png" width=25% /><img src="/imgs/erasers_kachaka_with_manipulation_shelf_description.png" width=25% /><img src="/imgs/erasers_kachaka_without_shelf_description.png" width=25% />
 
-  ```bash
-  ros2 launch erasers_kachaka_bringup bringup.launch.py use_rviz:=False
-  ```
+- **カチャカのみ使用する場合**<br>
+    ```bash
+    ros2 launch erasers_kachaka_bringup bringup.launch.py shelf_type:=0
+    ```
+- **マニピュレーターも使用する場合**<br>
+  このコマンドで起動すると搭載されているマニピュレーターも起動します。詳しくは
+[aerasers_kachaka_manipulation](/erasers_kachaka/erasers_kachaka_manipulation/README.md)
+を参照してください。
+    ```bash
+    ros2 launch erasers_kachaka_bringup bringup.launch.py shelf_type:=2
+    ```
 
 ## トラブルシューティング
 - **起動時に `May be KACHAKA is not running ...` と表示される**<br>
