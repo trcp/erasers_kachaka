@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -132,18 +132,23 @@ def generate_launch_description():
             ])
         )
     )
-    launch_manipulation = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            prefix_erk_manipulation,
-            "/launch/manipulation_launch.py"
-        ]),
-        condition=IfCondition(
-            PythonExpression([
-                config_shelf_type, " == 2"
-            ])
-        )
+    launch_manipulation = TimerAction(
+        period=5.0,
+        actions=[
+            IncludeLaunchDescription(
+                PythonLaunchDescriptionSource([
+                    prefix_erk_manipulation,
+                    "/launch/manipulation_launch.py"
+                ]),
+                condition=IfCondition(
+                    PythonExpression([
+                        config_shelf_type, " == 2"
+                    ])
+                )
+            )
+        ]
     )
-    launch_kachaka_description_only = IncludeLaunchDescription(
+    launch_kachaka_description_only =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             get_package_share_directory("kachaka_description"),
             "/launch/robot_description.launch.py"
@@ -158,6 +163,7 @@ def generate_launch_description():
             ])
         )
     )
+                   
 
     launch_teleop = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
