@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, TimerAction, ExecuteProcess
 from launch.substitutions import LaunchConfiguration
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from er_crane_x7_description.robot_description_loader import RobotDescriptionLoader
@@ -53,6 +53,19 @@ def generate_launch_description():
     )
 
     ld.add_action(launch_manipulation)
+
+    action_move_state = TimerAction(
+        period=10.0,
+        actions=[
+            ExecuteProcess(
+                cmd=["ros2 service call /move_groupstate er_crane_x7_srvs/srv/SetGoalstate"],
+                shell=True,
+                output='screen',
+            )
+        ]
+    )
+
+    ld.add_action(action_move_state)
 
 
     return ld
