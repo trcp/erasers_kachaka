@@ -33,7 +33,7 @@
    アームを以下の画像のような姿勢にしてください。アームの手先がシェルフ手前にぶら下がるような姿勢です。<br>
    <img src="/imgs/manipulation_pose.png" width=50% />
 
-   **以下のような姿勢にはしないでください！アームが正常に起動しません。**
+   **以下のような姿勢にはしないでください！アームが正常に起動しません。**<br>
    <img src="/imgs/manipulation_ng_pose0.png" width=30% /><img src="/imgs/manipulation_ng_pose1.png" width=30% /><img src="/imgs/manipulation_ng_pose2.png" width=30% />
    
 5. **マニピュレーターを起動する**<br>
