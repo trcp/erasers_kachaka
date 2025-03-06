@@ -143,6 +143,21 @@ def generate_launch_description():
             ])
         )
     )
+    launch_kachaka_description_only = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory("kachaka_description"),
+            "/launch/robot_description.launch.py"
+        ]),
+        launch_arguments={
+            "namespace":"",
+            "frame_prefix":"",
+        }.items(),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 0"
+            ])
+        )
+    )
 
     launch_teleop = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -153,6 +168,7 @@ def generate_launch_description():
 
     ld.add_action(launch_short_shelf_description)
     ld.add_action(launch_manipulation)
+    ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
 
 
