@@ -38,7 +38,7 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
     ```
 - **マニピュレーターも使用する場合**<br>
   このコマンドで起動すると搭載されているマニピュレーターも起動します。詳しくは
-[aerasers_kachaka_manipulation](/erasers_kachaka/erasers_kachaka_manipulation/README.md)
+[erasers_kachaka_manipulation](/erasers_kachaka/erasers_kachaka_manipulation/README.md)
 を参照してください。
     ```bash
     ros2 launch erasers_kachaka_bringup bringup.launch.py shelf_type:=2
