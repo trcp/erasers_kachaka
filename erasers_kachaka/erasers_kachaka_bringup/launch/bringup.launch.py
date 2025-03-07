@@ -28,14 +28,23 @@ def generate_launch_description():
         get_package_share_directory("erasers_kachaka_bringup"),
         "rviz", "erasers_kachaka.rviz"
     )
+    prefix_default_rviz = os.path.join(
+        get_package_share_directory("erasers_kachaka_bringup"),
+        "rviz", "erasers_kachaka_default.rviz"
+    )
 
 
     # config
+    config_bringup_type = LaunchConfiguration("bringup_type")
     config_use_rviz = LaunchConfiguration("use_rviz")
     config_shelf_type = LaunchConfiguration("shelf_type")
 
 
     # declare arguments
+    declare_bringup_type = DeclareLaunchArgument(
+        "bringup_type", default_value="1",
+        description="起動する bridge コンテナの種類を選択します。[0, 1] のどちらかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+    )
     declare_use_rviz = DeclareLaunchArgument(
         "use_rviz", default_value="True",
         description="Rviz2 を起動します"
@@ -45,8 +54,9 @@ def generate_launch_description():
         description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
     )
 
-    ld.add_action(declare_use_rviz)
+    ld.add_action(declare_bringup_type)
     ld.add_action(declare_shelf_type)
+    ld.add_action(declare_use_rviz)
 
 
     # NODES
@@ -71,30 +81,72 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         arguments=["-d", prefix_rviz],
-        condition=IfCondition(config_use_rviz)
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0 ",
+                " and ",
+                config_use_rviz
+            ])
+        )
+    )
+    node_default_rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=["-d", prefix_default_rviz],
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 1",
+                " and ",
+                config_use_rviz
+            ])
+        )
     )
     node_mapprovider = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=["0", "0", "0", "0", "0", "0", "map", "odom"],
         output="own_log",
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0"
+            ])
+        )
     )
 
     ld.add_action(node_kachaka_speak_subscriber)
     ld.add_action(node_emergency_manager)
     ld.add_action(node_lidar_observer)
     ld.add_action(node_rviz)
+    ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)
 
 
     # PROCESS
-    bringup_docker = ExecuteProcess(
+    bringup_trcp_docker = ExecuteProcess(
         cmd=[[
             "docker compose",
             " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
             " up kachaka"
         ]],
-        shell=True
+        shell=True,
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0"
+            ])
+        )
+    )
+    bringup_default_docker = ExecuteProcess(
+        cmd=[[
+            "docker compose",
+            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " up default_kachaka"
+        ]],
+        shell=True,
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 1"
+            ])
+        )
     )
     bringup_msg = RegisterEventHandler(
         OnProcessStart(
@@ -114,7 +166,8 @@ def generate_launch_description():
     )
 
 
-    ld.add_action(bringup_docker)
+    ld.add_action(bringup_trcp_docker)
+    ld.add_action(bringup_default_docker)
     ld.add_action(bringup_msg)
 
 
