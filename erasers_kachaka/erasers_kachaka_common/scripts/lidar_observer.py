@@ -6,6 +6,8 @@ import rclpy
 from sensor_msgs.msg import LaserScan, BatteryState
 from geometry_msgs.msg import Twist
 
+import time
+
 
 class LasesObserver(Node):
     def __init__(self):
@@ -35,13 +37,14 @@ class LasesObserver(Node):
 
         try:
             while rclpy.ok():
-                rclpy.spin_once(self, timeout_sec=0.25)
+                rclpy.spin_once(self, timeout_sec=5.0)
 
                 if not self.flag and not self.charging:
-                    #self.get_logger().info("Lidar reboot ...")
+                    self.get_logger().debug("Lidar reboot ...")
                     self.pub.publish(twist)
 
                 self.flag = False
+                time.sleep(1+30)
         
         except KeyboardInterrupt:
             pass
