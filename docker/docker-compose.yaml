@@ -23,7 +23,7 @@ services:
   
   default_kachaka:
     image: "asia-northeast1-docker.pkg.dev/kachaka-api/docker/kachaka-grpc-ros2-bridge:20250213"
-    container_name: "kachaka-bridge-trcp"
+    container_name: "kachaka-bridge-default"
     network_mode: "host"
     ipc: "host"
     pid: "host"
