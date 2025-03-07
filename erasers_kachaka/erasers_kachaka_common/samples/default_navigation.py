@@ -20,4 +20,5 @@ node = Node("sample_kachaka_default_navigation")
 navigation = DefaultNavigation(node)
 
 # ナビゲーションする
-navigation.move_abs(0.1, 0.1, 0.0)
+# 前に 50 cm 進む　
+navigation.move_rlt(x=1.0)
