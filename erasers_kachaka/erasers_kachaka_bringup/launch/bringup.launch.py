@@ -164,11 +164,16 @@ def generate_launch_description():
             ]
         )
     )
+    bringup_actions = TimerAction(
+        period=5.0,
+        actions=[
+            bringup_trcp_docker,
+            bringup_default_docker,
+            bringup_msg
+        ]
+    )
 
-
-    ld.add_action(bringup_trcp_docker)
-    ld.add_action(bringup_default_docker)
-    ld.add_action(bringup_msg)
+    ld.add_action(bringup_actions)
 
 
     # LAUNCHERS
