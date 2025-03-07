@@ -39,7 +39,24 @@ class TTS():
         self.__goal_msg.kachaka_command = self.__cmd
         
         future = self.__action_client.send_goal_async(self.__goal_msg)
-        #future.add_done_callback(self.__cb_respoTruense)
         
         if wait:
             rclpy.spin_until_future_complete(self.__node, future)
+            goal_handle = future.result()
+
+            # サーバーから拒否されたらエラーを出す
+            if not goal_handle.accepted:
+                self.__node.get_logger().error("Speak rejected by server")
+                return False
+
+            # サーバーからの実行結果を待機
+            result_future = goal_handle.get_result_async()
+            rclpy.spin_until_future_complete(self.__node, result_future)
+            result = result_future.result().result
+
+            # 実行結果を返す
+            if result.success:
+                return True
+            else:
+                self.__node.get_logger().warn("Speaking failed")
+                return False
