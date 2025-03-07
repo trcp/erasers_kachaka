@@ -10,6 +10,22 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
 
 ## 引数一覧
 
+- **bringup_type**<br>
+  |||
+  |:---:|:---:|
+  |Type| Int |
+  |Default| $1$ |
+  
+  カチャカ内蔵ナビゲーションとマップを使用するか選択する引数です。$0$ または $1$ のどちらかを選択してください。
+
+- $0$ : かちゃか内蔵ナビゲーションとマップを使用しません。マップをもたずにカチャカは起動します。
+- $1$ : カチャカ内蔵ナビゲーションとマップを使用します。
+
+- **マップを持たずに起動させたい場合は以下のコマンドを参考にしてください。**<br>
+    ```bash
+    ros2 launch erasers_kachaka_bringup bringup.launch.py bringup_type:=0
+    ```
+
 - **use_rviz**<br>
   |||
   |:---:|:---:|
