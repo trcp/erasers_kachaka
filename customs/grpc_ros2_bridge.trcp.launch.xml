@@ -54,7 +54,7 @@
                  value="false" />
     </composable_node>
     <!-- disable when use ros2 navigation pkgs -->
-    <composable_node pkg="kachaka_grpc_ros2_bridge"
+    <!-- composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::GoalPoseComponent"
                      name="goal_pose"
                      namespace="$(var namespace)">
@@ -62,7 +62,7 @@
              to="/goal_pose" />
       <extra_arg name="use_intra_process_comms"
                  value="false" />
-    </composable_node>
+    </composable_node -->
     <composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::ImuComponent"
                      name="imu"
@@ -75,17 +75,17 @@
                  value="false" />
     </composable_node>
     <!-- disable when use ros2 navigation pkgs -->
-    <composable_node pkg="kachaka_grpc_ros2_bridge"
+    <!-- composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::LayoutComponent"
                      name="layout"
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" /> 
       <extra_arg name="use_intra_process_comms"
                  value="false" />
-    </composable_node>
+    </composable_node -->
     <composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::LidarComponent"
                      name="lidar"
@@ -93,7 +93,7 @@
       <param name="server_uri"
              value="$(var server_uri)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" /> 
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -107,17 +107,17 @@
                  value="false" />
     </composable_node>
     <!-- disable when use ros2 navigation pkgs -->    
-    <composable_node pkg="kachaka_grpc_ros2_bridge"
+    <!-- composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::MappingComponent"
                      name="mapping"
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" /> 
       <extra_arg name="use_intra_process_comms"
                  value="false" />
-    </composable_node>
+    </composable_node -->
     <composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::RobotInfoComponent"
                      name="robot_info"
@@ -146,7 +146,7 @@
       <param name="publish_wheel_odometry"
              value="$(var publish_wheel_odometry)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" /> 
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -157,7 +157,7 @@
       <param name="server_uri"
              value="$(var server_uri)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" />
       <extra_arg name="use_intra_process_comms"
                  value="false" />
     </composable_node>
@@ -171,17 +171,17 @@
                  value="false" />
     </composable_node>
     <!-- disable when use ros2 navigation pkgs -->
-    <composable_node pkg="kachaka_grpc_ros2_bridge"
+    <!-- composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::StaticTfComponent"
                      name="static_tf"
                      namespace="$(var namespace)">
       <param name="server_uri"
              value="$(var server_uri)" />
       <param name="frame_prefix"
-             value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
+             value="$(var frame_prefix)" />
       <extra_arg name="use_intra_process_comms"
                  value="false" />
-    </composable_node>
+    </composable_node -->
     <!-- disable when use ros2 navigation pkgs -->
     <composable_node pkg="kachaka_grpc_ros2_bridge"
                      plugin="kachaka::grpc_ros2_bridge::DynamicTfComponent"
