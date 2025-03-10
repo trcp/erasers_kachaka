@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction, GroupAction
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -230,16 +230,11 @@ def generate_launch_description():
         ])
     )
 
-    launchers = GroupAction(
-        actions=[
-            launch_short_shelf_description,
-            launch_kachaka_description_only,
-            launch_manipulation,
-            launch_teleop
-        ]
-    )
 
-    ld.add_action(launchers)
+    ld.add_action(launch_short_shelf_description)
+    ld.add_action(launch_manipulation)
+    ld.add_action(launch_kachaka_description_only)
+    ld.add_action(launch_teleop)
 
 
     return ld
