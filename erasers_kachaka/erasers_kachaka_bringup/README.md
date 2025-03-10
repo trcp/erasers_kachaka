@@ -30,11 +30,11 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
   |||
   |:---:|:---:|
   |Type| Bool |
-  |Default| True |
+  |Default| False |
   
-  起動時に RViz を起動する引数です。Rviz を表示したくない場合、またはカスタムの RViz を使用したい場合はこの引数に `False` を与えてください。
+  起動時に RViz を起動する引数です。起動時にすぐ Rviz を使用したい場合は以下のように引数 `use_rviz:=True` を与えて起動してください。
   ```bash
-  ros2 launch erasers_kachaka_bringup bringup.launch.py use_rviz:=False
+  ros2 launch erasers_kachaka_bringup bringup.launch.py use_rviz:=True
   ```
 
 
