@@ -77,6 +77,16 @@ def generate_launch_description():
         output="screen",
         namespace=KACHAKA_NAME
     )
+    node_lidar_resampler = Node(
+        package="erasers_kachaka_common",
+        executable="lidar_resampler",
+        output="screen",
+        namespace=KACHAKA_NAME,
+        remappings=[
+            ("input_scan", "lidar/scan"),
+            ("output_scan", "sampling_lidar/scan")
+        ]
+    )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -116,6 +126,7 @@ def generate_launch_description():
     ld.add_action(node_kachaka_speak_subscriber)
     ld.add_action(node_emergency_manager)
     ld.add_action(node_lidar_observer)
+    ld.add_action(node_lidar_resampler)
     ld.add_action(node_rviz)
     ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)
@@ -165,7 +176,7 @@ def generate_launch_description():
         )
     )
     bringup_actions = TimerAction(
-        period=5.0,
+        period=2.0,
         actions=[
             bringup_trcp_docker,
             bringup_default_docker,
