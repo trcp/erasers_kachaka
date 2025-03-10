@@ -122,7 +122,7 @@ def generate_launch_description():
         remappings=[
             ('/imu', f'/{NAMESPACE}/imu/imu'),
             ('/scan', f'/{NAMESPACE}/lidar/scan'),
-            ('/odom', f'/{NAMESPACE}/odometry/odometry')
+            ('/odom', f'/{NAMESPACE}/odometry/odometry'),
         ],
         arguments=[
             '-configuration_directory', config_config_dir,
@@ -138,7 +138,10 @@ def generate_launch_description():
         arguments=[
             '-resolution', config_resolution,
             '-publish_period_sec', config_publish_period_sec,
-        ]
+        ],
+        remappings=[
+            ('/map', '/cartographer/map')
+        ],
     )
     node_map_saver = Node(
         package='erasers_kachaka_cartographer',
@@ -151,6 +154,12 @@ def generate_launch_description():
         ],
         condition=IfCondition(config_use_map_save)
     )
+    node_map_providor = Node(
+        package='erasers_kachaka_cartographer',
+        executable='map_providor',
+        output='screen',
+        condition=IfCondition(config_use_map_save)
+    )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -161,6 +170,7 @@ def generate_launch_description():
     ld.add_action(node_cartographer)
     ld.add_action(node_occupancy_grid_node)
     ld.add_action(node_map_saver)
+    ld.add_action(node_map_providor)
     ld.add_action(node_rviz)
 
 

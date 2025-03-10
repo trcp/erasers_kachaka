@@ -37,8 +37,8 @@ TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.
 TRAJECTORY_BUILDER_2D.use_imu_data = true
 TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
 
-POSE_GRAPH.constraint_builder.min_score = 0.65
-POSE_GRAPH.constraint_builder.global_localization_min_score = 0.7
+POSE_GRAPH.constraint_builder.min_score = 0.6
+POSE_GRAPH.constraint_builder.global_localization_min_score = 0.65
 
 POSE_GRAPH.optimization_problem.local_slam_pose_translation_weight = 1e5
 POSE_GRAPH.optimization_problem.local_slam_pose_rotation_weight = 1e5
@@ -46,7 +46,8 @@ POSE_GRAPH.optimization_problem.odometry_translation_weight = 1e5
 POSE_GRAPH.optimization_problem.odometry_rotation_weight = 1e5
 POSE_GRAPH.optimization_problem.huber_scale = 1e3
 
-TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 10
+-- おもみ追加
+TRAJECTORY_BUILDER_2D.ceres_scan_matcher.occupied_space_weight = 20
 TRAJECTORY_BUILDER_2D.ceres_scan_matcher.rotation_weight = 40
 
 TRAJECTORY_BUILDER_2D.submaps.num_range_data = 120
