@@ -46,7 +46,7 @@ def generate_launch_description():
         description="起動する bridge コンテナの種類を選択します。[0, 1] のどちらかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
     )
     declare_use_rviz = DeclareLaunchArgument(
-        "use_rviz", default_value="false",
+        "use_rviz", default_value="False",
         description="Rviz2 を起動します"
     )
     declare_shelf_type = DeclareLaunchArgument(
