@@ -28,7 +28,7 @@ def generate_launch_description():
         get_package_share_directory("erasers_kachaka_cartographer"),"config"
     )
     default_rviz = os.path.join(
-        default_config_dir, "cartographer.rviz"
+        default_config_dir, "navigation.rviz"
     )
 
     remappings = [
