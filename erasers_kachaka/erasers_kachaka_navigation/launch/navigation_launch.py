@@ -24,6 +24,13 @@ def generate_launch_description():
         get_package_share_directory('erasers_kachaka_navigation'),
         'params', 'navigation.yaml'
     )
+    default_config_dir = os.path.join(
+        get_package_share_directory("erasers_kachaka_cartographer"),"config"
+    )
+    default_rviz = os.path.join(
+        default_config_dir, "cartographer.rviz"
+    )
+
     remappings = [
         ('/tf', 'tf'),
         ('/tf_static', 'tf_static'),
@@ -111,10 +118,16 @@ def generate_launch_description():
 
 
     # Node
+    node_rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=["-d", default_rviz],
+    )
     node_emcl2 = Node(
         package="emcl2",
         executable="emcl2_node",
         name="emcl2",
+        output="own_log",
         remappings=remappings
     )
     node_map_server = Node(
@@ -248,6 +261,7 @@ def generate_launch_description():
         ]
     )
 
+    ld.add_action(node_rviz)
     ld.add_action(node_emcl2)
     ld.add_action(group_use_map_navigation)
     ld.add_action(group_navigation)
