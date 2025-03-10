@@ -31,6 +31,7 @@ def generate_launch_description():
 
     # configs
     config_use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    config_use_map_save = LaunchConfiguration("use_map_save")
     config_map_dir = LaunchConfiguration("map_dir")
     config_map_name = LaunchConfiguration("map_name")
     config_map_save_late = LaunchConfiguration("map_save_late")
@@ -42,6 +43,10 @@ def generate_launch_description():
     config_publish_period_sec = LaunchConfiguration('publish_period_sec')
 
 
+    declare_use_map_save = DeclareLaunchArgument(
+        'use_map_save', default_value="false",
+        description="自動的にマップを保存します。"
+    )
     declare_map_dir = DeclareLaunchArgument(
         'map_dir', default_value=default_map_dir,
         description="マップ保存先のディレクトリを指定します。デフォルトはこのパッケージの map ディレクトリです。"
@@ -55,7 +60,7 @@ def generate_launch_description():
         description="Rviz2 を起動します。"
     )
     declare_use_navigation = DeclareLaunchArgument(
-        'use_navigation', default_value="True",
+        'use_navigation', default_value="false",
         description="Navigation を有効にします。"
     )
     declare_map_save_late = DeclareLaunchArgument(
@@ -79,6 +84,7 @@ def generate_launch_description():
         description=''
     )
 
+    ld.add_action(declare_use_map_save)
     ld.add_action(declare_map_dir)
     ld.add_action(declare_map_name)
     ld.add_action(declare_map_save_late)
@@ -111,7 +117,8 @@ def generate_launch_description():
         package='cartographer_ros',
         executable='cartographer_node',
         output='screen',
-        parameters=[{'use_sim_time':config_use_sim_time}],
+        parameters=[{'use_sim_time':config_use_sim_time},
+                    {'frame_prefix': ''}],
         remappings=[
             ('/imu', f'/{NAMESPACE}/imu/imu'),
             ('/scan', f'/{NAMESPACE}/lidar/scan'),
@@ -141,7 +148,8 @@ def generate_launch_description():
             {'map_path': config_map_dir},
             {'map_name': config_map_name},
             {'save_late': config_map_save_late}
-        ]
+        ],
+        condition=IfCondition(config_use_map_save)
     )
     node_rviz = Node(
         package="rviz2",
