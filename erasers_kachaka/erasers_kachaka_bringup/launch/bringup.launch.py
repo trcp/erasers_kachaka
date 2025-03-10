@@ -71,6 +71,12 @@ def generate_launch_description():
         output="screen",
         namespace=KACHAKA_NAME
     )
+    node_battery_manager = Node(
+        package="erasers_kachaka_common",
+        executable="battery_manager",
+        output="screen",
+        namespace=KACHAKA_NAME
+    )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
@@ -125,6 +131,7 @@ def generate_launch_description():
 
     ld.add_action(node_kachaka_speak_subscriber)
     ld.add_action(node_emergency_manager)
+    ld.add_action(node_battery_manager)
     ld.add_action(node_lidar_observer)
     ld.add_action(node_lidar_resampler)
     ld.add_action(node_rviz)
