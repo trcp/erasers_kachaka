@@ -21,4 +21,4 @@ navigation = Nav2Navigation(node)
 
 # ナビゲーションする
 # 前に 50 cm 進む　
-navigation.move_rlt(x=1.5)
+navigation.move_rlt(yaw=1.57)

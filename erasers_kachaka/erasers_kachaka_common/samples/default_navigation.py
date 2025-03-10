@@ -23,6 +23,6 @@ print(navigation.get_current_pose())
 
 # ナビゲーションする
 # 前に 50 cm 進む　
-navigation.move_rlt(yaw=1.57)
+navigation.move_rlt(x=0.5)
 
 print(navigation.get_current_pose())
