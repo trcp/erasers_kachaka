@@ -43,7 +43,8 @@ setup(
         'console_scripts': [
             'kachaka_speak_subscriber = scripts.kachaka_speaker_subscriber:main',
             'emergency_manager = scripts.emergency_manager:main',
-            'lidar_observer = scripts.lidar_observer:main'
+            'lidar_observer = scripts.lidar_observer:lidar_observer',
+            'lidar_resampler = scripts.lidar_observer:lidar_resampler'
         ],
     },
 )
