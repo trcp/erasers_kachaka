@@ -27,6 +27,10 @@ def generate_launch_description():
     default_rviz = os.path.join(
         default_config_dir, "cartographer.rviz"
     )
+    default_params_file = os.path.join(
+        get_package_share_directory('erasers_kachaka_navigation'),
+        'params', 'nav_carto.yaml'
+    )
 
 
     # configs
@@ -105,7 +109,8 @@ def generate_launch_description():
             )
         ]),
         launch_arguments={
-            'use_map': 'False'
+            'use_map': 'False',
+            'params_file': default_params_file
         }.items(),
         condition=IfCondition(config_use_navigation)
     )
