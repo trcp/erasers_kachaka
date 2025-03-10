@@ -46,7 +46,7 @@ def generate_launch_description():
         description="起動する bridge コンテナの種類を選択します。[0, 1] のどちらかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
     )
     declare_use_rviz = DeclareLaunchArgument(
-        "use_rviz", default_value="True",
+        "use_rviz", default_value="false",
         description="Rviz2 を起動します"
     )
     declare_shelf_type = DeclareLaunchArgument(
@@ -175,16 +175,17 @@ def generate_launch_description():
             ]
         )
     )
+
     bringup_actions = TimerAction(
         period=2.0,
         actions=[
             bringup_trcp_docker,
             bringup_default_docker,
-            bringup_msg
         ]
     )
 
     ld.add_action(bringup_actions)
+    ld.add_action(bringup_msg)
 
 
     # LAUNCHERS
