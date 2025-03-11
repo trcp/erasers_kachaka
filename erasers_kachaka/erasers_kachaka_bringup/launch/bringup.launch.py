@@ -22,6 +22,7 @@ def generate_launch_description():
 
 
     prefix_erk_teleop = get_package_share_directory("erasers_kachaka_teleop")
+    prefix_erk_vision = get_package_share_directory("erasers_kachaka_vision")
     prefix_erk_description = get_package_share_directory("erasers_kachaka_description")
     prefix_erk_manipulation = get_package_share_directory("erasers_kachaka_manipulation")
     prefix_rviz = os.path.join(
@@ -38,6 +39,7 @@ def generate_launch_description():
     config_bringup_type = LaunchConfiguration("bringup_type")
     config_use_rviz = LaunchConfiguration("use_rviz")
     config_shelf_type = LaunchConfiguration("shelf_type")
+    config_publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
 
 
     # declare arguments
@@ -47,15 +49,20 @@ def generate_launch_description():
     )
     declare_use_rviz = DeclareLaunchArgument(
         "use_rviz", default_value="False",
-        description="Rviz2 を起動します"
+        description="Rviz2 を起動します True or False"
     )
     declare_shelf_type = DeclareLaunchArgument(
         "shelf_type", default_value="1",
         description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
     )
+    declare_publish_tof_pc2 = DeclareLaunchArgument(
+        "publish_tof_pc2", default_value="True",
+        description="カチャカ前方 ToF センサーの PointCloud2 を発行します。"
+    )
 
     ld.add_action(declare_bringup_type)
     ld.add_action(declare_shelf_type)
+    ld.add_action(declare_publish_tof_pc2)
     ld.add_action(declare_use_rviz)
 
 
@@ -249,11 +256,20 @@ def generate_launch_description():
         ])
     )
 
+    launch_tof_pointcloud = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            prefix_erk_vision,
+            "/launch/tof_pointcloud_launch.py"
+        ]),
+        condition=IfCondition(config_publish_tof_pc2)
+    )
+
 
     ld.add_action(launch_short_shelf_description)
     ld.add_action(launch_manipulation)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
+    ld.add_action(launch_tof_pointcloud)
 
 
     return ld

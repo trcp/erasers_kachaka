@@ -132,4 +132,4 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 - [🔈カチャカから発話させる方法](/docs/howtospeak.md)
 - [🚗カチャカを移動させる方法](/docs/howtomove.md)
 - [🗺マップの作成方法](/docs/howtomap.md)
-- [💫ナビゲーション方法](/docs/howtomap.md)
+- [💫ナビゲーション方法](/docs/howtonav.md)
