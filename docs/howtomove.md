@@ -107,7 +107,8 @@ ros2 pkg list | grep erasers_kachaka_common
      # 相対座標でロボットを 0.5m 前に移動させる
     navigation.move_rlt(x=0.5)
     ```
-    この状態で作成したプログラムを実行してみましょう。するとロボットが $0.5m$ 前進します。<br>
+    この状態で作成したプログラムを実行してみましょう。するとロボットが現在座標から x 軸方向へ $0.5m$ 前進します。
+  <br><img width=50% src="/imgs/move_rlt.png" /><br>
     $1m$ 前に進みたい場合は引数 `x` に $1.0$ を代入します。この時 **必ず引数に入れる値が foat 型になるように書きましょう。`x=1` と、整数を代入するとエラーになります。**
     ```python
      # 相対座標でロボットを 1.0m 前に移動させる
@@ -168,10 +169,11 @@ ros2 pkg list | grep erasers_kachaka_common
      # 引数 yaw を定義し忘れた例
     navigation.move_abs(x=0.0, y=0.0)
     ```
-    マップ原点から x 座標に $1.0m$ 前に移動させたい場合
+    マップ原点から x 座標に $0.5m$ 前に移動させたい場合、以下のように書いて実行すると、マップ原点から $0.5$ x 軸方向に進んだ位置へロボットが移動します。
     ```python
     navigation.move_abs(x=1.0, y=0.0, yaw=0.0)
     ```
+    <br><img width=50% src="/imgs/move_abs.png" /><br>
     マップ原点で回るサンプル
     ```python
     navigation.move_abs(x=0.0, y=0.0, yaw=1.57)
