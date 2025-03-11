@@ -7,7 +7,7 @@ Panels:
         - /TF1/Frames1
         - /LaserScan1/Topic1
         - /Map1/Topic1
-        - /PointCloud21/Topic1
+        - /PointCloud21/Autocompute Value Bounds1
       Splitter Ratio: 0.5
     Tree Height: 629
   - Class: rviz_common/Selection
@@ -182,7 +182,7 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 1020
+      Max Intensity: 1016
       Min Color: 0; 0; 0
       Min Intensity: 1008
       Name: LaserScan
@@ -305,14 +305,14 @@ Visualization Manager:
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
-        Max Value: 86.61235809326172
-        Min Value: 4.208071708679199
-        Value: true
+        Max Value: 5
+        Min Value: 0.30772873759269714
+        Value: false
       Axis: X
       Channel Name: intensity
       Class: rviz_default_plugins/PointCloud2
       Color: 97; 53; 131
-      Color Transformer: FlatColor
+      Color Transformer: AxisColor
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
@@ -382,7 +382,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 8.505151748657227
+      Distance: 11.367008209228516
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -397,10 +397,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.164797067642212
+      Pitch: 1.0647975206375122
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 4.561840057373047
+      Yaw: 0.06363360583782196
     Saved: ~
 Window Geometry:
   Displays:
