@@ -150,6 +150,33 @@ ros2 pkg list | grep erasers_kachaka_common
     ```python
     DefaultNavigation.move_abs(x:float, y:float, yaw:float, wait:bool=True) -> bool
     ```
+    　先ほどのプログラムに続けて、以下のように `move_rtl` メソッドを使用します。
+    ```python
+    # DefaultNavigation の初期化。node を引数に渡すことを忘れずに。
+    navigation = DefaultNavigation(node)
+    
+    # 絶対座標でロボットを移動させる
+    navigation.move_abs()
+    ```
+    　`move_abs` メソッドは **全ての引数を要求します。** 以下のコードのように全ての引数に $0.0$ を与えるとロボットはマップ座標の原点へ移動します。
+    ```python
+     # ロボットをマップ原点へ移動させる
+    navigation.move_abs(x=0.0, y=0.0, yaw=0.0)
+    ```
+    以下のように、必要な引数を与えないとエラーになります。
+    ```python
+     # 引数 yaw を定義し忘れた例
+    navigation.move_abs(x=0.0, y=0.0)
+    ```
+    マップ原点から x 座標に $1.0m$ 前に移動させたい場合
+    ```python
+    navigation.move_abs(x=1.0, y=0.0, yaw=0.0)
+    ```
+    マップ原点で回るサンプル
+    ```python
+    navigation.move_abs(x=0.0, y=0.0, yaw=1.57)
+    navigation.move_abs(x=0.0, y=0.0, yaw=1.57)
+    ```
 
 <a id="nav2"></a>
 ## Nav2Navigation を使ってカチャカを自律走行させる方法
