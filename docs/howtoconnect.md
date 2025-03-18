@@ -1,4 +1,5 @@
 # カチャカと接続する方法
+<a id='ethernet'></a>
 ## 有線接続する方法
 　erasers_kachaka は **GL.iNet ルーター** を使用してカチャカと有線接続を行っています。
 <p align="center">
@@ -58,6 +59,7 @@ Gl.Net ルーター
 [erasers_kachaka を起動する](/erasers_kachaka/erasers_kachaka_bringup/README.md)
 作業を行えば、カチャカを起動できます。
 
+<a id='wireless'></a>
 ## 無線接続する方法
 
 1. **カチャカを Wi-Fi に接続する**<br>
