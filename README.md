@@ -2,6 +2,26 @@
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
 
+# 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
+## 📝マニュアル
+- [⏩カチャカと接続する方法](/docs/howtoconnect.md)
+  - [⏩有線接続する方法](/docs/howtoconnect.md)
+  - [⏩無線接続する方法](/docs/howtoconnect.md)
+- [⏩カチャカを起動する方法](/docs/howtobringup.md)
+  - [⏩起動モードについて](/docs/howtobringup.md)
+  - [⏩Launchファイルについて](/docs/howtobringup.md) 
+- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
+
+## ⚒開発関連
+- [🐱開発のはじめ方](/docs/develop.md)
+
+## 🗒チュートリアル
+- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
+- [🚗カチャカを移動させる方法](/docs/howtomove.md)
+- [🗺マップの作成方法](/docs/howtomap.md)
+- [💫ナビゲーション方法](/docs/howtonav.md)
+
+
 ## セットアップ方法
 
 ### 1. ワークスペースの作成
@@ -118,18 +138,3 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 　ロボットの起動方法は
  [こちら](/erasers_kachaka/erasers_kachaka_bringup/README.md)
  を参照してください。
-
-# 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
-## 📝マニュアル
-- [⏩カチャカと接続する方法](/docs/howtoconnect.md)
-- [🦾CRANE_X7 セットアップ方法](/docs/manipulation.md)
-- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
-
-## ⚒開発関連
-- [🐱開発のはじめ方](/docs/develop.md)
-
-## 🗒チュートリアル
-- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
-- [🚗カチャカを移動させる方法](/docs/howtomove.md)
-- [🗺マップの作成方法](/docs/howtomap.md)
-- [💫ナビゲーション方法](/docs/howtonav.md)
