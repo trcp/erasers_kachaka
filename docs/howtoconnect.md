@@ -56,8 +56,8 @@ Gl.Net ルーター
 ---
 
 　これで
-[erasers_kachaka を起動する](/erasers_kachaka/erasers_kachaka_bringup/README.md)
-作業を行えば、カチャカを起動できます。
+[カチャカを起動する方法](/docs/howtobringup.md)
+をよんでカチャカを起動してみましょう。
 
 <a id='wireless'></a>
 ## 無線接続する方法
@@ -90,5 +90,5 @@ Gl.Net ルーター
 ---
 
 　これで
-[erasers_kachaka を起動する](/erasers_kachaka/erasers_kachaka_bringup/README.md)
-作業を行えば、カチャカを起動できます。
+[カチャカを起動する方法](/docs/howtobringup.md)
+をよんでカチャカを起動してみましょう。
