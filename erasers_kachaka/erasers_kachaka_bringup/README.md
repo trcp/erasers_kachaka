@@ -1,12 +1,30 @@
 # erasers_kachaka_bringup
-　erasers_kachaka を起動するパッケージです。以下のコマンドを実行して erasers_kachaka を起動します。
+　erasers_kachaka を起動する方法を解説します。その前に以下の作業を終えていることを確認してください。
+
+- [**カチャカと接続する方法**](/docs/howtoconnect.md) を読んで接続準備をした
+- **カチャカが緊急停止状態ではない。**<br>
+  カチャカの LED リングが黄色の場合、カチャカは緊急停止状態です。カチャカの電源ボタンを押して緊急停止状態から復帰させてください。
+
+　以下のコマンドを実行すると erasers_kachaka が起動します。
 ```bash
 ros2 launch erasers_kachaka_bringup bringup.launch.py
 ```
-　以下のコマンドを実行すると引数一覧が表示されます。
+　Rviz を起動したい場合、上記のコマンドに引数 `use_rviz:=True` を入力します。
 ```bash
-ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
+ros2 launch erasers_kachaka_bringup bringup.launch.py use_rviz:=True
 ```
+
+## トラブルシューティング
+- **起動時に `May be KACHAKA is not running ...` と表示される**<br>
+  カチャカとの通信に失敗するとこのエラーが発生します。以下のチェックリストの順番に沿って対応してください。
+
+  - [x] **カチャカの電源が入っている。**
+    - 解決方法：カチャカの電源を入れてください。
+  - [x] **カチャカとコンピューターが有線または Wi-Fi 経由で接続されている。**
+    - 解決方法：カチャカとコンピューターを有線接続するか、同じ Wi-Fi 環境であることを確認してください。
+  - [x] **コマンド `ping $KACHAKA_IP` でカチャカとの通信ができている。そして $KACHAKA_IP が正しいカチャカの IP アドレスに設定されている。**
+    - 解決方法：[このドキュメント](/docs/howtoconnect.md) を参考にしてください。
+  - [x] **[このドキュメント](/docs/erk_docker.md) を参考に、Docker コンテナが正常に動作しているか確認する。**
 
 ## 引数一覧
 
@@ -59,18 +77,6 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
     ```bash
     ros2 launch erasers_kachaka_bringup bringup.launch.py shelf_type:=2
     ```
-
-## トラブルシューティング
-- **起動時に `May be KACHAKA is not running ...` と表示される**<br>
-  カチャカとの通信に失敗するとこのエラーが発生します。以下のチェックリストの順番に沿って対応してください。
-
-  - [x] **カチャカの電源が入っている。**
-    - 解決方法：カチャカの電源を入れてください。
-  - [x] **カチャカとコンピューターが有線または Wi-Fi 経由で接続されている。**
-    - 解決方法：カチャカとコンピューターを有線接続するか、同じ Wi-Fi 環境であることを確認してください。
-  - [x] **コマンド `ping $KACHAKA_IP` でカチャカとの通信ができている。そして $KACHAKA_IP が正しいカチャカの IP アドレスに設定されている。**
-    - 解決方法：[このドキュメント](/docs/howtoconnect.md) を参考にしてください。
-  - [x] **[このドキュメント](/docs/erk_docker.md) を参考に、Docker コンテナが正常に動作しているか確認する。**
 
 ## 編集
 - [bringup.launch.py](launch/bringup.launch.py) の **12行目** の `BRINGUP_MSG` ないの文字列を変更するとロボット起動時のメッセージが変わります。
