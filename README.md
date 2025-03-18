@@ -5,8 +5,8 @@
 # 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
 ## 📝マニュアル
 - [⏩カチャカと接続する方法](/docs/howtoconnect.md)
-  - [⏩有線接続する方法](/docs/howtoconnect.md)
-  - [⏩無線接続する方法](/docs/howtoconnect.md)
+  - [⏩有線接続する方法](/docs/howtoconnect.md#ethernet)
+  - [⏩無線接続する方法](/docs/howtoconnect.md#wireless)
 - [⏩カチャカを起動する方法](/docs/howtobringup.md)
   - [⏩起動モードについて](/docs/howtobringup.md)
   - [⏩Launchファイルについて](/docs/howtobringup.md) 
