@@ -49,6 +49,9 @@
 
 <a id=topic></a>
 ## トピックからカチャカを発話させる方法
+　ROS2 トピックからカチャカを発話させるメッセージを送ることでも発話させることができます。ターミナルで以下のコマンドを実行してみましょう。するとカチャカから "Hello Kachaka" と発話します。
 ```bash
 ros2 topic pub --once /$KACHAKA_NAME/kachaka_speak std_msgs/msg/String "{data: Hello Kachaka!}"
 ```
+
+- [トップに戻る](/README.md)
