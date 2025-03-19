@@ -11,13 +11,14 @@
   - [🕹️起動モードについて](/docs/howtobringup.md#mode)
   - [🚀Launchファイルについて](/docs/howtobringup.md#launch) 
 - [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
+- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
+- [🗺マップの作成方法](/docs/howtomap.md)
 
 ## ⚒開発関連
 - [🐱開発のはじめ方](/docs/develop.md)
 - [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
 
 ## 🗒チュートリアル
-- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
 - [🚗カチャカを移動させる方法](/docs/howtomove.md)
 - [🗺マップの作成方法](/docs/howtomap.md)
 - [💫ナビゲーション方法](/docs/howtonav.md)
