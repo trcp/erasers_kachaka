@@ -10,3 +10,8 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py bringup_type:=0
 ```
 
 ## cartographer を起動する
+　マップはデフォルトで `~/map` に作成されます。ホームディレクトリに map ディレクトリがない場合は以下のコマンドを実行して map ディレクトリを作成してください。
+```bash
+mkdir ~/map
+```
+　erasers_kachaka が起動していることを確認して以下のコマンドを実行してマップを作成します。
