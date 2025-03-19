@@ -5,15 +5,16 @@
 # 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
 ## 📝マニュアル
 - [⏩カチャカと接続する方法](/docs/howtoconnect.md)
-  - [⏩有線接続する方法](/docs/howtoconnect.md#ethernet)
-  - [⏩無線接続する方法](/docs/howtoconnect.md#wireless)
+  - [🔌有線接続する方法](/docs/howtoconnect.md#ethernet)
+  - [🛜無線接続する方法](/docs/howtoconnect.md#wireless)
 - [⏩カチャカを起動する方法](/docs/howtobringup.md)
-  - [⏩起動モードについて](/docs/howtobringup.md)
-  - [⏩Launchファイルについて](/docs/howtobringup.md) 
-- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
+  - [🕹️起動モードについて](/docs/howtobringup.md)
+  - [🚀Launchファイルについて](/docs/howtobringup.md) 
+- [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
 
 ## ⚒開発関連
 - [🐱開発のはじめ方](/docs/develop.md)
+- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
 
 ## 🗒チュートリアル
 - [🔈カチャカから発話させる方法](/docs/howtospeak.md)
