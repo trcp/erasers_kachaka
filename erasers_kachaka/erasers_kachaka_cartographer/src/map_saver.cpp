@@ -13,7 +13,7 @@ int main(int argc, char ** argv)
   auto node = rclcpp::Node::make_shared("auto_map_saver");
 
   // パラメータの宣言（map_pathの初期値を空に設定）
-  node->declare_parameter("map_path", std::string(""));
+  node->declare_parameter("map_path", std::string("~/map"));
   node->declare_parameter("map_name", std::string("test_field"));
   node->declare_parameter("save_late", 5);
 
