@@ -8,8 +8,8 @@
   - [🔌有線接続する方法](/docs/howtoconnect.md#ethernet)
   - [🛜無線接続する方法](/docs/howtoconnect.md#wireless)
 - [⏩カチャカを起動する方法](/docs/howtobringup.md)
-  - [🕹️起動モードについて](/docs/howtobringup.md)
-  - [🚀Launchファイルについて](/docs/howtobringup.md) 
+  - [🕹️起動モードについて](/docs/howtobringup.md#mode)
+  - [🚀Launchファイルについて](/docs/howtobringup.md#launch) 
 - [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
 
 ## ⚒開発関連
