@@ -28,6 +28,7 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
 ros2 launch erasers_kachaka_bringup bringup.launch.py use_rviz:=True
 ```
 
+<a id="mode"></a>
 ## 起動モードについて
 　カチャカはデフォルトでカチャカ内部のナビゲーションやマップリソースを使い起動するようになっていますが、マップを自作したい場合、またはカチャカのリソースが邪魔な場合起動モードを変更することでカチャカのリソースを使用しないで利用することができます。
 launch コマンドに引数 `bringup_type:=0` を記述して起動すると、カチャカはマップとナビゲーション機能を持たずに起動します。
@@ -43,8 +44,11 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py bringup_type:=0 use_rviz:=
 - カチャカがもつマップを使いたい場合：デフォルト
 - Carry my Luggage タスクのように未知領域へのナビゲーションが必要な場合：bringup_type を 0 にする
 
+<a id="launch"></a>
 ## launch ファイルについて
 　以下のコマンドを実行すると launch ファイルが要求する引数一覧が表示されます。
 ```bash
 ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
 ```
+
+次のマニュアル  を読む。
