@@ -2,7 +2,7 @@
 　ここでは **erasers_kachaka の主要機能を使わずに kachaka との通信のみ行いたい場合** や、**トラブルシューティングにおける対処法** を解説します。
 
 ## 現在のコンテナの状態を確認する方法
-　[erasers_kachaka を起動](/erasers_kachaka/erasers_kachaka_bringup/README.md)
+　[erasers_kachaka を起動](/docs/howtobringup.md)
 すると、kachaka との通信用 Docker コンテナが起動します。起動中のコンテナの状態を確認したい場合、`erasers_kachaka/docker` ディレクトリ上で以下のコマンドを実行してください。
 ```bash
 docker compose logs kachaka
