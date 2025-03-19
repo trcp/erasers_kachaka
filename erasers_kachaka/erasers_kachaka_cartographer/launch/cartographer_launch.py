@@ -89,7 +89,7 @@ def generate_launch_description():
     )
 
     ld.add_action(declare_use_map_save)
-    ld.add_action(declare_map_dir)
+    #ld.add_action(declare_map_dir)
     ld.add_action(declare_map_name)
     ld.add_action(declare_map_save_late)
     ld.add_action(declare_use_rviz)
@@ -153,7 +153,7 @@ def generate_launch_description():
         executable='map_saver',
         output='screen',
         parameters=[
-            {'map_path': config_map_dir},
+            #{'map_path': config_map_dir},
             {'map_name': config_map_name},
             {'save_late': config_map_save_late}
         ],
