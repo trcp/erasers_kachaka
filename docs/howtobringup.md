@@ -51,4 +51,4 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py bringup_type:=0 use_rviz:=
 ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
 ```
 
-次のマニュアル  を読む。
+次のマニュアル [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md) を読む。
