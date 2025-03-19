@@ -6,7 +6,7 @@ OccupancyGridMapCreator::OccupancyGridMapCreator()
   : Node("occupancy_grid_map_creator") 
 {
   // パラメータ宣言
-  declare_parameter("obstacle_threshold", 50);
+  declare_parameter("obstacle_threshold", 65);
   declare_parameter("publish_original", false);
   declare_parameter("input_topic", "/cartographer/map");
   declare_parameter("output_topic", "/map");
