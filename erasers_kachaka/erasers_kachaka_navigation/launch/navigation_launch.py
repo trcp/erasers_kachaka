@@ -19,7 +19,7 @@ def generate_launch_description():
 
 
     # default valiables
-    default_map = '/home/roboworks/colcon_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_cartographer/map/test_field.yaml'
+    default_map = '~/map/test_field.yaml'
     default_params_file = os.path.join(
         get_package_share_directory('erasers_kachaka_navigation'),
         'params', 'navigation.yaml'
