@@ -126,47 +126,43 @@ class DefaultNavigation():
         self.move_abs(new_x, new_y, new_yaw, wait)
 
 
-# Nav2 Stack ナビゲーションを使用するクラス
 class Nav2Navigation():
     def __init__(self, node:Node, wait_time=10, tf_buffer:Buffer=None):
-        self.__node = node                                              # 引数に渡された Node オブジェクト
-        self.__current_goal_handle = None 
+        self.__node = node
+        self.__current_goal_handle = None
         self.__pose: PoseWithCovarianceStamped = None
         
-        # TF2 セットアップ
-        self.__tf_buffer = tf_buffer
-        if self.__tf_buffer is None:
-            self.__tf_buffer = Buffer()
+        self.__tf_buffer = tf_buffer or Buffer()
         self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
 
-        # Action クライアントの作成
         self.__action_client = ActionClient(self.__node, NavigateToPose, "/navigate_to_pose")
 
-        # サーバーの応答を待機
         if not self.__action_client.wait_for_server(timeout_sec=wait_time):
             self.__node.get_logger().fatal("Nav2 action server not available...")
-    
+            raise RuntimeError("Action server not available")
 
     def __goal_response_callback(self, future):
         self.__current_goal_handle = future.result()
         if not self.__current_goal_handle.accepted:
             self.__node.get_logger().error("Goal rejected!")
 
-
     def cancel(self):
         if self.__current_goal_handle:
-            # 非同期でキャンセルリクエストを送信
             future = self.__current_goal_handle.cancel_goal_async()
-            rclpy.spin_until_future_complete(self.__node, future)
-            self.__node.get_logger().info("Navigation canceled")
-            return future.result()
-        return None
-    
+            try:
+                rclpy.spin_until_future_complete(self.__node, future, timeout_sec=2.0)
+                response = future.result()
+                if response and response.goals_canceling:
+                    self.__node.get_logger().info("Cancel request accepted")
+                    return True
+                return False
+            except Exception as e:
+                self.__node.get_logger().error(f"Cancel failed: {str(e)}")
+                return False
+        return False
 
-    # 現在のロボットの座標を取得 (DefaultNavigationと同じ)
     def get_current_pose(self) -> TransformStamped:
-
-        self.__pose: PoseWithCovarianceStamped = None
+        self.__pose = None
 
         def __cb(msg:PoseWithCovarianceStamped):
             self.__pose = msg
@@ -180,20 +176,14 @@ class Nav2Navigation():
         ):
             while rclpy.ok() and self.__pose is None:
                 rclpy.spin_once(self.__node, timeout_sec=0.1)
-                #print(self.__pose)
             
             pose = PoseStamped()
             pose.header = self.__pose.header
             pose.pose = self.__pose.pose.pose
         
-        print(pose)
-
         return pose
 
-
-    # 絶対座標で移動 (Nav2用に実装)
     def move_abs(self, x:float, y:float, yaw:float, wait:bool=True) -> bool:
-        # 目標姿勢の作成
         goal_pose = PoseStamped()
         goal_pose.header.frame_id = "map"
         goal_pose.header.stamp = self.__node.get_clock().now().to_msg()
@@ -201,60 +191,67 @@ class Nav2Navigation():
         goal_pose.pose.position.y = y
         goal_pose.pose.position.z = 0.0
 
-        # ヨー角をクォータニオンに変換
         q = quaternion_from_euler(0, 0, yaw)
-        goal_pose.pose.orientation = Quaternion(
-            x=q[0], y=q[1], z=q[2], w=q[3]
-        )
+        goal_pose.pose.orientation = Quaternion(x=q[0], y=q[1], z=q[2], w=q[3])
 
-        # ゴールメッセージの作成
-        goal_msg = NavigateToPose.Goal()
-        goal_msg.pose = goal_pose
-
-        # ゴールの送信
+        goal_msg = NavigateToPose.Goal(pose=goal_pose)
         future = self.__action_client.send_goal_async(goal_msg)
 
-        # 結果待機
         if wait:
             try:
-                rclpy.spin_until_future_complete(self.__node, future)
+                rclpy.spin_until_future_complete(self.__node, future, timeout_sec=10.0)
+                if not future.done():
+                    self.__node.get_logger().error("Send goal timed out")
+                    return False
+
                 goal_handle = future.result()
+                self.__current_goal_handle = goal_handle  # 明示的にハンドルを更新
 
                 if not goal_handle.accepted:
-                    future.add_done_callback(self.__goal_response_callback)
                     self.__node.get_logger().error("Goal rejected by server")
                     return False
 
-                # 結果取得
                 result_future = goal_handle.get_result_async()
                 rclpy.spin_until_future_complete(self.__node, result_future)
-                result = result_future.result()
 
-                # ステータスチェック
-                if result.status == GoalStatus.STATUS_SUCCEEDED:
+                if not result_future.done():
+                    self.__node.get_logger().error("Result timed out")
+                    return False
+
+                result = result_future.result()
+                if result is None:
+                    self.__node.get_logger().error("Action result is None")
+                    return False
+
+                status = result.status
+                if status == GoalStatus.STATUS_SUCCEEDED:
                     return True
                 else:
                     self.__node.get_logger().warn(
-                        f"Navigation failed with status: {result.status}")
+                        f"Navigation failed with status: {status}")
                     return False
+
             except KeyboardInterrupt:
-                self.cancel()
+                self.__node.get_logger().info("Canceling navigation...")
+                if self.cancel():
+                    self.__node.get_logger().info("Navigation canceled")
+                else:
+                    self.__node.get_logger().error("Failed to cancel navigation")
+                return False
+
+            except Exception as e:
+                self.__node.get_logger().error(f"Navigation error: {str(e)}")
                 return False
         else:
-            return True  # 非同期送信の場合はとりあえず成功とする
+            future.add_done_callback(self.__goal_response_callback)
+            return True
 
-
-    # 相対座標で移動 (DefaultNavigationと同じ)
     def move_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
-        # 現在の座標を取得
-        current_pose: PoseStamped = self.get_current_pose()
-
-        # 現在の位置と姿勢を取得
+        current_pose = self.get_current_pose()
         current_x = current_pose.pose.position.x
         current_y = current_pose.pose.position.y
         current_orientation = current_pose.pose.orientation
 
-        # クォータニオンをオイラー角に変換
         (_, _, current_yaw) = euler_from_quaternion([
             current_orientation.x,
             current_orientation.y,
@@ -262,10 +259,10 @@ class Nav2Navigation():
             current_orientation.w
         ])
 
-        # 相対座標を絶対座標に変換
         new_x = current_x + x * math.cos(current_yaw) - y * math.sin(current_yaw)
         new_y = current_y + x * math.sin(current_yaw) + y * math.cos(current_yaw)
         new_yaw = current_yaw + yaw
 
-        # 移動実行
+        print(new_x, new_y, new_yaw)
+
         return self.move_abs(new_x, new_y, new_yaw, wait)
