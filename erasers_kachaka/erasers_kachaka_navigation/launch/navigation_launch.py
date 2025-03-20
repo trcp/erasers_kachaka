@@ -236,6 +236,7 @@ def generate_launch_description():
     group_use_map_navigation = GroupAction(
         condition=IfCondition(config_use_map),
         actions=[
+            node_emcl2,
             node_map_server,
             node_nav2_controller,
             node_smoother_server,
@@ -262,7 +263,6 @@ def generate_launch_description():
     )
 
     ld.add_action(node_rviz)
-    ld.add_action(node_emcl2)
     ld.add_action(group_use_map_navigation)
     ld.add_action(group_navigation)
     
