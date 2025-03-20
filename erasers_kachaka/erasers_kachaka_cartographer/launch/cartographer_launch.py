@@ -17,7 +17,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # 各コンフィグのデフォルト値
-    default_map_dir = "/home/roboworks/colcon_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_cartographer/map"
+    default_map_dir = "~/map"
     default_map_name = "test_field"
     defaulr_map_save_late = "5"
     default_config_dir = os.path.join(
@@ -48,7 +48,7 @@ def generate_launch_description():
 
 
     declare_use_map_save = DeclareLaunchArgument(
-        'use_map_save', default_value="false",
+        'use_map_save', default_value="True",
         description="自動的にマップを保存します。"
     )
     declare_map_dir = DeclareLaunchArgument(
@@ -110,7 +110,9 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'use_map': 'False',
-            'params_file': default_params_file
+            'params_file': default_params_file,
+            'use_rviz':'False'
+            
         }.items(),
         condition=IfCondition(config_use_navigation)
     )
@@ -163,13 +165,12 @@ def generate_launch_description():
         package='erasers_kachaka_cartographer',
         executable='map_providor',
         output='screen',
-        condition=IfCondition(config_use_map_save)
     )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
         arguments=["-d", default_rviz],
-        condition=IfCondition(config_use_rviz)
+        #condition=IfCondition(config_use_rviz)
     )
     
     ld.add_action(node_cartographer)

@@ -62,6 +62,7 @@ def generate_launch_description():
 
     # configs
     config_use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    config_use_rviz = LaunchConfiguration("use_rviz")
     config_params_file = LaunchConfiguration('params_file')
     config_use_map = LaunchConfiguration('use_map')
     config_map = LaunchConfiguration('map')
@@ -83,6 +84,10 @@ def generate_launch_description():
 
 
     # declare arguments
+    declare_use_rviz = DeclareLaunchArgument(
+        'use_rviz', default_value="True",
+        description="Rviz2 を起動します。"
+    )
     declare_params_file = DeclareLaunchArgument(
         'params_file', default_value=default_params_file,
         description='Navigation パラメータYAMLファイルを指定します。'
@@ -103,6 +108,7 @@ def generate_launch_description():
         'use_respawn', default_value='true',
         description='Nav2 Stack の再起動を有効にします。'
     )
+    ld.add_action(declare_use_rviz)
     ld.add_action(declare_params_file)
     ld.add_action(declare_use_map)
     ld.add_action(declare_map)
@@ -122,6 +128,7 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         arguments=["-d", default_rviz],
+        condition=IfCondition(config_use_rviz)
     )
     node_emcl2 = Node(
         package="emcl2",
