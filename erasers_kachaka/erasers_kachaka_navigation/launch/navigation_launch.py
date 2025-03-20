@@ -38,6 +38,7 @@ def generate_launch_description():
         ('/local_costmap/scan', f'/{NAMESPACE}/lidar/scan'),
         ('/odom', f'/{NAMESPACE}/odometry/odometry'),
         ('/cmd_vel', f'/{NAMESPACE}/manual_control/cmd_vel'),
+        ('/mcl_pose', f'/{NAMESPACE}/pose'),
     ]
     use_map_lifecycle_nodes = [
         'map_server',
@@ -258,6 +259,7 @@ def generate_launch_description():
     group_navigation = GroupAction(
         condition=UnlessCondition(config_use_map),
         actions=[
+            node_emcl2,
             node_nav2_controller,
             node_smoother_server,
             node_planner_server,
