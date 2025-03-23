@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: LaserScan
 Visualization Manager:
   Class: ""
   Displays:
@@ -55,61 +55,69 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        S01:
-          Value: true
-        S01_home:
-          Value: true
-        S02:
-          Value: true
-        S02_home:
-          Value: true
-        __CHARGER__:
-          Value: true
+        arm_base_link:
+          Value: false
         base_footprint:
           Value: false
         base_l_drive_wheel_link:
           Value: false
         base_link:
-          Value: false
+          Value: true
         base_r_drive_wheel_link:
           Value: false
-        camera_back:
-          Value: false
         camera_back_link:
-          Value: false
-        camera_front:
           Value: false
         camera_front_link:
           Value: false
         docking_link:
           Value: false
-        global_map-grid-base:
-          Value: true
-        home:
-          Value: true
+        gripper_base:
+          Value: false
         imu_link:
           Value: false
         laser_frame:
           Value: false
-        laser_link:
+        link1:
           Value: false
-        layout_offset:
-          Value: true
-        lidar_center_frame:
+        link2:
           Value: false
-        local_map-grid-base:
+        link3:
           Value: false
-        local_map-lidar-map-grid-base:
+        link4:
+          Value: false
+        link5:
+          Value: false
+        link6:
+          Value: false
+        link7:
           Value: false
         map:
           Value: true
+        oak-d_frame:
+          Value: true
+        oak_imu_frame:
+          Value: false
+        oak_left_camera_frame:
+          Value: false
+        oak_left_camera_optical_frame:
+          Value: false
+        oak_model_origin:
+          Value: false
+        oak_rgb_camera_frame:
+          Value: false
+        oak_rgb_camera_optical_frame:
+          Value: false
+        oak_right_camera_frame:
+          Value: false
+        oak_right_camera_optical_frame:
+          Value: false
         odom:
           Value: false
         shelf_base_link:
-          Value: true
+          Value: false
         shelf_middle_plate_link:
-          Value: true
-        tof_camera:
+          Value: false
+        shelf_top_plate_link:
           Value: false
         tof_link:
           Value: false
@@ -120,21 +128,6 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
-          S01:
-            {}
-          S01_home:
-            {}
-          S02:
-            {}
-          S02_home:
-            {}
-          global_map-grid-base:
-            {}
-          home:
-            __CHARGER__:
-              {}
-          layout_offset:
-            {}
           odom:
             base_footprint:
               base_link:
@@ -143,28 +136,43 @@ Visualization Manager:
                 base_r_drive_wheel_link:
                   {}
                 camera_back_link:
-                  camera_back:
-                    {}
+                  {}
                 camera_front_link:
-                  camera_front:
-                    {}
+                  {}
                 docking_link:
                   shelf_base_link:
                     shelf_middle_plate_link:
-                      {}
+                      shelf_top_plate_link:
+                        arm_base_link:
+                          link1:
+                            link2:
+                              link3:
+                                link4:
+                                  link5:
+                                    link6:
+                                      gripper_base:
+                                        link7:
+                                          {}
+                                        oak-d_frame:
+                                          oak_imu_frame:
+                                            {}
+                                          oak_left_camera_frame:
+                                            oak_left_camera_optical_frame:
+                                              {}
+                                          oak_model_origin:
+                                            {}
+                                          oak_rgb_camera_frame:
+                                            oak_rgb_camera_optical_frame:
+                                              {}
+                                          oak_right_camera_frame:
+                                            oak_right_camera_optical_frame:
+                                              {}
                 imu_link:
                   {}
-                laser_link:
-                  laser_frame:
-                    lidar_center_frame:
-                      {}
+                laser_frame:
+                  {}
                 tof_link:
-                  tof_camera:
-                    {}
-            local_map-grid-base:
-              {}
-            local_map-lidar-map-grid-base:
-              {}
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 0.5
@@ -219,6 +227,11 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
+        arm_base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         base_footprint:
           Alpha: 1
           Show Axes: false
@@ -251,11 +264,93 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        gripper_base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         imu_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
         laser_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        link1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        link8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        oak-d_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_imu_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_left_camera_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_left_camera_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_model_origin:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        oak_rgb_camera_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_rgb_camera_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_right_camera_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        oak_right_camera_optical_frame:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -265,6 +360,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         shelf_middle_plate_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shelf_top_plate_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -382,25 +482,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.9444563388824463
+      Distance: 3.1018097400665283
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.037765372544527054
-        Y: 0.3306725025177002
-        Z: 0.01530302595347166
+        X: -0.036943476647138596
+        Y: -0.0006902471650391817
+        Z: 0.04841025918722153
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5747979879379272
+      Pitch: 0.5047971606254578
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 5.591818332672119
+      Yaw: 2.816819667816162
     Saved: ~
 Window Geometry:
   Displays:
