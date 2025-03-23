@@ -24,7 +24,7 @@ def generate_launch_description():
     prefix_erk_teleop = get_package_share_directory("erasers_kachaka_teleop")
     prefix_erk_vision = get_package_share_directory("erasers_kachaka_vision")
     prefix_erk_description = get_package_share_directory("erasers_kachaka_description")
-    prefix_erk_manipulation = get_package_share_directory("erasers_kachaka_manipulation")
+
     prefix_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
         "rviz", "erasers_kachaka.rviz"
@@ -211,26 +211,23 @@ def generate_launch_description():
         condition=IfCondition(
             PythonExpression([
                 config_shelf_type, " == 1",
+                #" or ",
+                #config_shelf_type, " == 2",
+            ])
+        )
+    )
+    launch_short_shelf_description = IncludeLaunchDescription(
+        XMLLaunchDescriptionSource([
+            prefix_erk_description,
+            "/launch/erasers_kachaka_description.launch"
+        ]),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 1",
                 " or ",
                 config_shelf_type, " == 2",
             ])
         )
-    )
-    launch_manipulation = TimerAction(
-        period=5.0,
-        actions=[
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([
-                    prefix_erk_manipulation,
-                    "/launch/manipulation_launch.py"
-                ]),
-                condition=IfCondition(
-                    PythonExpression([
-                        config_shelf_type, " == 2"
-                    ])
-                )
-            )
-        ]
     )
     launch_kachaka_description_only =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -266,7 +263,6 @@ def generate_launch_description():
 
 
     ld.add_action(launch_short_shelf_description)
-    ld.add_action(launch_manipulation)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
     ld.add_action(launch_tof_pointcloud)

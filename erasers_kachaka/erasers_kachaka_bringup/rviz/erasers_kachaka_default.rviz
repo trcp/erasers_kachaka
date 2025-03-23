@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: LaserScan
+    SyncSource: PointCloud2
 Visualization Manager:
   Class: ""
   Displays:
@@ -106,9 +106,9 @@ Visualization Manager:
         odom:
           Value: false
         shelf_base_link:
-          Value: false
+          Value: true
         shelf_middle_plate_link:
-          Value: false
+          Value: true
         tof_camera:
           Value: false
         tof_link:
@@ -382,7 +382,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 11.367008209228516
+      Distance: 1.9444563388824463
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -397,10 +397,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0647975206375122
+      Pitch: 0.5747979879379272
       Target Frame: base_link
       Value: Orbit (rviz)
-      Yaw: 0.06363360583782196
+      Yaw: 5.591818332672119
     Saved: ~
 Window Geometry:
   Displays:
