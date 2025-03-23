@@ -216,19 +216,6 @@ def generate_launch_description():
             ])
         )
     )
-    launch_short_shelf_description = IncludeLaunchDescription(
-        XMLLaunchDescriptionSource([
-            prefix_erk_description,
-            "/launch/erasers_kachaka_description.launch"
-        ]),
-        condition=IfCondition(
-            PythonExpression([
-                config_shelf_type, " == 1",
-                " or ",
-                config_shelf_type, " == 2",
-            ])
-        )
-    )
     launch_kachaka_description_only =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             get_package_share_directory("kachaka_description"),
