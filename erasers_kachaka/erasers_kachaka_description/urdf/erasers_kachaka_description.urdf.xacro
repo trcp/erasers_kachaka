@@ -1,7 +1,8 @@
 <?xml version="1.0" ?>
 <robot name="erasers_kachaka" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find kachaka_description)/robot/kachaka.urdf.xacro" />
-  <xacro:include filename="$(find kachaka_shelf_description)/urdf/short_shelf_description.urdf.xacro" />
+  <xacro:include filename="$(find kachaka_shelf_description)/urdf/shelf_description.urdf.xacro" />
+  <!-- xacro:include filename="$(find kachaka_shelf_description)/urdf/short_shelf_description.urdf.xacro" /-->
 
   <joint name="docking_to_shelf" type="fixed">
     <parent link="docking_link" />
