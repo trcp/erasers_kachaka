@@ -20,9 +20,5 @@ node = Node("sample_kachaka_nav2_navigation")
 navigation = Nav2Navigation(node)
 
 # ナビゲーションする
-# 前に 50 cm 進む　
-#navigation.move_rlt(yaw=1.57)
-
-navigation.get_current_pose()
-
-navigation.move_rlt(yaw=1.57)
+r = navigation.move_abs(0.0, 0.0, 0.0, 0.0)
+print(r)
