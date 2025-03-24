@@ -28,3 +28,7 @@ Dualsense 5
 
 > [!TIP]
 > もし erasers_kachaka を起動しているのに操作できない場合は erasers_kachaka_bringup を再施行してください。
+
+次のドキュメント
+[🔈カチャカから発話させる方法](/docs/howtospeak.md)
+をよむ。

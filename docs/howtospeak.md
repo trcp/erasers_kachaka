@@ -45,7 +45,7 @@
 
 　サンプルコードの実行と確認は
 [`erasers_kachaka/erasers_kachaka/erasers_kachaka_common/samples/kachaka_speak.py`](/erasers_kachaka/erasers_kachaka_common/samples/kachaka_speak.py)
-を参照してください。
+を参照してください。サンプルコードを実行、実行してカチャカの発話方法を理解しましょう。
 
 <a id=topic></a>
 ## トピックからカチャカを発話させる方法
