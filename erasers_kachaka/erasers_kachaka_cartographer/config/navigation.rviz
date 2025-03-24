@@ -4,6 +4,7 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
+        - /TF1
         - /LaserScan1/Topic1
       Splitter Ratio: 0.5
     Tree Height: 629
@@ -89,19 +90,71 @@ Visualization Manager:
       Use Timestamp: false
       Value: true
     - Class: rviz_default_plugins/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
         All Enabled: true
+        base_footprint:
+          Value: true
+        base_l_drive_wheel_link:
+          Value: true
+        base_link:
+          Value: true
+        base_r_drive_wheel_link:
+          Value: true
+        camera_back_link:
+          Value: true
+        camera_front_link:
+          Value: true
+        docking_link:
+          Value: true
+        imu_link:
+          Value: true
+        laser_frame:
+          Value: true
+        map:
+          Value: true
+        odom:
+          Value: true
+        shelf_base_link:
+          Value: true
+        shelf_middle_plate_link:
+          Value: true
+        shelf_top_plate_link:
+          Value: true
+        tof_link:
+          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        map:
+          odom:
+            base_footprint:
+              base_link:
+                base_l_drive_wheel_link:
+                  {}
+                base_r_drive_wheel_link:
+                  {}
+                camera_back_link:
+                  {}
+                camera_front_link:
+                  {}
+                docking_link:
+                  shelf_base_link:
+                    shelf_middle_plate_link:
+                      shelf_top_plate_link:
+                        {}
+                imu_link:
+                  {}
+                laser_frame:
+                  {}
+                tof_link:
+                  {}
       Update Interval: 0
-      Value: false
+      Value: true
     - Alpha: 1
       Class: rviz_default_plugins/RobotModel
       Collision Enabled: false
@@ -170,6 +223,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        shelf_top_plate_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         tof_link:
           Alpha: 1
           Show Axes: false
@@ -197,9 +255,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 206
+      Max Intensity: 1016
       Min Color: 0; 0; 0
-      Min Intensity: 8
+      Min Intensity: 1008
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -393,7 +451,7 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Angle: 1.5850000381469727
+      Angle: 1.53000009059906
       Class: rviz_default_plugins/TopDownOrtho
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
@@ -403,7 +461,7 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Scale: 72.77413177490234
+      Scale: 184.54612731933594
       Target Frame: base_link
       Value: TopDownOrtho (rviz_default_plugins)
       X: 0
