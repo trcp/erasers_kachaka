@@ -1,10 +1,10 @@
 [Unit]
 Description=Bringup erasers_kachaka
-After=network.target
+After=multi-user.target
 
 [Service]
 User=roboworks
-EnvironmentFile=/home/roboworks/erk_params.env
+EnvironmentFile=-/etc/erasers_kachaka/erk_params
 ExecStart=/home/roboworks/colcon_ws/src/erasers_kachaka/bringup.bash
 Type=simple
 
