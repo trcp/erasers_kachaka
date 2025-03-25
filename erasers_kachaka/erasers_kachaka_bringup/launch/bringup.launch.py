@@ -13,8 +13,10 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
+BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
-BRINGUP_MSG = "Kachaka スタート！"
+if BRINGUP_MSG == None
+    BRINGUP_MSG = "Kachaka スタート！"
 
 
 def generate_launch_description():
@@ -39,6 +41,7 @@ def generate_launch_description():
     config_bringup_type = LaunchConfiguration("bringup_type")
     config_use_rviz = LaunchConfiguration("use_rviz")
     config_shelf_type = LaunchConfiguration("shelf_type")
+    config_bringup_msg = LaunchConfiguration("bringup_msg")
     config_publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
 
 
@@ -54,6 +57,10 @@ def generate_launch_description():
     declare_shelf_type = DeclareLaunchArgument(
         "shelf_type", default_value="1",
         description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+    )
+    declare_bringup_msg = DeclareLaunchArgument(
+        "bringup_msg", default_value=BRINGUP_MSG,
+        description="カチャカ起動時のメッセージを設定します。"
     )
     declare_publish_tof_pc2 = DeclareLaunchArgument(
         "publish_tof_pc2", default_value="True",
