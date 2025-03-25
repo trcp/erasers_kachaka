@@ -15,7 +15,7 @@ import os
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
-if BRINGUP_MSG == None
+if BRINGUP_MSG == None:
     BRINGUP_MSG = "Kachaka スタート！"
 
 
