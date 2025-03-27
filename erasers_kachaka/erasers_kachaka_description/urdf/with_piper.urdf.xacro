@@ -2,11 +2,19 @@
 <robot name="erasers_kachaka" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:include filename="$(find erasers_kachaka_description)/urdf/erasers_kachaka_description.urdf.xacro" />
   <xacro:include filename="$(find erasers_piper_description)/urdf/piper_description.xacro" />
+  <xacro:include filename="$(find depthai_descriptions)/urdf/include/depthai_macro.urdf.xacro" />
 
   <xacro:piper_macro 
     use_base="false"
     parent="shelf_top_plate_link"
     x="0.07" y="0" z="0.15"
     roll="0" pitch="0" yaw="0"/>
+  
+  <xacro:depthai_camera camera_name="oak" parent="gripper_base"
+    camera_model="OAK-D-PRO" base_frame="oak-d_frame" 
+    cam_pos_x="-0.05" cam_pos_y="0.0" cam_pos_z="0.075"
+    cam_roll="0.0" cam_pitch="-1.57" cam_yaw="3.14"
+    rs_compat="false"
+  />
 
 </robot>

@@ -231,7 +231,6 @@ def generate_launch_description():
         launch_arguments={
             "namespace":"",
             "frame_prefix":"",
-            "publish_urdf":"False"
         }.items(),
         condition=IfCondition(
             PythonExpression([
