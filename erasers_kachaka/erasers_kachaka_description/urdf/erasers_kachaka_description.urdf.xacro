@@ -4,8 +4,8 @@
   <xacro:include filename="$(find kachaka_shelf_description)/urdf/shelf_description.urdf.xacro" />
   <!-- xacro:include filename="$(find kachaka_shelf_description)/urdf/short_shelf_description.urdf.xacro" /-->
 
-  <joint name="docking_to_shelf" type="fixed">
-    <parent link="docking_link" />
+  <joint name="base_to_shelf" type="fixed">
+    <parent link="base_link" />
     <child link="shelf_base_link" />
     <origin xyz="0 0 0.15" rpy="0 0 0" />
   </joint>
