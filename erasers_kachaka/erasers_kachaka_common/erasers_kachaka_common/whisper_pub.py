@@ -22,7 +22,7 @@ class VoiceRecog(Node):
         self.m = sr.Microphone()
 
         # whisper
-        self.model_size = "large-v3"
+        self.model_size = "small"
         self.model = WhisperModel(self.model_size, device="cuda", compute_type="float32")
 
         #認識した言葉をためておく
