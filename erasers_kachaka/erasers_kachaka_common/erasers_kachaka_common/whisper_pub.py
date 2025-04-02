@@ -21,19 +21,15 @@ class VoiceRecog(Node):
         self.r = sr.Recognizer()
         self.m = sr.Microphone()
 
-        # whisper
+        # whisper smallモデル
         self.model_size = "small"
         self.model = WhisperModel(self.model_size, device="cuda", compute_type="float32")
 
-        #認識した言葉をためておく
+        #リスト
         self.recognized_texts = []
 
         self.recog_pub = self.create_publisher(String, "/voice_recog",10)
 
-        # 別スレッドで音声認識を実行
-        #self.recognition_thread = threading.Thread(target=self.whisper_recog)
-        #self.recognition_thread.daemon = True
-        #self.recognition_thread.start()
 
     def whisper_recog(self):
         try:
