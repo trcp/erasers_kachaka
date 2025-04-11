@@ -16,7 +16,7 @@ KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
 if BRINGUP_MSG == None:
-    BRINGUP_MSG = "Kachaka スタート！"
+    BRINGUP_MSG = "Kachaka!スタート!"
 
 
 def generate_launch_description():
