@@ -77,30 +77,35 @@ def generate_launch_description():
     node_kachaka_speak_subscriber = Node(
         package="erasers_kachaka_common",
         executable="kachaka_speak_subscriber",
+        emulate_tty=True,
         namespace=KACHAKA_NAME
     )
     node_emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
         output="screen",
+        emulate_tty=True,
         namespace=KACHAKA_NAME
     )
     node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
         output="screen",
+        emulate_tty=True,
         namespace=KACHAKA_NAME
     )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
         output="screen",
+        emulate_tty=True,
         namespace=KACHAKA_NAME
     )
     node_lidar_resampler = Node(
         package="erasers_kachaka_common",
         executable="lidar_resampler",
         output="screen",
+        emulate_tty=True,
         namespace=KACHAKA_NAME,
         remappings=[
             ("input_scan", "lidar/scan"),
@@ -111,6 +116,7 @@ def generate_launch_description():
         package="rviz2",
         executable="rviz2",
         arguments=["-d", prefix_rviz],
+        emulate_tty=True,
         condition=IfCondition(
             PythonExpression([
                 config_bringup_type, " == 0 ",
@@ -122,6 +128,7 @@ def generate_launch_description():
     node_default_rviz = Node(
         package="rviz2",
         executable="rviz2",
+        emulate_tty=True,
         arguments=["-d", prefix_default_rviz],
         condition=IfCondition(
             PythonExpression([
