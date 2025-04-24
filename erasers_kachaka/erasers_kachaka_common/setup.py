@@ -42,7 +42,8 @@ setup(
     entry_points={
         'console_scripts': [
             'kachaka_speak_subscriber = scripts.kachaka_speaker_subscriber:main',
-            'emergency_manager = scripts.emergency_manager:main',
+            'emergency_manager = scripts.emergency_manager:emergency_manager',
+            'emergency_button = scripts.emergency_manager:emergency_button',
             'battery_manager = scripts.battery_manager:main',
             'lidar_observer = scripts.lidar_observer:lidar_observer',
             'lidar_resampler = scripts.lidar_observer:lidar_resampler'

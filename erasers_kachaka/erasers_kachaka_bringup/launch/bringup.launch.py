@@ -87,6 +87,13 @@ def generate_launch_description():
         emulate_tty=True,
         namespace=KACHAKA_NAME
     )
+    node_emergency_button = Node(
+        package="erasers_kachaka_common",
+        executable="emergency_button",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
     node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
@@ -152,6 +159,7 @@ def generate_launch_description():
 
     ld.add_action(node_kachaka_speak_subscriber)
     ld.add_action(node_emergency_manager)
+    ld.add_action(node_emergency_button)
     ld.add_action(node_battery_manager)
     ld.add_action(node_lidar_observer)
     ld.add_action(node_lidar_resampler)
