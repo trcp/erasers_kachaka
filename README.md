@@ -43,13 +43,9 @@ git clone https://github.com/trcp/erasers_kachaka.git
 ```
 
 ### 3. 必要なパッケージをダウンロード
-　以下のコマンドを実行し、`colcon_ws` ディレクトリに移動します。
-```bash
-cd ~/colcon_ws
-```
 　以下のコマンドを実行し、erasers_kachaka をビルドするために必要なパッケージを src ディレクトリにダウンロードします。
 ```bash
-vcs import src < ~/colcon_ws/src/erasers_kachaka/setup.repos
+vcs import . < ./erasers_kachaka/setup.repos
 ```
 　このコマンドを実行すると、以下のパッケージが src ディレクトリにダウンロードされます。
 
@@ -63,7 +59,7 @@ vcs import src < ~/colcon_ws/src/erasers_kachaka/setup.repos
 ### 4, ros2_bridge コンテナのビルド
 　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
 ```bash
-cd ~/colcon_ws/src/erasers_kachaka
+cd ./erasers_kachaka
 ```
 　以下のコマンドを実行して kachaka-api に必要なファイルをコピーします。
 ```bash
@@ -99,10 +95,8 @@ python3 -m pip install --upgrade pip
 ```
 　実環境上にインストールする場合、以下のコマンドを実行して kachaka-api をインストールしてください。
 ```bash
-# kachaka-api インストール前に scipy をアップグレードする
-pip install --break-system-packages --upgrade scipy
-# kachaka-api 本体をインストール
-pip install --break-system-packages --extra-index-url https://pf-robotics.github.io/kachaka-python-packages/simple kachaka-api
+pip install kachaka-api
+pip install "scipy>=1.13.0"
 ```
 　正常にインストールが完了したら以下のコマンドを実行して正常に kachaka-api がインスt−おるされたか確認してください。
 以下のコマンドを実行したとき、なにもメッセージが表示されなければ成功です。
@@ -133,8 +127,10 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 ```
 
 ### コード修正
-- [cartographer_launch.py](erasers_kachaka/erasers_kachaka_cartographer/launch/cartographer_launch.py) の変数 **`default_map_dir`** の絶対パスを実際のコンピューターの環境に合わせてください。パスの位置はパッケージ erasers_cartographer 内の map ディレクトリの位置にしてください。
-- [navigation_launch.py](erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py) の変数 **`default_map`** の絶対パスを実際のコンピューターの環境に合わせてください。パスの位置はパッケージ erasers_cartographer 内の map ディレクトリの位置にしてください。`test_field.yaml` はそのままで大丈夫です。
+- [`/colcon_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py`](erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py) の変数 **`default_map`** の絶対パスを実際のコンピューターの環境に合わせてください。パスは `~/map` の **絶対パス** にしてください。`test_field.yaml` はそのままで大丈夫です。そのため以下のコマンドを実行して `~/map` を作成してください。
+```bash
+mkdir ~/map
+```
 
 ## 起動方法
 　ロボットの起動方法は
