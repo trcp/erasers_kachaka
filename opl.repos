@@ -7,3 +7,7 @@ repositories:
         type: git
         url: https://github.com/agilexrobotics/piper_ros.git
         version: humble
+    nakalab_realsense:
+        type: git
+        url: https://github.com/GAI-313/nakalab_realsense.git
+        version: main
