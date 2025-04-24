@@ -56,6 +56,12 @@ vcs import . < ./erasers_kachaka/setup.repos
 - [cartographer_ros_kachaka](https://github.com/GAI-313/cartographer_ros_kachaka.git)
 - [emcl2](https://github.com/GAI-313/emcl2_for_kachaka.git)
 
+
+> OPL 使用にしたい場合は続けて以下のコマンドを実行してください。
+> ```bash
+> vcs import . < ./erasers_kachaka/opl.repos
+> ```
+
 ### 4, ros2_bridge コンテナのビルド
 　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
 ```bash
