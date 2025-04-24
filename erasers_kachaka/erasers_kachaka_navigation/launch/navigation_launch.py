@@ -136,6 +136,9 @@ def generate_launch_description():
         executable="emcl2_node",
         name="emcl2",
         output="own_log",
+        parameters=[
+            {'num_particles': 1000}
+        ],
         remappings=remappings
     )
     node_map_server = Node(
