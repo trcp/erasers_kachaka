@@ -7,6 +7,8 @@ import rclpy                            # ROS2 制御クライアント.
 # ナビゲーション API をインポート
 from erasers_kachaka_common.navigator import Nav2Navigation
 
+import time
+
 
 # rclpy を初期化
 rclpy.init()
@@ -17,14 +19,15 @@ node = Node("sample_kachaka_nav2_navigation")
 
 # ナビゲーションを初期化
 # ナビゲーションクラスの引数に node オブジェクトを渡さないとエラーになるので気をつけること
-navigation = Nav2Navigation(node)
+navigation = Nav2Navigation(node, exploration=True)
 
-# ナビゲーションする
-result = navigation.move_abs(0.0, 0.0, 0.0) # マップ原点へ移動
-print(result) # 結果が True なら成功
+# Waypoint 作成
+init_time = time.time()
+while time.time() - init_time < 15:
+    navigation.add_waypoint_rlt()
+    time.sleep(3)
 
-result = navigation.move_abs(0.0, 0.0, 1.57) # マップ原点で90度左方向へ旋回
-print(result)
 
-result = navigation.move_rlt(yaw=-1.57, wait=True) # 現在の姿勢から90度右費方向へ旋回
-print(result)
+navigation.execute_waypoints(reverse=True)
+
+navigation.move_abs(0.0,0.0,0.0)

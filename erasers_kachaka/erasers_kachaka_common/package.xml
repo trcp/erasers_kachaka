@@ -14,6 +14,7 @@
 
   <depend>kachaka_interfaces</depend>
   <depend>rclpy_util</depend>
+  <depend>smach</depend>
   
   <export>
     <build_type>ament_python</build_type>
