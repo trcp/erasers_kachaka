@@ -9,9 +9,21 @@ KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 def generate_launch_description():
     ld = LaunchDescription()
 
+    node_emergency_button = Node(
+        package="joy",
+        executable="joy_node",
+        parameters=[
+            {'device_id': 0}
+        ],
+        namespace=KACHAKA_NAME+'/emergency'
+    )
+    
     node_joy = Node(
         package="joy",
         executable="joy_node",
+        parameters=[
+            {'device_id': 1}
+        ],
         namespace=KACHAKA_NAME
     )
     node_teleop = Node(
@@ -20,6 +32,7 @@ def generate_launch_description():
         namespace=KACHAKA_NAME
     )
 
+    ld.add_action(node_emergency_button)
     ld.add_action(node_joy)
     ld.add_action(node_teleop)
     
