@@ -7,6 +7,9 @@ ros2 launch erasers_kachaka_navigation navigation_launch.py
 ## pot_fields
 　ポテンシャル・フィールド法を用いた障害物に対する**反発力**をもとめる。
 
+## leg_finder
+　人の足を検出するノード。
+
 # Build
 ```bash
 rosdep install -i -y --from-path src/erasers_kachaka/erasers_kachaka/erasers_kachaka_navigation
