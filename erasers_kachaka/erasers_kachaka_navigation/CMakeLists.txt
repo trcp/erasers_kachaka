@@ -7,7 +7,27 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
 
+# add executable
+add_executable(pot_fields_node src/pot_fields_node.cpp)
+ament_target_dependencies(pot_fields_node
+  rclcpp
+  sensor_msgs
+  std_msgs
+  visualization_msgs
+)
+
+# install targets
+install(TARGETS
+  pot_fields_node
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# install directories
 install(DIRECTORY
   launch
   params
