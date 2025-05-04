@@ -26,6 +26,7 @@ def generate_launch_description():
     prefix_erk_teleop = get_package_share_directory("erasers_kachaka_teleop")
     prefix_erk_vision = get_package_share_directory("erasers_kachaka_vision")
     prefix_erk_description = get_package_share_directory("erasers_kachaka_description")
+    prefix_erk_navigation = get_package_share_directory("erasers_kachaka_navigation")
 
     prefix_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
@@ -34,6 +35,10 @@ def generate_launch_description():
     prefix_default_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
         "rviz", "erasers_kachaka_default.rviz"
+    )
+    param_for_pt_fields_node = os.path.join(
+        prefix_erk_navigation, 'params',
+        'pt_fields.yaml'
     )
 
 
@@ -119,6 +124,14 @@ def generate_launch_description():
             ("output_scan", "sampling_lidar/scan")
         ]
     )
+    node_pt_field = Node(
+        package="erasers_kachaka_navigation",
+        executable="pot_fields_node",
+        output="screen",
+        parameters=[param_for_pt_fields_node],
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -163,6 +176,7 @@ def generate_launch_description():
     ld.add_action(node_battery_manager)
     ld.add_action(node_lidar_observer)
     ld.add_action(node_lidar_resampler)
+    ld.add_action(node_pt_field)
     ld.add_action(node_rviz)
     ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)

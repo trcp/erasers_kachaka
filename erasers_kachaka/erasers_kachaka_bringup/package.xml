@@ -17,6 +17,7 @@
   <depend>erasers_kachaka_description</depend>
   <depend>erasers_kachaka_vision</depend>
   <depend>erasers_kachaka_cartographer</depend>
+  <depend>erasers_kachaka_navigation</depend>
   
   <export>
     <build_type>ament_cmake</build_type>
