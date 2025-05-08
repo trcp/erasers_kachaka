@@ -1,0 +1,12 @@
+[Unit]
+Description=Bringup erasers_kachaka
+After=multi-user.target
+
+[Service]
+User=roboworks
+EnvironmentFile=-/etc/erasers_kachaka/erk_params
+ExecStart=/home/roboworks/colcon_ws/src/erasers_kachaka/bringup.bash
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

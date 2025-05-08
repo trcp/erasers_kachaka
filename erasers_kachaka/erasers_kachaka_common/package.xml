@@ -4,7 +4,7 @@
   <name>erasers_kachaka_common</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="gai@todo.todo">gai</maintainer>
+  <maintainer email="nakatogawagai@gmail.com">roboworks</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>
@@ -12,12 +12,10 @@
   <test_depend>ament_pep257</test_depend>
   <test_depend>python3-pytest</test_depend>
 
-  <depend>erasers_kachaka_interfaces</depend>
-  <depend>erasers_kachaka_navigation</depend>
+  <depend>kachaka_interfaces</depend>
+  <depend>rclpy_util</depend>
   <depend>smach</depend>
-  <depend>tf_transformations</depend>
-  <depend>rviz_2d_overlay_plugins</depend>
-
+  
   <export>
     <build_type>ament_python</build_type>
   </export>

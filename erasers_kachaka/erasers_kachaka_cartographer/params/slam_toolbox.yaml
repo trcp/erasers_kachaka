@@ -1,0 +1,67 @@
+slam_toolbox:
+  ros__parameters:
+    # プラグイン関連設定
+    solver_plugin: solver_plugins::CeresSolver  # 最適化ソルバー（Ceres使用）
+    ceres_linear_solver: SPARSE_NORMAL_CHOLESKY  # 線形ソルバー（スパース正規コレスキー分解）
+    ceres_preconditioner: SCHUR_JACOBI           # 前処理（シューア・ヤコビ）
+    ceres_trust_strategy: LEVENBERG_MARQUARDT    # 信頼領域戦略（レーベンバーグ・マーカート）
+    ceres_dogleg_type: TRADITIONAL_DOGLEG        # ドッグレッグ法（伝統的手法）
+    ceres_loss_function: None                    # 損失関数（なし）
+
+    # ROS基本設定
+    odom_frame: odom              # オドメトリフレーム名
+    map_frame: map                # マップフレーム名
+    base_frame: base_footprint    # ベースフレーム名
+    scan_topic: /scan             # LiDARスキャントピック
+    use_map_saver: true           # マップ保存機能有効化
+    mode: mapping                 # 動作モード（mapping/localization）
+
+    # デバッグ/パフォーマンス設定
+    debug_logging: false          # 詳細ログ出力（無効）
+    throttle_scans: 1             # スキャン処理の間引き間隔（1=毎回処理しない）
+    transform_publish_period: 0.02 # TF発行間隔（秒）
+    map_update_interval: 1.0      # マップ更新間隔（秒）
+    resolution: 0.025             # マップ解像度（m/ピクセル）
+    min_laser_range: 0.0          # LiDAR最小有効距離（m）
+    max_laser_range: 8.0          # LiDAR最大有効距離（m）
+    minimum_time_interval: 0.5    # 最小処理間隔（秒）
+    transform_timeout: 1.0        # TF待機タイムアウト（秒）
+    tf_buffer_duration: 30.       # TFバッファ保持時間（秒）
+    stack_size_to_use: 40000000   # スタックサイズ（シリアライズ用）
+    enable_interactive_mode: true # インタラクティブモード有効化
+
+    # 一般動作パラメータ
+    use_scan_matching: true       # スキャンマッチング使用
+    use_scan_barycenter: true     # スキャン重心を使用
+    minimum_travel_distance: 0.05 # 最小移動距離（更新トリガー m）
+    minimum_travel_heading: 0.087 # 最小回転量（更新トリガー rad）
+    scan_buffer_size: 10          # スキャン保持バッファ数
+    scan_buffer_maximum_scan_distance: 8.0  # バッファ保持最大距離（m）
+    link_match_minimum_response_fine: 0.1   # 精密マッチング閾値
+    link_scan_maximum_distance: 1.5         # スキャンリンク最大距離
+    loop_search_maximum_distance: 3.0       # ループ検索最大距離
+    do_loop_closing: true         # ループ閉じ込み有効化
+    loop_match_minimum_chain_size: 10       # ループ検出最小連鎖数
+    loop_match_maximum_variance_coarse: 3.0 # 粗探索最大分散
+    loop_match_minimum_response_coarse: 0.35 # 粗探索最小応答
+    loop_match_minimum_response_fine: 0.45  # 精密探索最小応答
+
+    # 相関計算パラメータ
+    correlation_search_space_dimension: 0.5   # 相関探索空間サイズ
+    correlation_search_space_resolution: 0.01 # 相関探索解像度
+    correlation_search_space_smear_deviation: 0.1 # スミア分散
+
+    # ループ検出パラメータ
+    loop_search_space_dimension: 8.0        # ループ探索空間サイズ
+    loop_search_space_resolution: 0.05      # ループ探索解像度
+    loop_search_space_smear_deviation: 0.03 # ループスミア分散
+
+    # スキャンマッチングパラメータ
+    distance_variance_penalty: 0.5    # オドメティ距離の信頼度
+    angle_variance_penalty: 1.0       # オドメティ角度の信頼度
+    fine_search_angle_offset: 0.00349 # 精密探索角度範囲（0.2度）
+    coarse_search_angle_offset: 0.349 # 粗探索角度範囲（20度）
+    coarse_angle_resolution: 0.0349   # 粗探索角度分解能（2度）
+    minimum_angle_penalty: 0.9        # 最小角度ペナルティ
+    minimum_distance_penalty: 0.5     # 最小距離ペナルティ
+    use_response_expansion: true      # 応答拡張機能有効化

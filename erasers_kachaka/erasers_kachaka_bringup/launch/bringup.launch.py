@@ -1,207 +1,294 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess
-from launch.actions import DeclareLaunchArgument
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction
 from launch_ros.actions import Node
+from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.conditions import IfCondition
+from launch.substitutions import LaunchConfiguration, PythonExpression
 
 from ament_index_python.packages import get_package_share_directory
 
 import os
 
-NAMESPACE = "/er_kachaka"
+KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
+BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
-# 起動時の発話メッセージを指定します。黙らせたい場合は空の文字列
-DECLARE_BOOT_MESSAGE = "erasers カチャカ、スタート！"
-# 使用するマップ名
-MAP = "2024-220-tecnofesta"
+if BRINGUP_MSG == None:
+    BRINGUP_MSG = "Kachaka!スタート!"
+
 
 def generate_launch_description():
     ld = LaunchDescription()
 
-    # launch configurations
-    LaunchConfiguration("provide_map")
-    show_rviz = LaunchConfiguration("show_rviz")
-    use_emc = LaunchConfiguration("use_emc")
-    use_xtion = LaunchConfiguration("use_xtion")
-    use_navigation = LaunchConfiguration("use_navigation")
-    map_name = LaunchConfiguration("map_name")
-    log = LaunchConfiguration("log")
-    ns = LaunchConfiguration("_namespace", default=NAMESPACE)
 
-    # map
-    map2odom_pose = ["0", "0", "0", "0", "0", "0", "map", "odom"]
-    odom2foot_pose = ["0", "0", "0", "0", "0", "0", "odom", "base_footprint"]
+    prefix_erk_teleop = get_package_share_directory("erasers_kachaka_teleop")
+    prefix_erk_vision = get_package_share_directory("erasers_kachaka_vision")
+    prefix_erk_description = get_package_share_directory("erasers_kachaka_description")
+    prefix_erk_navigation = get_package_share_directory("erasers_kachaka_navigation")
 
-    # params prefix
-    rviz_name = "erasers_kachaka.rviz"
-    control_pkg_prefix = get_package_share_directory("erasers_kachaka_control")
-    common_pkg_prefix = get_package_share_directory("erasers_kachaka_common")
-    vision_pkg_prefix = get_package_share_directory("erasers_kachaka_vision")
-    navigation_pkg_prefix = get_package_share_directory("erasers_kachaka_navigation")
-    rviz_prefix = os.path.join(common_pkg_prefix, "config", rviz_name)
+    prefix_rviz = os.path.join(
+        get_package_share_directory("erasers_kachaka_bringup"),
+        "rviz", "erasers_kachaka.rviz"
+    )
+    prefix_default_rviz = os.path.join(
+        get_package_share_directory("erasers_kachaka_bringup"),
+        "rviz", "erasers_kachaka_default.rviz"
+    )
+    param_for_pt_fields_node = os.path.join(
+        prefix_erk_navigation, 'params',
+        'pt_fields.yaml'
+    )
+
+
+    # config
+    config_bringup_type = LaunchConfiguration("bringup_type")
+    config_use_rviz = LaunchConfiguration("use_rviz")
+    config_shelf_type = LaunchConfiguration("shelf_type")
+    config_bringup_msg = LaunchConfiguration("bringup_msg")
+    config_publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
+
 
     # declare arguments
-    declare_provide_map = DeclareLaunchArgument("provide_map",
-                                                default_value="true",
-                                                description="map フレームを生成します。この値は変更しないでください。")
-    declare_show_rviz = DeclareLaunchArgument("show_rviz",
-                                                default_value="true",
-                                                description="Rviz2 を起動します。")
-    declare_use_emc = DeclareLaunchArgument("use_emc",
-                                                default_value="true",
-                                                description="緊急停止ボタンを接続している場合は True にしてください。そうでない場合は False にしてください。")
-    declare_use_xtion = DeclareLaunchArgument("use_xtion",
-                                                default_value="false",
-                                                description="Xtion を使用する場合は True にしてください。")
-    declare_use_navigation = DeclareLaunchArgument("use_navigation",
-                                                default_value="false",
-                                                description="ナビゲーションを有効にします。")
-    declare_map_name = DeclareLaunchArgument("map_name",
-                                                default_value=MAP,
-                                                description="ナビゲーションで使うマップを指定します。")
-    declare_log = DeclareLaunchArgument("log",
-                                                default_value="own_log",
-                                                description="デバックまたは詳細なログを表示したい場合は screen にしてください。")
-    # load declare arguments
-    ld.add_action(declare_provide_map)
-    ld.add_action(declare_show_rviz)
-    ld.add_action(declare_use_emc)
-    ld.add_action(declare_use_xtion)
-    ld.add_action(declare_use_navigation)
-    ld.add_action(declare_map_name)
-    ld.add_action(declare_log)
-
-    # include launch
-    teleop_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [control_pkg_prefix, "/launch/joy_teleop.launch.py"]
-        ),
-        launch_arguments={"use_emc": use_emc,
-                          "_namespace": ns}.items(),
+    declare_bringup_type = DeclareLaunchArgument(
+        "bringup_type", default_value="1",
+        description="起動する bridge コンテナの種類を選択します。[0, 1] のどちらかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+    )
+    declare_use_rviz = DeclareLaunchArgument(
+        "use_rviz", default_value="False",
+        description="Rviz2 を起動します True or False"
+    )
+    declare_shelf_type = DeclareLaunchArgument(
+        "shelf_type", default_value="1",
+        description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+    )
+    declare_bringup_msg = DeclareLaunchArgument(
+        "bringup_msg", default_value=BRINGUP_MSG,
+        description="カチャカ起動時のメッセージを設定します。"
+    )
+    declare_publish_tof_pc2 = DeclareLaunchArgument(
+        "publish_tof_pc2", default_value="True",
+        description="カチャカ前方 ToF センサーの PointCloud2 を発行します。"
     )
 
-    xtion_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [vision_pkg_prefix, "/launch/xtion.launch.py"]
-        ),
-        condition=IfCondition(use_xtion),
-        launch_arguments={"_namespace": ns}.items(),
-    )
+    ld.add_action(declare_bringup_type)
+    ld.add_action(declare_shelf_type)
+    ld.add_action(declare_publish_tof_pc2)
+    ld.add_action(declare_use_rviz)
 
-    navigation_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            [navigation_pkg_prefix, "/launch/navigation.main.launch.py"]
-        ),
-        condition=IfCondition(use_navigation),
-        launch_arguments={
-            "map_name":map_name,
-            "log":log,
-        }.items(),
-    )
 
-    # load launches
-    ld.add_action(teleop_launch)
-    ld.add_action(xtion_launch)
-    ld.add_action(navigation_launch)
-
-    # include node
-    service_tts = Node(
+    # NODES
+    node_kachaka_speak_subscriber = Node(
         package="erasers_kachaka_common",
-        executable="service_tts",
-        output="screen",
-        namespace=ns
+        executable="kachaka_speak_subscriber",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
     )
-
-    emergency_manager = Node(
+    node_emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
-        namespace=ns
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
     )
-
-    rth_manager = Node(
+    node_emergency_button = Node(
         package="erasers_kachaka_common",
-        executable="rth_manager",
-        namespace=ns
+        executable="emergency_button",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
     )
-
-    docking_manager = Node(
-        package="erasers_kachaka_common",
-        executable="docking_manager",
-        namespace=ns
-    )
-
-    battery_manager = Node(
+    node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
-        namespace=ns
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
     )
-
-    sound_manager = Node(
+    node_lidar_observer = Node(
         package="erasers_kachaka_common",
-        executable="sound_manager",
-        namespace=ns,
-        output="own_log"
+        executable="lidar_observer",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
     )
-
-    object_detection_publisher = Node(
+    node_lidar_resampler = Node(
         package="erasers_kachaka_common",
-        executable="object_detection_publisher",
-        namespace=ns,
-        output="own_log"
+        executable="lidar_resampler",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME,
+        remappings=[
+            ("input_scan", "lidar/scan"),
+            ("output_scan", "sampling_lidar/scan")
+        ]
     )
-
-    map2odom = Node(
+    node_pt_field = Node(
+        package="erasers_kachaka_navigation",
+        executable="pot_fields_node",
+        output="screen",
+        parameters=[param_for_pt_fields_node],
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
+    node_rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        arguments=["-d", prefix_rviz],
+        emulate_tty=True,
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0 ",
+                " and ",
+                config_use_rviz
+            ])
+        )
+    )
+    node_default_rviz = Node(
+        package="rviz2",
+        executable="rviz2",
+        emulate_tty=True,
+        arguments=["-d", prefix_default_rviz],
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 1",
+                " and ",
+                config_use_rviz
+            ])
+        )
+    )
+    node_mapprovider = Node(
         package="tf2_ros",
         executable="static_transform_publisher",
-        arguments=map2odom_pose,
+        arguments=["0", "0", "0", "0", "0", "0", "map", "odom"],
         output="own_log",
-        condition=IfCondition(LaunchConfiguration('provide_map')),
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0"
+            ])
+        )
     )
 
-    odom2foot = Node(
-        package="tf2_ros",
-        executable="static_transform_publisher",
-        arguments=odom2foot_pose,
-        output="own_log",
-        condition=IfCondition(LaunchConfiguration('provide_map')),
-    )
+    ld.add_action(node_kachaka_speak_subscriber)
+    ld.add_action(node_emergency_manager)
+    ld.add_action(node_emergency_button)
+    ld.add_action(node_battery_manager)
+    ld.add_action(node_lidar_observer)
+    ld.add_action(node_lidar_resampler)
+    ld.add_action(node_pt_field)
+    ld.add_action(node_rviz)
+    ld.add_action(node_default_rviz)
+    ld.add_action(node_mapprovider)
 
-    rviz = Node(
-        package = "rviz2",
-        executable = "rviz2",
-        condition=IfCondition(show_rviz),
-        arguments=["-d", rviz_prefix],
-        output="own_log"
-    )
 
-    # load nodes
-    ld.add_action(service_tts)
-    ld.add_action(emergency_manager)
-    ld.add_action(rth_manager)
-    ld.add_action(docking_manager)
-    ld.add_action(battery_manager)
-    ld.add_action(sound_manager)
-    ld.add_action(object_detection_publisher)
-    ld.add_action(map2odom)
-    ld.add_action(odom2foot)
-    ld.add_action(rviz)
-
-    # launch message
-    startup_sound_command = ExecuteProcess(
-        cmd=[
-            'ros2 service call %s/tts erasers_kachaka_interfaces/srv/Speaker "{text: %s}"'%(NAMESPACE, DECLARE_BOOT_MESSAGE)
-        ],
+    # PROCESS
+    bringup_trcp_docker = ExecuteProcess(
+        cmd=[[
+            "docker compose",
+            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " up kachaka"
+        ]],
         shell=True,
-        output="own_log",
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 0"
+            ])
+        )
+    )
+    bringup_default_docker = ExecuteProcess(
+        cmd=[[
+            "docker compose",
+            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " up default_kachaka"
+        ]],
+        shell=True,
+        condition=IfCondition(
+            PythonExpression([
+                config_bringup_type, " == 1"
+            ])
+        )
+    )
+    bringup_msg = RegisterEventHandler(
+        OnProcessStart(
+            target_action=node_kachaka_speak_subscriber,
+            on_start=[
+                ExecuteProcess(
+                    cmd=[[
+                        "ros2 topic pub --once",
+                        " /%s/kachaka_speak"%KACHAKA_NAME,
+                        " std_msgs/msg/String",
+                        " \"{data: %s}\""%BRINGUP_MSG
+                    ]],
+                    shell=True
+                )
+            ]
+        )
     )
 
-    # load actions
-    ld.add_action(startup_sound_command)
+    bringup_actions = TimerAction(
+        period=2.0,
+        actions=[
+            bringup_trcp_docker,
+            bringup_default_docker,
+        ]
+    )
 
-    print(NAMESPACE)
+    ld.add_action(bringup_actions)
+    ld.add_action(bringup_msg)
 
-    # include and execute
+
+    # LAUNCHERS
+    launch_short_shelf_description = IncludeLaunchDescription(
+        XMLLaunchDescriptionSource([
+            prefix_erk_description,
+            "/launch/erasers_kachaka_description.launch"
+        ]),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 1",
+                #" or ",
+                #config_shelf_type, " == 2",
+            ])
+        )
+    )
+    launch_kachaka_description_only =  IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory("kachaka_description"),
+            "/launch/robot_description.launch.py"
+        ]),
+        launch_arguments={
+            "namespace":"",
+            "frame_prefix":"",
+        }.items(),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 0"
+            ])
+        )
+    )
+                   
+
+    launch_teleop = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            prefix_erk_teleop,
+            "/launch/teleop.launch.py"
+        ])
+    )
+
+    launch_tof_pointcloud = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            prefix_erk_vision,
+            "/launch/tof_pointcloud_launch.py"
+        ]),
+        condition=IfCondition(config_publish_tof_pc2)
+    )
+
+
+    ld.add_action(launch_short_shelf_description)
+    ld.add_action(launch_kachaka_description_only)
+    ld.add_action(launch_teleop)
+    ld.add_action(launch_tof_pointcloud)
+
+
     return ld

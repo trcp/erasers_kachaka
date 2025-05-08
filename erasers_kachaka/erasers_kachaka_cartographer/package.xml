@@ -12,8 +12,10 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
-  <depend>slam_toolbox</depend>
   <depend>cartographer_ros</depend>
+  <depend>slam_toolbox</depend>
+  <depend>nav2_map_server</depend>
+  <depend>erasers_kachaka_navigation</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

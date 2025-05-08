@@ -1,0 +1,23 @@
+repositories:
+    kachaka-api:
+        type: git
+        url: https://github.com/pf-robotics/kachaka-api.git
+        version: main
+    shelf_description:
+        type: git
+        url: https://github.com/GAI-313/kachaka_shelf_description.git
+        version: main
+
+    rclpy_util:
+        type: git
+        url: https://github.com/GAI-313/rclpy_util.git
+        version: main
+
+    cartographer_ros_kachaka:
+        type: git
+        url: https://github.com/GAI-313/cartographer_ros_kachaka.git
+        version: ros2
+    emcl2:
+        type: git
+        url: https://github.com/GAI-313/emcl2_for_kachaka.git
+        version: main

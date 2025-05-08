@@ -12,7 +12,7 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
-  <depend>erasers_kachaka_cartographer</depend>
+  <depend>nav2_bringup</depend>
   <depend>emcl2</depend>
 
   <export>

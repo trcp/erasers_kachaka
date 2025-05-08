@@ -1,0 +1,44 @@
+services:
+  kachaka:
+    container_name: kachaka-bridge-trcp
+    image: "kachaka-api:erasers"
+    network_mode: "host"
+    ipc: "host"
+    pid: "host"
+    environment:
+      - GRPC_PORT
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - ROS_LOG_DIR=/tmp
+      - RMW_IMPLEMENTATION
+      - USER_ID
+      - GROUP_ID
+      - KACHAKA_IP
+      - KACHAKA_NAME
+      - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+      - FRAME_PREFIX=""
+    user: "${USER_ID}:${GROUP_ID}"
+    command: ros2 launch kachaka_grpc_ros2_bridge grpc_ros2_bridge.trcp.launch.xml server_uri:=${API_GRPC_BRIDGE_SERVER_URI}
+    #command: /bin/bash
+  
+  default_kachaka:
+    image: "asia-northeast1-docker.pkg.dev/kachaka-api/docker/kachaka-grpc-ros2-bridge:20250213"
+    container_name: "kachaka-bridge-default"
+    network_mode: "host"
+    ipc: "host"
+    pid: "host"
+    environment:
+      - GRPC_PORT
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - ROS_LOG_DIR=/tmp
+      - RMW_IMPLEMENTATION
+      - USER_ID
+      - GROUP_ID
+      - KACHAKA_IP
+      - KACHAKA_NAME
+      - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+      - FRAME_PREFIX=""
+    user: "${USER_ID}:${GROUP_ID}"
+    command: ros2 launch kachaka_grpc_ros2_bridge grpc_ros2_bridge.launch.xml server_uri:=${API_GRPC_BRIDGE_SERVER_URI} namespace:=${KACHAKA_NAME}
+    #command: /bin/bash

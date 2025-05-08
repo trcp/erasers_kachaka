@@ -1,0 +1,13 @@
+repositories:
+    erasers_piper:
+        type: git
+        url: git@github.com:trcp/erasers_piper.git
+        version: main
+    piper_ros:
+        type: git
+        url: https://github.com/agilexrobotics/piper_ros.git
+        version: humble
+    nakalab_realsense:
+        type: git
+        url: https://github.com/GAI-313/nakalab_realsense.git
+        version: main

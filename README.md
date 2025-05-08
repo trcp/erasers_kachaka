@@ -1,172 +1,144 @@
 # erasers_kachaka
-## 依存関係のダウンロード
+
+<img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
+
+# 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
+## 📝マニュアル
+- [⏩カチャカと接続する方法](/docs/howtoconnect.md)
+  - [🔌有線接続する方法](/docs/howtoconnect.md#ethernet)
+  - [🛜無線接続する方法](/docs/howtoconnect.md#wireless)
+- [⏩カチャカを起動する方法](/docs/howtobringup.md)
+  - [🕹️起動モードについて](/docs/howtobringup.md#mode)
+  - [🚀Launchファイルについて](/docs/howtobringup.md#launch) 
+- [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
+- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
+- [🗺マップの作成方法](/docs/howtomap.md)
+
+## ⚒開発関連
+- [🐱開発のはじめ方](/docs/develop.md)
+- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
+
+## 🗒チュートリアル
+- [🚗カチャカを移動させる方法](/docs/howtomove.md)
+- [🗺マップの作成方法](/docs/howtomap.md)
+- [💫ナビゲーション方法](/docs/howtonav.md)
+
+
+## セットアップ方法
+
+### 1. ワークスペースの作成
+　以下のコマンドを実行してホームディレクトリに `colcon_ws` ディレクトリを作成します。
 ```bash
-git clone https://github.com/GAI-313/emcl2_for_kachaka.git
-git clone https://github.com/GAI-313/cartographer_ros_kachaka.git
-git clone https://github.com/ros2/cartographer.git
-git clone https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco.git
-git clone https://github.com/teamspatzenhirn/rviz_2d_overlay_plugins.git
+cd && mkdir -p colcon_ws/src
 ```
 
-## venv 作成
+### 2. リポジトリ erasers_kachaka のダウンロード
+　以下のコマンドを実行して`colcon_ws/src` ディレクトリに移動します。
 ```bash
-cd ~
-sudo apt install -y python3.10-venv
-python3 -m venv kachaka
+cd colcon_ws/src
 ```
+　以下のコマンドを実行して erasers_kachaka をダウンロードします。
 ```bash
-source ~/kachaka/bin/activate
-```
-
-## kachaka-api ビルド
-> 事前に `source ~/kachaka/bin/activate` を実行すること。
-
-このリポジトリ内にダウンロードする。
-```bash
-# ./erasers_kachaka
-git clone https://github.com/pf-robotics/kachaka-api.git
-```
-kachaka-api ROS2 Bridge コンテナをビルドする。
-```bash
-cd kachaka-api
-docker buildx build -t asia-northeast1-docker.pkg.dev/kachaka-api/docker/kachaka-grpc-ros2-bridge:base --target kachaka-grpc-ros2-bridge -f Dockerfile.ros2 . --build-arg BASE_ARCH=x86_64 --load
-```
-カスタムファイルを kachaka-api にコピーする
-```bash
-# ./kachaka_api
-cp ../custums/dynamic_tf_bridge.cpp ros2/kachaka_grpc_ros2_bridge/src
-cp ../customs/static_tf_component.cpp ros2/kachaka_grpc_ros2_bridge/src/component
-```
-eR@sars 用 kachaka-api ROS2 Bridge コンテナをビルドする。
-```bash
-docker buildx build -t asia-northeast1-docker.pkg.dev/kachaka-api/docker/kachaka-grpc-ros2-bridge:fcsc --target kachaka-grpc-ros2-bridge -f Dockerfile.ros2 . --build-arg BASE_ARCH=x86_64 --load
-```
-必要な Python3 パッケージをインストールする。
-```bash
-# ROS2 ビルドツール
-pip install catkin_pkg empy==3.3.4 lark colcon-common-extensions
-# Aruco 検出用
-pip install opencv-contrib-python==4.6.0.66
-```
-kachaka-api/python/demos に移動して kachaka_api モジュールの依存関係と本体をインストールする。
-```bash
-# ./kachaka_api
-cd python/demos
-pip install -r requirements.txt
-python3 -m grpc_tools.protoc -I../../protos --python_out=. --pyi_out=. --grpc_python_out=. ../../protos/kachaka-api.proto
-```
-kachaka_api モジュールが使用できるかどうか確認する。<br>
-なにもエラーが出なければ成功。
-```bash
-python3 -c "import kachaka_api" 
+git clone https://github.com/trcp/erasers_kachaka.git
 ```
 
-## 環境構築
-　依存関係をインストールしてワークスペース直下でパッケージをビルドする。
+### 3. 必要なパッケージをダウンロード
+　以下のコマンドを実行し、erasers_kachaka をビルドするために必要なパッケージを src ディレクトリにダウンロードします。
+```bash
+vcs import . < ./erasers_kachaka/setup.repos
+```
+　このコマンドを実行すると、以下のパッケージが src ディレクトリにダウンロードされます。
+
+- [**kachaka-api**](https://github.com/pf-robotics/kachaka-api.git)
+- [kachaka shelf description](https://github.com/GAI-313/kachaka_shelf_description.git)
+- [rclpy_util](https://github.com/GAI-313/rclpy_util.git)
+- [cartographer](https://github.com/ros2/cartographer.git)
+- [cartographer_ros_kachaka](https://github.com/GAI-313/cartographer_ros_kachaka.git)
+- [emcl2](https://github.com/GAI-313/emcl2_for_kachaka.git)
+
+
+> OPL 使用にしたい場合は続けて以下のコマンドを実行してください。
+> ```bash
+> vcs import . < ./erasers_kachaka/opl.repos
+> ```
+
+### 4, ros2_bridge コンテナのビルド
+　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
+```bash
+cd ./erasers_kachaka
+```
+　以下のコマンドを実行して kachaka-api に必要なファイルをコピーします。
+```bash
+cp docker/Dockerfile.erk ../kachaka-api/
+cp customs/grpc_ros2_bridge.trcp.launch.xml ../kachaka-api/ros2/kachaka_grpc_ros2_bridge/launch/
+cp customs/dynamic_tf_bridge.cpp ~/colcon_ws/src/kachaka-api/ros2/kachaka_grpc_ros2_bridge/src/dynamic_tf_bridge.cpp
+cp customs/static_tf_component.cpp ~/colcon_ws/src/kachaka-api/ros2/kachaka_grpc_ros2_bridge/src/component/static_tf_component.cpp
+```
+
+---
+
+　以下のコマンドを実行して `kachaka-api` ディレクトリに移動します。
+```bash
+cd ../kachaka-api
+```
+以下のコマンドを実行してコンテナをビルドしてください。
+初めてコンテナをビルドするととても長い時間がかかります。
+```bash
+docker buildx build -t kachaka-api:erasers --target kachaka-grpc-ros2-bridge -f Dockerfile.erk . --build-arg BASE_ARCH=x86_64 --load
+```
+
+> [!TIP]
+> ネットワーク状況によってビルドにはかなりの時間がかかります。そのため上記コマンドを実行したら別のターミナルで次の手順を行うことをおすすめします。
+
+### Python kachaka-api インストール
+　pip3 がインストールされていない場合は以下のコマンドを実行して pip3 をインストールしてください。
+```bash
+sudo apt install -y python3-pip
+```
+　次に以下のコマンドを実行して pip を更新してください。
+```bash
+python3 -m pip install --upgrade pip
+```
+　実環境上にインストールする場合、以下のコマンドを実行して kachaka-api をインストールしてください。
+```bash
+pip install kachaka-api
+pip install "scipy>=1.13.0"
+```
+　正常にインストールが完了したら以下のコマンドを実行して正常に kachaka-api がインスt−おるされたか確認してください。
+以下のコマンドを実行したとき、なにもメッセージが表示されなければ成功です。
+```bash
+python3 -c "import kachaka_api"
+```
+
+### 環境変数の設定
+　~/.bashrc を開き、以下のコードを下に追加してください。
+```bash
+# kachaka
+export KACHAKA_NAME="er_kachaka"
+export KACHAKA_IP=192.168.195.125
+export KACHAKA_ERK_PATH=~/colcon_ws/src/erasers_kachaka
+export GRPC_PORT=26400
+export API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+```
+　KACHAKA_IP は実際のカチャカのIPアドレスを指定してください。
+
+### ビルド
+　`~/colcon_ws` ディレクトリに移動します。
+```bash
+cd ~/colcon_ws
+```
+　以下のコマンドを実行してワークスペース内のパッケージをビルドします。
 ```bash
 colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 ```
-エラーが出たら都度足りないパッケージをインストールしてください。<br>
-　ビルドが完了したら以下のコマンドを実行して ~/.bashrc に登録します。
+
+### コード修正
+- [`/colcon_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py`](erasers_kachaka/erasers_kachaka_navigation/launch/navigation_launch.py) の変数 **`default_map`** の絶対パスを実際のコンピューターの環境に合わせてください。パスは `~/map` の **絶対パス** にしてください。`test_field.yaml` はそのままで大丈夫です。そのため以下のコマンドを実行して `~/map` を作成してください。
 ```bash
-echo "source ~/YOUR_WS/install/setup.bash" >> ~/.bashrc
-```
-　~/.bashrc 最下層に以下のスクリプトを追加してください。`YOUR_WS` の部分はお使いの環境に合わせてください。`KACHAKA_IP` も接続するカチャカの IP アドレスにしてください。
-```bash
-export ROS_DOMAIN_ID=20
-export ROS_LOCALHOST_ONLY=0
-
-# kachaka
-export GRPC_PORT=26400
-
-export KACHAKA_IP=192.168.195.123
-
-export KACHAKA_WS=~/YOUR_WS/install/setup.bash
-export ER_KACHAKA_PKG=~/YOUR_WS/src/erasers_kachaka
-source $KACHAKA_WS
-alias kachaka_mode='source ~/kachaka/bin/activate'
-alias kachaka_mode_logs='docker compose -f $ER_KACHAKA_PKG/docker-compose.yaml logs'
-```
-　erasers_kachaka/customs にあるカスタムアクティベーションスクリプトを kachaka venv にコピーします。
-```bash
-cp ~/YOUR_WS/src/erasers_kachaka/customs/activate ~/kachaka/bin/activate
-```
-　最後に ~/.bashrc を再読込みしたら完了です。
-```bash
-source ~/.bashrc
+mkdir ~/map
 ```
 
-## 起動する
-　以下のコマンドを実行してカチャカとの接続可能な状態にします。
-```bash
-kachaka_mode
-```
-kachaka_mode が起動するとバックグラウンドでカチャカとの接続が試みられます。このとき、接続先のカチャカのトーチライトが点灯したら成功です。トーチライトが点灯しない場合は接続に失敗しています。<br>
-　kachaka_mode 起動中はシェルの端に `kachaka` というプロンプトが表示されます。
-
----
-
-　erasers_kachaka を起動する前に以下の確認をしましょう。
-
-- [x] kachaka_mode が起動している。（シェル左端に `kachaka` がある。）
-- [x] カチャカが停止状態じゃない。（LED リングが白色である）
-- [x] PS5 コントローラーと緊急停止ボタンが PC に接続されている
-- [x] 十分広い場所、または安全な環境である
-
-すべての条件が整っている場合、以下のコマンドを実行して erasers_kachaka を起動します。
-```bash
-ros2 launch erasers_kachaka_bringup bringup.launch.py
-```
-「erasers カチャカ、スタート！」とカチャカが発話したら成功です。
-
-### 緊急停止ボタンがない。または緊急停止ボタンおよびコントローラーがない場合
-　緊急停止ボタンを接続していない、または緊急停止ボタンとコントローラー両方とも接続していない場合は先程のコマンドに引数 `use_emc:=false` を追記してください。
-```bash
-ros2 launch erasers_kachaka_bringup bringup.launch.py use_emc:=false
-```
-
-## 地図を作る
-　地図を作る前に、erasers_kachaka_cartographer/launch/slam.cartographer.launch.py を編集しなければなりません。まず erasers_kachaka_cartographer/map まで移動して、`pwd` コマンドなどを使い cartographer の launch ディレクトリまでの絶対パスを取得してください。取得したパスはコピーして控えてください。<br>
-　次に slam.cartographer.launch.py を開いて、変数 `SAVE_MAP_PATH` に文字列でコピーした絶対パスを指定してください。
-```python
-# erasers_kachaka_cartographer の絶対パスを記述
-SAVE_MAP_PATH = "/home/roboworks/education_ws/src/erasers_kachaka/erasers_kachaka/erasers_kachaka_cartographer/map"
-```
-
----
-
-　erasers_kachaka_bringup bringup.launch.py が起動している状態で、新たなターミナルを起動してください。<br>
-　新しいターミナルで `kachaka_mode` を実行してから以下のコマンドを実行してマップの作成を行います。
-```bash
-ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py
-```
-すると Rviz2 上でマップが生成されているのを確認することができます。<br>
-　Rviz2 の 2D Nav Pose で目標地点を定義することでカチャカがマップを作成しながら移動を開始します。<br>
-　固有のマップ名を指定したい場合は先程のコマンドに引数 map_name を追加してください。以下のように記述すると `my_room` という名前でマップが作成されます。
-```bash
-ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py map_name=my_room
-```
-　デフォルトでは自動的にマップが保存されるようになっていますが、マップを保存せずに SLAM を実行したい場合は以下のように引数 auto_map_save を False にします。
-```bash
-ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py auto_map_save:=false
-```
-　デフォルトでは SLAM 中でもナビゲーションが有効になり、自立走行が可能になります。SLAM 中のナビゲーションを無効にしたい場合は引数 use_navigation を False にします。
-```bash
-ros2 launch erasers_kachaka_cartographer slam.cartographer.launch.py use_navigation:=false
-```
-
----
-
-　マップの作成が完了したら cartographer launch を終了しましょう。そしてワークスペース直下で erasers_kachaka_cartographer をビルドしてください。
-```bash
-# YOUR_WS
-colcon build --symlink-install --packages-select erasers_kachaka_cartographer && . install/setup.bash
-```
-　
-## ナビゲーションをつかう
-　マップを作ったら bringup.launch.py を終了してください。そして引数 use_navigation に True を指定してサイド起動してください。
-```bash
-ros2 launch erasers_kachaka_bringup bringup.launch.py use_navigation:=true
-```
-　起動させたらすぐにカチャカをコントローラーで軽く動かすか、手でカチャカを動かしてください。すると Rviz2 上に作成したマップが読み込まれます。<br>
-Nav 2D Pose を使い任意の場所へロボットを自律走行させることができます。
+## 起動方法
+　ロボットの起動方法は
+ [こちら](/erasers_kachaka/erasers_kachaka_bringup/README.md)
+ を参照してください。
