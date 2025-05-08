@@ -60,10 +60,15 @@ private:
     // パラメータ宣言関数
     void declare_parameters() {
         // フレームID設定 (デフォルト: base_range_sensor_link)
-        declare_parameter("frame_id", "base_range_sensor_link");
+        declare_parameter("frame_id", "laser_frame");
         
         // 遮蔽領域角度 (後方±150度)
         declare_parameter("occlusion_angle", M_PI * 5.0 / 6.0);
+
+        // leg
+        declare_parameter("min_leg_width", 0.15);
+        declare_parameter("max_leg_width", 0.30);
+        declare_parameter("leg_aspect_ratio", 1.5);
         
         // バターワースフィルタ係数
         declare_parameter("bfa0x", 1.0);
@@ -96,7 +101,7 @@ private:
     // サービス設定関数
     void setup_services() {
         service_ = create_service<std_srvs::srv::SetBool>(
-            "/navigation/leg_finder/execute",
+            "navigation/leg_finder/execute",
             [this](const std::shared_ptr<std_srvs::srv::SetBool::Request> req,
                    std::shared_ptr<std_srvs::srv::SetBool::Response> res) {
                 is_active_ = req->data;
@@ -110,20 +115,26 @@ private:
     // パブリッシャー設定関数
     void setup_publishers() {
         legs_pose_pub_ = create_publisher<geometry_msgs::msg::PointStamped>(
-            "/navigation/leg_finder/leg_poses", rclcpp::SensorDataQoS());
+            "navigation/leg_finder/leg_poses", rclcpp::SensorDataQoS());
             
         marker_pub_ = create_publisher<visualization_msgs::msg::Marker>(
-            "/navigation/leg_finder/marker", 10);
+            "navigation/leg_finder/marker", 10);
             
         legs_found_pub_ = create_publisher<std_msgs::msg::Bool>(
-            "/navigation/leg_finder/legs_found", rclcpp::SystemDefaultsQoS());
+            "navigation/leg_finder/legs_found", rclcpp::SystemDefaultsQoS());
     }
 
     // サブスクリプション管理関数
     void manage_subscriptions() {
         if (is_active_ && !laser_sub_) {
+            auto lidar_qos = rclcpp::QoS(
+                rclcpp::KeepLast(5)  // パブリッシャーと同じキューサイズ
+            );
+            lidar_qos.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+            lidar_qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+
             laser_sub_ = create_subscription<sensor_msgs::msg::LaserScan>(
-                "lidar/scan", rclcpp::SensorDataQoS(),
+                "lidar/scan", lidar_qos,
                 std::bind(&LegFinderNode::laser_callback, this, std::placeholders::_1));
             RCLCPP_INFO(this->get_logger(), "LiDAR subscription started");
         } else if (!is_active_ && laser_sub_) {
@@ -232,15 +243,29 @@ private:
             const size_t end = flank_indices[i];
             const float dx = laser_x[end] - laser_x[start];
             const float dy = laser_y[end] - laser_y[start];
-            const float dist_sq = dx*dx + dy*dy;
+            const float dist = std::hypot(dx, dy);
+            const float width = dist;  // 物体の幅
+
+            // 幅のチェック (椅子の脚を除外)
+                if(width < get_parameter("min_leg_width").as_double() || 
+                width > get_parameter("max_leg_width").as_double()) {
+                continue;
+            }
+            
+            // アスペクト比チェック (円柱状の物体を優先)
+            const float height = 0.7;  // 仮定の足の高さ
+            const float aspect_ratio = height / width;
+            if(aspect_ratio < get_parameter("leg_aspect_ratio").as_double()) {
+                continue;
+            }
 
             // 単一の足判定
-            if(dist_sq > PIERNA_DELGADA && dist_sq < PIERNA_GRUESA) {
+            if(dist > PIERNA_DELGADA && dist < PIERNA_GRUESA) {
                 legs_x.push_back((laser_x[start] + laser_x[end]) / 2);
                 legs_y.push_back((laser_y[start] + laser_y[end]) / 2);
             }
             // 両足判定
-            else if(dist_sq > DOS_PIERNAS_CERCAS && dist_sq < DOS_PIERNAS_LEJOS) {
+            else if(dist > DOS_PIERNAS_CERCAS && dist < DOS_PIERNAS_LEJOS) {
                 legs_x.push_back((laser_x[start] + laser_x[end]) / 2);
                 legs_y.push_back((laser_y[start] + laser_y[end]) / 2);
             }
@@ -353,9 +378,9 @@ private:
         marker.scale.y = 0.07;
         marker.scale.z = 0.07;
         marker.color.a = 1.0;
-        marker.color.r = 0.0;
-        marker.color.g = 0.5;
-        marker.color.b = 0.0;
+        marker.color.r = 0.2;
+        marker.color.g = 0.6;
+        marker.color.b = 0.2;
 
         for(size_t i = 0; i < legs_x.size(); ++i) {
             geometry_msgs::msg::Point p;
