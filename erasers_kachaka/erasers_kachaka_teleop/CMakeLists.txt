@@ -15,9 +15,13 @@ find_package(std_srvs REQUIRED)
 add_executable(teleop src/teleop.cpp)
 ament_target_dependencies(teleop rclcpp geometry_msgs sensor_msgs)
 
+add_executable(keyboard_teleop src/keyboard_teleop.cpp)
+ament_target_dependencies(keyboard_teleop rclcpp geometry_msgs)
+
 # install nodes
 install(TARGETS
   teleop
+  keyboard_teleop
   DESTINATION lib/${PROJECT_NAME}
 )
 
