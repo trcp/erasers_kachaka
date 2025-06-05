@@ -257,8 +257,6 @@ class Nav2Navigation():
             if not self.__waypoints_client.wait_for_server(timeout_sec=5.0):
                 self.__node.get_logger().warn("Follow waypoints action server not available...")
                 self.__waypoints_client = None
-            else:
-                self.__node.get_logger().info("Successfully connected to follow_waypoints action server")
         except Exception as e:
             self.__node.get_logger().error(f"Error connecting to waypoints server: {str(e)}")
             self.__waypoints_client = None
@@ -409,12 +407,6 @@ class Nav2Navigation():
         goal_pose.pose.orientation.z = q[2]
         goal_pose.pose.orientation.w = q[3]
 
-        # ログに目標位置を出力
-        self.__node.get_logger().info(
-            f"ナビゲーション目標送出: X={x:.2f}, Y={y:.2f}, Yaw={math.degrees(yaw if consider_angle else calculated_yaw):.1f}°"
-            + (" (角度考慮あり)" if consider_angle else " (角度考慮なし)")
-        )
-
         # アクションゴールメッセージを作成
         goal_msg = NavigateToPose.Goal(pose=goal_pose)
         
@@ -457,7 +449,6 @@ class Nav2Navigation():
                 # ステータスを確認
                 status = result.status
                 if status == GoalStatus.STATUS_SUCCEEDED:
-                    self.__node.get_logger().info("Navigation succeeded, PID角度調整開始...")
 
                     # PID制御パラメータ設定
                     KP = 0.8    # 比例ゲイン
@@ -537,12 +528,6 @@ class Nav2Navigation():
                     return False
 
             except KeyboardInterrupt:
-                # キーボード割り込み時の処理
-                self.__node.get_logger().info("ナビゲーションをキャンセルします...")
-                if self.cancel():
-                    self.__node.get_logger().info("ナビゲーションキャンセル成功")
-                else:
-                    self.__node.get_logger().error("ナビゲーションキャンセル失敗")
                 return False
 
             except Exception as e:
