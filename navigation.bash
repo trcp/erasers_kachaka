@@ -2,7 +2,6 @@
 
 echo "Map Path: ${MAP_PATTH}"
 
-export API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
 
 . /home/roboworks/colcon_ws/install/setup.bash
 

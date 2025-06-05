@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 User=roboworks
-EnvironmentFile=--/etc/erasers_kachaka.d/erasers_kachaka
+EnvironmentFile=-/etc/erasers_kachaka.d/erasers_kachaka
 ExecStart=/home/roboworks/colcon_ws/src/erasers_kachaka/navigation.bash
 Type=simple
 

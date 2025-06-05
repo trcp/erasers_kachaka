@@ -1,5 +1,6 @@
 [Unit]
 Description=Bringup erasers_kachaka
+Wants=navigation.service piper.service
 After=multi-user.target
 
 [Service]
