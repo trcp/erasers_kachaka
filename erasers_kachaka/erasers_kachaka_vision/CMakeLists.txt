@@ -7,6 +7,39 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(kachaka_interfaces REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
+
+
+add_executable(
+  object_detection_visualizer
+  src/object_detection_visualizer.cpp
+)
+
+
+ament_target_dependencies(
+  object_detection_visualizer
+  rclcpp
+  sensor_msgs
+  kachaka_interfaces
+  cv_bridge
+)
+
+
+target_link_libraries(
+  object_detection_visualizer 
+  ${OpenCV_LIBRARIES}
+)
+
+
+install(TARGETS
+  object_detection_visualizer
+  DESTINATION lib/${PROJECT_NAME}
+)
+
 
 install(DIRECTORY
   launch
