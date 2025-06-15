@@ -197,7 +197,7 @@ def generate_launch_description():
     ld.add_action(node_lidar_observer)
     #ld.add_action(node_lidar_resampler)
     #ld.add_action(node_pt_field)
-    ld.add_action(node_leg_finder_node)
+    #ld.add_action(node_leg_finder_node)
     ld.add_action(node_rviz)
     ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)
@@ -309,7 +309,7 @@ def generate_launch_description():
     ld.add_action(launch_short_shelf_description)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
-    ld.add_action(launch_tof_pointcloud)
+    #ld.add_action(launch_tof_pointcloud)
 
 
     return ld
