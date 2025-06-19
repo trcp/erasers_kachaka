@@ -1,7 +1,7 @@
 [Unit]
 Description=Bringup erasers_kachaka
-Wants=navigation.service piper.service
-After=multi-user.target
+Wants=chrony-wait.service navigation.service
+After=chrony-wait.service
 
 [Service]
 User=roboworks
