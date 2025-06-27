@@ -16,7 +16,7 @@
     cam_pos_x="-0.05" cam_pos_y="0.0" cam_pos_z="0.075"
     cam_roll="0.0" cam_pitch="-1.57" cam_yaw="0.0"
     rs_compat="false"
-  /-->
+  / -->
 
   <xacro:sensor_d435 parent="gripper_base" name="arm_camera" >
      <origin xyz="-0.05 0 0.075" rpy="0 -1.57 0"/>
