@@ -43,7 +43,7 @@ def generate_launch_description():
         name='robot_state_publisher',
         output='screen',
         parameters=[robot_description],
-        namespace=robot_name # robot_state_publisherノード自体に名前空間を適用
+        namespace = robot_name # robot_state_publisherノード自体に名前空間を適用
     )
 
     # LaunchDescriptionを構築し、定義した引数とノードを追加します。

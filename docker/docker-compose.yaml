@@ -59,7 +59,7 @@ services:
       - USER_ID
       - GROUP_ID
       - KACHAKA_IP
-      - KACHAKA_NAME = "container_kachaka"
+      - KACHAKA_NAME 
       - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
       - FRAME_PREFIX="container_kachaka"
     user: "${USER_ID}:${GROUP_ID}"
