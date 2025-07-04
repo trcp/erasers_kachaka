@@ -5,7 +5,7 @@
   <xacro:include filename="$(find realsense2_description)/urdf/_d435.urdf.xacro" />
   <!-- xacro:include filename="$(find kachaka_shelf_description)/urdf/short_shelf_description.urdf.xacro" /-->
   <xacro:arg name="robot_name" default="" />
-  <xacro:property name="prefix" value="$(arg robot_name)_" />
+  <xacro:property name="prefix" value="$(arg robot_name)/" />
 
   <joint name="${prefix}base_to_shelf" type="fixed">
     <parent link="${prefix}base_link" />

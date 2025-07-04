@@ -10,7 +10,7 @@ def generate_launch_description():
     # この引数が、ロボットの名前空間およびTFプレフィックスとして使われます。
     robot_name_arg = DeclareLaunchArgument(
         'robot_name',
-        default_value='kachaka_robot', # デフォルト値を設定
+        default_value='container_kachaka', # デフォルト値を設定
         description='Unique name for the robot instance (e.g., kachaka_0, kachaka_1)'
     )
 
