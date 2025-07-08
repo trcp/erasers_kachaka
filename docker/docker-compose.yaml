@@ -61,7 +61,7 @@ services:
       - KACHAKA_IP
       - KACHAKA_NAME 
       - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
-      - FRAME_PREFIX="container_kachaka"
+      - FRAME_PREFIX="container_kachaka/"
     user: "${USER_ID}:${GROUP_ID}"
     command: ros2 launch kachaka_grpc_ros2_bridge grpc_ros2_bridge.launch.xml server_uri:=${API_GRPC_BRIDGE_SERVER_URI} namespace:=${KACHAKA_NAME}
     #command: /bin/bash

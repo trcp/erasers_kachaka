@@ -1,10 +1,12 @@
 <?xml version="1.0"?>
 <launch>
+  <arg name="robot_name" default="container_kachaka" />
+
   <node pkg="robot_state_publisher"
         exec="robot_state_publisher"
         name="robot_state_publisher"
-        namespace="er_kachaka_description">
+        namespace="$(arg robot_name)">
     <param name="robot_description"
-           value="$(command 'cat $(find-pkg-share kachaka_description)/robot/kachaka.urdf')" />
+           value="$(command 'xacro $(find-pkg-share erasers_kachaka_description)/urdf/erasers_kachaka_container_description.urdf.xacro robot_name:=$(arg robot_name)')" />
   </node>
 </launch>

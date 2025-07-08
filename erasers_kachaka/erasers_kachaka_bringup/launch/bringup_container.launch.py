@@ -12,8 +12,8 @@ from ament_index_python.packages import get_package_share_directory
 
 import os
 
-#KACHAKA_NAME = "container_kachaka"
-KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
+KACHAKA_NAME = "container_kachaka"
+
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
 if BRINGUP_MSG == None:
@@ -32,11 +32,11 @@ def generate_launch_description():
 
     prefix_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
-        "rviz", "erasers_kachaka.rviz"
+        "rviz", "container_kachaka.rviz"
     )
     prefix_default_rviz = os.path.join(
         get_package_share_directory("erasers_kachaka_bringup"),
-        "rviz", "erasers_kachaka_default.rviz"
+        "rviz", "container_kachaka.rviz"
     )
     param_for_pt_fields_node = os.path.join(
         prefix_erk_navigation, 'params',
@@ -195,7 +195,7 @@ def generate_launch_description():
         cmd=[[
             "docker compose",
             " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
-            " up kachaka"
+            " up container_kachaka"
         ]],
         shell=True,
         condition=IfCondition(
@@ -266,16 +266,16 @@ def generate_launch_description():
     )
     launch_kachaka_description_only =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            get_package_share_directory("kachaka_description"),
-            "/launch/robot_description.launch.py"
+            prefix_erk_description,
+            "/launch/erasers_kachaka_container_description.launch.py"
         ]),
         launch_arguments={
             "namespace":"",
-            "frame_prefix":"",
+            "frame_prefix": config_robot_name,
         }.items(),
         condition=IfCondition(
             PythonExpression([
-                config_shelf_type, " == 0"
+                config_shelf_type, " == 1"
             ])
         )
     )
