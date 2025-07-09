@@ -297,7 +297,7 @@ def generate_launch_description():
     )
 
 
-    ld.add_action(launch_short_shelf_description)
+    #ld.add_action(launch_short_shelf_description)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
     ld.add_action(launch_tof_pointcloud)
