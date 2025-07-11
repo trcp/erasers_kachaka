@@ -1,0 +1,6 @@
+/**:
+  ros__parameters:
+    marker_size: 0.037
+    aruco_dictionary_id: DICT_4X4_250
+    image_topic: /er_kachaka/front_camera/image_raw
+    camera_info_topic: /er_kachaka/front_camera/camera_info
