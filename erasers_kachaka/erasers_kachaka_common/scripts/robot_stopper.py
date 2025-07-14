@@ -9,9 +9,9 @@ class RobotStopper(Node):
     def __init__(self):
         super().__init__('robot_stopper')
 
-        self.pub = self.create_publisher(Twist, '/er_kachaka/manual_control/cmd_vel', 10)
+        self.pub = self.create_publisher(Twist, 'manual_control/cmd_vel', 10)
 
-        srv = self.create_service(SetBool, '/er_kachaka/robot_stopper', self.cb)
+        srv = self.create_service(SetBool, 'robot_stopper', self.cb)
 
         timer = self.create_timer(0.1, self.robot_stopper)
 
