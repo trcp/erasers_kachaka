@@ -151,6 +151,13 @@ def generate_launch_description():
         emulate_tty=True,
         namespace=KACHAKA_NAME
     )
+    node_robot_stopper = Node(
+        package="erasers_kachaka_common",
+        executable="robot_stopper",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
@@ -198,6 +205,7 @@ def generate_launch_description():
     #ld.add_action(node_lidar_resampler)
     #ld.add_action(node_pt_field)
     #ld.add_action(node_leg_finder_node)
+    ld.add_action(node_robot_stopper)
     ld.add_action(node_rviz)
     ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)
