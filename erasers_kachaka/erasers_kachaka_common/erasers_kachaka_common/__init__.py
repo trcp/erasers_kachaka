@@ -15,6 +15,8 @@ class Kachaka():
         __tts = TTS(self.ros_node)
         self.say = __tts.say
         self.robot_stopper = RobotStopper(self.ros_node)
+        self.robot_info = RobotInfo(self.ros_node)
+        self.camera = Camera(self.ros_node)
 
         try:
             self.navigation = Nav2Navigation(self.ros_node, 3.0, buffer)
