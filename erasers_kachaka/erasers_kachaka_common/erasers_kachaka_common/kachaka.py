@@ -176,7 +176,7 @@ class Camera():
                     self.__back_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'bgr8')
                 elif 'tof_camera' in topic_name:
                     self.__tof_camera_image_msg = msg
-                    self.__tof_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'bgr8')
+                    self.__tof_camera_image = self.__bridge.imgmsg_to_cv2(msg, '16UC1')
 
             data_received = True
 
@@ -332,7 +332,7 @@ class Camera():
             self.__node.get_logger().error('Failure get tof camera')
             return self.__tof_camera_image
         
-        self.__tof_camera_image = self.__bridge.imgmsg_to_cv2(self.__tof_camera_image_msg, 'bgr8')
+        self.__tof_camera_image = self.__bridge.imgmsg_to_cv2(self.__tof_camera_image_msg, '16UC1')
         if preview:
             plt.figure("tof Camera Preview") 
             plt.imshow(self.__tof_camera_image)
