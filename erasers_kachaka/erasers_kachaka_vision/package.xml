@@ -13,6 +13,10 @@
   <test_depend>ament_lint_common</test_depend>
 
   <depend>depth_image_proc</depend>
+  <depend>message_filters</depend>
+  <depend>ros2_aruco</depend>
+  <depend>ros2_aruco_interfaces</depend>
+  <depend>kachaka_interfaces</depend>
   
   <export>
     <build_type>ament_cmake</build_type>
