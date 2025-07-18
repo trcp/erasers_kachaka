@@ -2,30 +2,18 @@
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
 
-# 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
-## 📝マニュアル
-- [⏩カチャカと接続する方法](/docs/howtoconnect.md)
-  - [🔌有線接続する方法](/docs/howtoconnect.md#ethernet)
-  - [🛜無線接続する方法](/docs/howtoconnect.md#wireless)
-- [⏩カチャカを起動する方法](/docs/howtobringup.md)
-  - [🕹️起動モードについて](/docs/howtobringup.md#mode)
-  - [🚀Launchファイルについて](/docs/howtobringup.md#launch) 
-- [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
-- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
-- [🗺マップの作成方法](/docs/howtomap.md)
+## Docker セットアップ方法
+1. 以下のコマンドを実行して erasers_kachaka をダウンロードします。
+    ```bash
+    git clone https://github.com/trcp/erasers_kachaka.git
+    ```
 
-## ⚒開発関連
-- [🐱開発のはじめ方](/docs/develop.md)
-- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
+2. 以下のコマンドを実行して `erasers_kachaka` コンテナをビルドします。
+    ```bash
+    docker compose build erasers_kachaka
+    ```
 
-## 🗒チュートリアル
-- [🚗カチャカを移動させる方法](/docs/howtomove.md)
-- [🗺マップの作成方法](/docs/howtomap.md)
-- [💫ナビゲーション方法](/docs/howtonav.md)
-
-
-## セットアップ方法
-
+## ローカルセットアップ方法
 ### 1. ワークスペースの作成
 　以下のコマンドを実行してホームディレクトリに `colcon_ws` ディレクトリを作成します。
 ```bash
