@@ -1,0 +1,22 @@
+ARG ROS=humble
+FROM gai313/ros2:${ROS} AS builder
+
+ARG ROS
+WORKDIR /ws
+COPY setup.repos setup.repos
+RUN mkdir src && apt-get update && \
+    vcs import src < setup.repos && \
+    . /opt/ros/${ROS}/setup.bash && \
+    rosdep install -y -i --from-path src && \
+    rm -rf /var/lib/apt/lists/*
+
+FROM builder
+ARG ROS
+
+WORKDIR /ws
+COPY erasers_kachaka /ws/src/erasers_kachaka
+RUN . /opt/ros/${ROS}/setup.bash && \
+    apt-get update && \
+    rosdep install -y -i --from-path src && \
+    colcon build --symlink-install --packages-up-to erasers_kachaka_bringup &&\
+    rm -rf /var/lib/apt/lists/*

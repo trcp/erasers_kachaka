@@ -1,0 +1,33 @@
+x-preferences: &preferences
+  image: gai313/ros2:humble.erasers_kachaka
+  build:
+    context: .
+    dockerfile: Dockerfile.erasers_kachaka
+    args:
+      - ROS=humble
+  privileged: true
+  ipc: host
+  network_mode: host
+  tty: true
+  stdin_open: true
+  environment:
+    - DISPLAY=${DISPLAY}
+    - NVIDIA_VISIBLE_DEVICES=all
+    - NVIDIA_DRIVER_CAPABILITIES=all
+    - ROS_DOMAIN_ID=${ROS_DOMAIN_ID}
+    - RMW_IMPLEMENTATION=${RMW_IMPLEMENTATION}
+  volumes:
+    - /run/user/1000/pulse/native:/tmp/pulse/native
+    - ~/.config/pulse/cookie:/tmp/pulse/cookie:ro
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - $HOME/.Xauthority/:/root/.Xauthority
+    - ./src:/ws/src
+    - /dev:/dev
+  devices:
+      - /dev:/dev
+
+
+services:
+  erasers_kachaka:
+    container_name: erasers_kachaka.main
+    <<: *preferences
