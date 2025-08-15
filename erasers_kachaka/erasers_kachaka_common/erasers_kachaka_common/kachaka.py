@@ -5,7 +5,7 @@ from rclpy.node import Node
 import rclpy
 
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float32, UInt8
+from std_msgs.msg import Float32, UInt8, Int8
 from std_srvs.srv import SetBool
 
 from cv_bridge import CvBridge
@@ -385,4 +385,32 @@ class Torch():
         msg.data = bright if turnon else 0
 
         self.__pub_back.publish(msg)
+        rclpy.spin_once(self.__node, timeout_sec=1.0)
+
+
+class Volume():
+    """
+    Kachaka の音量を制御します。
+
+    Args:
+        node: rclpy.node.Node : rclpy Node オブジェクト。代入必須です。
+    """
+    def __init__(self, node:Node):
+        self.__node = node
+        self.__ns = NS
+
+        self.__pub = self.__node.create_publisher(Int8, f'/{self.__ns}/volume', 10)
+    
+
+    def volume(self, volume:int=10):
+        """
+        Kachaka のボリュームを制御します。
+
+        Args:
+            volume: int : 音量を指定します。
+        """
+        msg = Int8()
+        msg.data = volume
+
+        self.__pub.publish(msg)
         rclpy.spin_once(self.__node, timeout_sec=1.0)
