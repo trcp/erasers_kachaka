@@ -8,11 +8,29 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
-find_package(kachaka_interfaces REQUIRED)
 find_package(cv_bridge REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(message_filters REQUIRED)
+find_package(kachaka_interfaces REQUIRED)
 find_package(OpenCV REQUIRED)
 
+add_executable(human_track src/human_track.cpp)
+ament_target_dependencies(human_track
+  rclcpp
+  std_srvs
+  geometry_msgs
+  sensor_msgs
+  cv_bridge
+  tf2_ros
+  tf2_geometry_msgs
+  message_filters
+  kachaka_interfaces
+  OpenCV
+)
 
 add_executable(
   object_detection_visualizer
@@ -37,12 +55,13 @@ target_link_libraries(
 
 install(TARGETS
   object_detection_visualizer
+  human_track
   DESTINATION lib/${PROJECT_NAME}
 )
 
-
 install(DIRECTORY
   launch
+  params
   DESTINATION share/${PROJECT_NAME}/
 )
 
