@@ -5,7 +5,7 @@ from rclpy.node import Node
 import rclpy
 
 from sensor_msgs.msg import Image
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, UInt8
 from std_srvs.srv import SetBool
 
 from cv_bridge import CvBridge
@@ -341,3 +341,48 @@ class Camera():
         if use_msg: self.__tof_camera_image = self.__tof_camera_image_msg       
 
         return self.__tof_camera_image
+
+
+class Torch():
+    """
+    Kachaka のライトを制御します。
+
+    Args:
+        node: rclpy.node.Node : rclpy Node オブジェクト。代入必須です。
+    """
+    def __init__(self, node:Node):
+        self.__node = node
+        self.__ns = NS
+
+        self.__pub_front = self.__node.create_publisher(UInt8, f'/{self.__ns}/torch/front', 10)
+        self.__pub_back = self.__node.create_publisher(UInt8, f'/{self.__ns}/torch/back', 10)
+    
+
+    def front(self, turnon:bool=True, bright:int=255):
+        """
+        Kachaka の前方ライトを制御します。
+
+        Args:
+            turnon: bool : True の場合前方ライトを点灯します。False の場合消灯します。
+            bright: int : turnon が True のときのライトの明るさを指定します。
+        """
+        msg = UInt8()
+        msg.data = bright if turnon else 0
+
+        self.__pub_front.publish(msg)
+        rclpy.spin_once(self.__node, timeout_sec=1.0)
+        
+
+    def back(self, turnon:bool=True, bright:int=255):
+        """
+        Kachaka の後方ライトを制御します。
+
+        Args:
+            turnon: bool : True の場合後方ライトを点灯します。False の場合消灯します。
+            bright: int : turnon が True のときのライトの明るさを指定します。
+        """
+        msg = UInt8()
+        msg.data = bright if turnon else 0
+
+        self.__pub_back.publish(msg)
+        rclpy.spin_once(self.__node, timeout_sec=1.0)
