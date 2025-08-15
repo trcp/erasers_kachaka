@@ -32,7 +32,29 @@ ament_target_dependencies(human_track
   OpenCV
 )
 
+add_executable(
+  object_detection_visualizer
+  src/object_detection_visualizer.cpp
+)
+
+
+ament_target_dependencies(
+  object_detection_visualizer
+  rclcpp
+  sensor_msgs
+  kachaka_interfaces
+  cv_bridge
+)
+
+
+target_link_libraries(
+  object_detection_visualizer 
+  ${OpenCV_LIBRARIES}
+)
+
+
 install(TARGETS
+  object_detection_visualizer
   human_track
   DESTINATION lib/${PROJECT_NAME}
 )

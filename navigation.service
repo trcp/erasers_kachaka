@@ -1,0 +1,13 @@
+[Unit]
+Description=Bringup erasers_kachaka navigation
+Wants=chrony-wait.service
+After=chrony-wait.service
+
+[Service]
+User=roboworks
+EnvironmentFile=-/etc/erasers_kachaka.d/erasers_kachaka
+ExecStart=/home/roboworks/colcon_ws/src/erasers_kachaka/navigation.bash
+Type=simple
+
+[Install]
+WantedBy=bringup.service

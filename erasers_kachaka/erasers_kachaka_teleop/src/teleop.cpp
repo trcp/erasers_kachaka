@@ -17,7 +17,7 @@ public:
     void callback(const sensor_msgs::msg::Joy::SharedPtr sub_joy)
     {
         auto cmd_vel = geometry_msgs::msg::Twist();
-        if (sub_joy->buttons[4])
+        if (sub_joy->buttons[4] && !sub_joy->buttons[5])
         {
             cmd_vel.linear.x = sub_joy->axes[1] / 8.0;
             cmd_vel.angular.z = sub_joy->axes[0];

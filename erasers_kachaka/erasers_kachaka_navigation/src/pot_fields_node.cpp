@@ -21,9 +21,15 @@ public:
         valid_angle_min_ = this->get_parameter("valid_angle_min").as_double();
         valid_angle_max_ = this->get_parameter("valid_angle_max").as_double();
 
+        auto lidar_qos = rclcpp::QoS(
+            rclcpp::KeepLast(5)  // パブリッシャーと同じキューサイズ
+        );
+        lidar_qos.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+        lidar_qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+
         // サブスクライバーとパブリッシャーの設定
         laser_sub_ = this->create_subscription<sensor_msgs::msg::LaserScan>(
-            "lidar/scan", 10,
+            "lidar/scan", lidar_qos,
             std::bind(&PotFieldsNode::laser_callback, this, std::placeholders::_1));
             
         force_pub_ = this->create_publisher<std_msgs::msg::Float32>(
