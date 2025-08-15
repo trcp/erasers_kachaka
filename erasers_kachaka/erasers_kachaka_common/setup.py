@@ -46,7 +46,8 @@ setup(
             'emergency_button = scripts.emergency_manager:emergency_button',
             'battery_manager = scripts.battery_manager:main',
             'lidar_observer = scripts.lidar_observer:lidar_observer',
-            'lidar_resampler = scripts.lidar_observer:lidar_resampler'
+            'lidar_resampler = scripts.lidar_observer:lidar_resampler',
+            'robot_stopper = scripts.robot_stopper:main'
         ],
     },
 )

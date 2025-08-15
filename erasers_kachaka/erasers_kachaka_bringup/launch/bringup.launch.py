@@ -40,6 +40,10 @@ def generate_launch_description():
         prefix_erk_navigation, 'params',
         'pt_fields.yaml'
     )
+    param_for_leg_finder_node = os.path.join(
+        prefix_erk_navigation, 'params',
+        'leg_finder.yaml'
+    )
 
 
     # config
@@ -106,6 +110,13 @@ def generate_launch_description():
         emulate_tty=True,
         namespace=KACHAKA_NAME
     )
+    node_object_detection_visualizer = Node(
+        package="erasers_kachaka_vision",
+        executable="object_detection_visualizer",
+        output="screen",
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
@@ -129,6 +140,21 @@ def generate_launch_description():
         executable="pot_fields_node",
         output="screen",
         parameters=[param_for_pt_fields_node],
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
+    node_leg_finder_node = Node(
+        package="erasers_kachaka_navigation",
+        executable="leg_finder_node",
+        output="screen",
+        parameters=[param_for_leg_finder_node],
+        emulate_tty=True,
+        namespace=KACHAKA_NAME
+    )
+    node_robot_stopper = Node(
+        package="erasers_kachaka_common",
+        executable="robot_stopper",
+        output="screen",
         emulate_tty=True,
         namespace=KACHAKA_NAME
     )
@@ -174,9 +200,12 @@ def generate_launch_description():
     ld.add_action(node_emergency_manager)
     ld.add_action(node_emergency_button)
     ld.add_action(node_battery_manager)
+    ld.add_action(node_object_detection_visualizer)
     ld.add_action(node_lidar_observer)
-    ld.add_action(node_lidar_resampler)
-    ld.add_action(node_pt_field)
+    #ld.add_action(node_lidar_resampler)
+    #ld.add_action(node_pt_field)
+    #ld.add_action(node_leg_finder_node)
+    ld.add_action(node_robot_stopper)
     ld.add_action(node_rviz)
     ld.add_action(node_default_rviz)
     ld.add_action(node_mapprovider)
@@ -288,7 +317,7 @@ def generate_launch_description():
     ld.add_action(launch_short_shelf_description)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
-    ld.add_action(launch_tof_pointcloud)
+    #ld.add_action(launch_tof_pointcloud)
 
 
     return ld

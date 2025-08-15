@@ -37,9 +37,14 @@ bool ConvertGrpcTfToRosTf(
         transform_grpc.header(), &(transform_ros.header));
 
     // skipper
-    if (transform_ros.header.frame_id == "map" || transform_ros.header.frame_id == "layout_offset" || transform_ros.header.frame_id == "home") {
-      continue;
-    }    
+    if (transform_ros.header.frame_id.find("map") != std::string::npos ||
+        transform_ros.header.frame_id.find("layout_offset") != std::string::npos ||
+        transform_ros.header.frame_id.find("home") != std::string::npos) {
+        continue;
+    }
+    // if (transform_ros.header.frame_id == "map" || transform_ros.header.frame_id == "layout_offset" || transform_ros.header.frame_id == "home") {
+    //  continue;
+    // }    
 
     transform_ros.child_frame_id = transform_grpc.child_frame_id();
     transform_ros.transform.translation.x = transform_grpc.translation().x();

@@ -1,0 +1,44 @@
+/**:
+  ros__parameters:
+    # 座標系設定
+    frame_id: "laser_frame"  # LiDARデータの基準座標フレーム
+    
+    # 遮蔽領域設定 (後方の検出無効ゾーン)
+    occlusion_angle: 2.61799387799     # 遮蔽角度[rad] (150度)
+    
+    # ノイズフィルタ閾値 [m]
+    filter_threshold: 0.081            # 移動平均フィルタの閾値
+    flank_threshold: 0.04              # 足の輪郭検出閾値
+    
+    # 足の幾何学的特性 [m^2]
+    pierna_delgada: 0.05        # 細い足の閾値 (7.9cm幅相当)
+    pierna_gruesa: 0.03             # 太い足の閾値 (19.23cm幅相当)
+    dos_piernas_cercas: 0.022201       # 近接した両足 (14.9cm間隔)
+    dos_piernas_lejos: 0.20          # 離れた両足 (40cm間隔)
+    min_leg_width: 0.15                  # 最小幅 (15cm以下の物体は除外)
+    max_leg_width: 0.30                  # 最大幅 (30cm以上の物体は除外)
+    leg_aspect_ratio: 1.5                # 縦横比の閾値
+    
+    # 検出範囲制限 [m]
+    min_detection_range: 0.4           # 最小検出距離
+    max_detection_range: 10.0          # 最大検出距離
+    
+    # バターワースフィルタ係数 (カットオフ周波数 0.7Hz)
+    bfa0x: 1.0                         # フィルタ分母係数0次項
+    bfa1x: -1.760041880343169          # フィルタ分母係数1次項  
+    bfa2x: 1.182893262037831           # フィルタ分母係数2次項
+    bfa3x: -0.278059917634546          # フィルタ分母係数3次項
+    bfb0x: 0.018098933007514           # フィルタ分子係数0次項
+    bfb1x: 0.054296799022543           # フィルタ分子係数1次項
+    bfb2x: 0.054296799022543           # フィルタ分子係数2次項 
+    bfb3x: 0.018098933007514           # フィルタ分子係数3次項
+    
+    # 追跡領域設定 [m]
+    in_front_min_x: 0.25               # ロボット前方最小距離
+    in_front_max_x: 1.5                # ロボット前方最大距離
+    in_front_min_y: -0.5               # ロボット左側最大範囲
+    in_front_max_y: 0.5                # ロボット右側最大範囲
+    
+    # デバッグ設定
+    show_hypothesis: true             # 可視化マーカーの表示有無
+    debug_mode: false                  # デバッグログ出力の有効化
