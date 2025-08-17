@@ -1,7 +1,7 @@
 services:
   kachaka:
     container_name: kachaka-bridge-trcp
-    image: "kachaka-api:erasers"
+    image: "erasers_kachaka:20250817"
     network_mode: "host"
     ipc: "host"
     pid: "host"
