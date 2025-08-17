@@ -230,7 +230,7 @@ class Nav2Navigation():
         self.__waypoints: List[PoseStamped] = []
         
         # 姿勢取得方法の設定（TF使用フラグ）
-        self.__use_tf_for_pose = exploration 
+        self.use_tf_for_pose = exploration 
         
         # TFバッファの初期化（引数で指定がない場合は新規作成）
         self.__tf_buffer = tf_buffer or Buffer()
@@ -316,7 +316,7 @@ class Nav2Navigation():
             取得できない場合はブロッキング状態になります。
         """
         # TFを使用して姿勢を取得する場合
-        if self.__use_tf_for_pose:
+        if self.use_tf_for_pose:
             while rclpy.ok():
                 # ROSコールバックを処理
                 rclpy.spin_once(self.__node, timeout_sec=0.1)
