@@ -49,6 +49,7 @@ def generate_launch_description():
 
     # config
     config_bringup_type = LaunchConfiguration("bringup_type")
+    config_bringup_docker = LaunchConfiguration("bringup_docker")
     config_use_rviz = LaunchConfiguration("use_rviz")
     config_shelf_type = LaunchConfiguration("shelf_type")
     config_bringup_msg = LaunchConfiguration("bringup_msg")
@@ -58,25 +59,30 @@ def generate_launch_description():
     # declare arguments
     declare_bringup_type = DeclareLaunchArgument(
         "bringup_type", default_value="1",
-        description="起動する bridge コンテナの種類を選択します。[0, 1] のどちらかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+        description="Select bringup docker container type: [0, 1]. Please read doc about detail."
+    )
+    declare_bringup_docker = DeclareLaunchArgument(
+        "bringup_docker", default_value="True",
+        description="Launch docker container automatic."
     )
     declare_use_rviz = DeclareLaunchArgument(
         "use_rviz", default_value="False",
-        description="Rviz2 を起動します True or False"
+        description="Launch Rviz2"
     )
     declare_shelf_type = DeclareLaunchArgument(
         "shelf_type", default_value="1",
-        description="[0, 1, 2] のどれかを選択してください。詳しくは起動方法ドキュメントを参照してください。"
+        description="Select shelf model type:[0, 1, 2]/ Please read doc about detail."
     )
     declare_bringup_msg = DeclareLaunchArgument(
         "bringup_msg", default_value=BRINGUP_MSG,
-        description="カチャカ起動時のメッセージを設定します。"
+        description="Define speak bringup message from Kachaka."
     )
     declare_publish_tof_pc2 = DeclareLaunchArgument(
         "publish_tof_pc2", default_value="True",
-        description="カチャカ前方 ToF センサーの PointCloud2 を発行します。"
+        description="Enable publish TOF Pointcloud2 topic from Kachaka front sensor."
     )
 
+    ld.add_action(declare_bringup_docker)
     ld.add_action(declare_bringup_type)
     ld.add_action(declare_shelf_type)
     ld.add_action(declare_publish_tof_pc2)
@@ -231,7 +237,9 @@ def generate_launch_description():
         shell=True,
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 0"
+                config_bringup_type, " == 0",
+                " and ",
+                config_bringup_docker
             ])
         )
     )
@@ -244,7 +252,9 @@ def generate_launch_description():
         shell=True,
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 1"
+                config_bringup_type, " == 1",
+                " and ",
+                config_bringup_docker
             ])
         )
     )
