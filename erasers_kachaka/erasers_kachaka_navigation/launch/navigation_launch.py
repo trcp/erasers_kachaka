@@ -262,7 +262,7 @@ def generate_launch_description():
     group_navigation = GroupAction(
         condition=UnlessCondition(config_use_map),
         actions=[
-            node_emcl2,
+            #node_emcl2,
             node_nav2_controller,
             node_smoother_server,
             node_planner_server,

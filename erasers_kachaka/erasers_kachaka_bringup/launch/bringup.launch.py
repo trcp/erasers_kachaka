@@ -13,6 +13,7 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
+KACHAKA_IP = os.environ.get('KACHAKA_IP')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
 if BRINGUP_MSG == None:
@@ -110,6 +111,14 @@ def generate_launch_description():
         emulate_tty=True,
         namespace=KACHAKA_NAME
     )
+    node_volume_manager = Node(
+        package="erasers_kachaka_common",
+        executable="volume_manager",
+        output="screen",
+        emulate_tty=True,
+        parameters=[{'kachaka_ip': KACHAKA_IP}],
+        namespace=KACHAKA_NAME
+    )
     node_object_detection_visualizer = Node(
         package="erasers_kachaka_vision",
         executable="object_detection_visualizer",
@@ -200,6 +209,7 @@ def generate_launch_description():
     ld.add_action(node_emergency_manager)
     ld.add_action(node_emergency_button)
     ld.add_action(node_battery_manager)
+    ld.add_action(node_volume_manager)
     ld.add_action(node_object_detection_visualizer)
     ld.add_action(node_lidar_observer)
     #ld.add_action(node_lidar_resampler)
