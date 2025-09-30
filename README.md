@@ -102,12 +102,22 @@ python3 -m pip install --upgrade pip
 　実環境上にインストールする場合、以下のコマンドを実行して kachaka-api をインストールしてください。
 ```bash
 pip install kachaka-api
-pip install "scipy>=1.13.0"
+pip install "scipy>=1.13.0" transform3d matplotlib numpy==1.22.4
 ```
 　正常にインストールが完了したら以下のコマンドを実行して正常に kachaka-api がインスt−おるされたか確認してください。
 以下のコマンドを実行したとき、なにもメッセージが表示されなければ成功です。
 ```bash
 python3 -c "import kachaka_api"
+```
+
+### 依存関係のインストール
+　以下のコマンドを実行して必要な依存関係を自動インストールします．
+```bash
+cd ~/colcon_ws
+sudo apt update && rosdep update
+```
+```bash
+rosdep install -y -i --from-path src --skip-keys=ros2_aruco_interfaces --skip-keys=ros2_aruco
 ```
 
 ### 環境変数の設定
