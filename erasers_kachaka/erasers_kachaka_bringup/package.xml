@@ -18,6 +18,8 @@
   <depend>erasers_kachaka_vision</depend>
   <depend>erasers_kachaka_cartographer</depend>
   <depend>erasers_kachaka_navigation</depend>
+
+  <depend>rmw_cyclonedds_cpp</depend>
   
   <export>
     <build_type>ament_cmake</build_type>
