@@ -46,10 +46,15 @@ services:
       - RMW_IMPLEMENTATION
       - KACHAKA_NAME
       - KACHAKA_IP
+      - USE_RVIZ
+      - BRINGUP_TYPE
+      - SHELF_TYPE
     command: "/bin/bash -ic 
-      \"sleep 10 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
+      \"sleep 5 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
         bringup_docker:=False \
-        use_rviz:=True\""
+        use_rviz:=${USE_RVIZ} \
+        bringup_type:=${BRINGUP_TYPE} \
+        shelf_type:=${SHELF_TYPE}\""
 
 
   nomap_bridge:
