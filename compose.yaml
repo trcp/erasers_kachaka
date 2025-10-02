@@ -1,0 +1,97 @@
+x-linux: &linux
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix
+    - $HOME/.Xauthority/:/home/${USERNAME}/.Xauthority
+    - /dev:/dev
+    - ./erasers_kachaka:$HOME/colcon_ws/src/erasers_kachaka
+  devices:
+    - /dev:/dev
+
+x-gpu: &gpu
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+
+x-network: &network
+  privileged: true
+  ipc: host
+  network_mode: host
+  tty: true
+  stdin_open: true
+
+
+services:
+  erasers_kachaka:
+    container_name: erasers_kachaka
+    image: gai313/ros2:humble.erk
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ROS=humble
+        - USERNAME=${USER}
+        - GROUPNAME=${USER}
+        - UID
+        - GID
+        - PASSWORD
+    <<: [*network, *linux]
+    environment:
+      - DISPLAY
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - RMW_IMPLEMENTATION
+      - KACHAKA_NAME
+      - KACHAKA_IP
+    command: "/bin/bash -ic 
+      \"sleep 10 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
+        bringup_docker:=False \
+        use_rviz:=True\""
+
+
+  nomap_bridge:
+    container_name: erasers_kachaka.bridge.nomap
+    image: gai313/ros2:kachaka_bridge.nomap
+    build:
+      context: .
+      dockerfile: Dockerfile.bridge
+      target: nomap_bridge
+      args:
+        - BASE_ARCH=x86_64
+    <<: [*network]
+    environment:
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - ROS_LOG_DIR=/tmp
+      - KACHAKA_NAME
+      - KACHAKA_IP
+      - GRPC_PORT
+      - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+      - FRAME_PREFIX=""
+    user: "${USER_ID}:${GROUP_ID}"
+    command: ros2 launch kachaka_grpc_ros2_bridge grpc_ros2_bridge.trcp.launch.xml server_uri:=${API_GRPC_BRIDGE_SERVER_URI}
+
+  official_bridge:
+    container_name: erasers_kachaka.bridge.official
+    image: gai313/ros2:kachaka_bridge.official
+    build:
+      context: .
+      dockerfile: Dockerfile.bridge
+      target: official_bridge
+      args:
+        - BASE_ARCH=x86_64
+    <<: [*network]
+    environment:
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - ROS_LOG_DIR=/tmp
+      - KACHAKA_NAME
+      - KACHAKA_IP
+      - GRPC_PORT
+      - API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+      - FRAME_PREFIX=""
+    user: "${USER_ID}:${GROUP_ID}"
+    command: ros2 launch kachaka_grpc_ros2_bridge grpc_ros2_bridge.launch.xml server_uri:=${API_GRPC_BRIDGE_SERVER_URI} namespace:=${KACHAKA_NAME}
