@@ -176,3 +176,9 @@ export PASSWORD=<password>
 ```bash
 docker compose build erasers_kachaka
 ```
+
+> [!WARNING]
+> erasers_kachaka コンテナをビルドしているときに以下のエラーが発生した場合，環境変数 `PASSWORD` が未定義であるか，変数内画からである可能性があります．もう一度この環境変数に任意のパスワードを定義して再実行してください．
+> ```
+> chpasswd: (line 1, user USERNAME) password not changed
+> ```
