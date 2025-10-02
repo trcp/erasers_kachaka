@@ -4,6 +4,7 @@ x-linux: &linux
     - $HOME/.Xauthority/:/home/${USERNAME}/.Xauthority
     - /dev:/dev
     - ./erasers_kachaka:$HOME/colcon_ws/src/erasers_kachaka
+    - ./map:$HOME/map
   devices:
     - /dev:/dev
 
@@ -50,7 +51,7 @@ services:
       - BRINGUP_TYPE
       - SHELF_TYPE
     command: "/bin/bash -ic 
-      \"sleep 5 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
+      \"terminator & sleep 5 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
         bringup_docker:=False \
         use_rviz:=${USE_RVIZ} \
         bringup_type:=${BRINGUP_TYPE} \
