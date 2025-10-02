@@ -31,10 +31,16 @@ int main(int argc, char ** argv)
   int save_late = node->get_parameter("save_late").as_int();
 
   // コマンド文字列の作成
-  // 名前空間の処理を無効にする
+  std::string ns = node->get_namespace();
+  std::string map_topic = "/mapping/map";
+  if (ns != "/") {
+    map_topic = ns + map_topic;
+  }
+  RCLCPP_INFO(node->get_logger(), "Target map topic is: %s", map_topic.c_str());
   std::ostringstream oss;
   oss << "ros2 run nav2_map_server map_saver_cli -f "
-      << map_path << "/" << map_name;
+      << map_path << "/" << map_name << " "
+      << "--ros-args -r map:=" << map_topic;
   std::string cmd = oss.str();
 
   // 定期的にマップ保存コマンドを実行するループ

@@ -17,7 +17,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     # 各コンフィグのデフォルト値
-    default_map_dir = "~/map"
+    default_map_dir = os.path.join(os.environ.get('HOME'), 'map')
     default_map_name = "test_field"
     defaulr_map_save_late = "5"
     default_config_dir = os.path.join(
@@ -34,12 +34,13 @@ def generate_launch_description():
 
 
     # configs
-    config_use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    config_namespace = LaunchConfiguration('namespace')
     config_use_map_save = LaunchConfiguration("use_map_save")
     config_map_dir = LaunchConfiguration("map_dir")
     config_map_name = LaunchConfiguration("map_name")
     config_map_save_late = LaunchConfiguration("map_save_late")
     config_use_rviz = LaunchConfiguration("use_rviz")
+    config_use_sim_time = LaunchConfiguration("use_sim_time")
     config_use_navigation = LaunchConfiguration("use_navigation")
     config_config_dir = LaunchConfiguration("config_dir")
     config_config_filename = LaunchConfiguration("config_name")
@@ -47,51 +48,61 @@ def generate_launch_description():
     config_publish_period_sec = LaunchConfiguration('publish_period_sec')
 
 
+    declare_namespace = DeclareLaunchArgument(
+        'namespace', default_value=NAMESPACE,
+        description="Robot's name"
+    )
     declare_use_map_save = DeclareLaunchArgument(
         'use_map_save', default_value="True",
-        description="自動的にマップを保存します。"
+        description="Enable automatic save map."
     )
     declare_map_dir = DeclareLaunchArgument(
         'map_dir', default_value=default_map_dir,
-        description="マップ保存先のディレクトリを指定します。デフォルトはこのパッケージの map ディレクトリです。"
+        description="Directory for save map."
     )
     declare_map_name = DeclareLaunchArgument(
         'map_name', default_value=default_map_name,
-        description="保存されるマップ名を指定します。"
+        description="Name of map file."
     )
     declare_use_rviz = DeclareLaunchArgument(
-        'use_rviz', default_value="True",
-        description="Rviz2 を起動します。"
+        'use_rviz', default_value="False",
+        description="Bringup RViz2"
+    )
+    declare_use_sim_time = DeclareLaunchArgument(
+        'use_sim_time', default_value="False",
+        description="If use rosbag"
     )
     declare_use_navigation = DeclareLaunchArgument(
         'use_navigation', default_value="false",
-        description="Navigation を有効にします。"
+        description="Enable navigation"
     )
     declare_map_save_late = DeclareLaunchArgument(
         'map_save_late', default_value=defaulr_map_save_late,
-        description="マップを自動保存する周期（/s）を指定します。"
+        description="Define save map late [sec]"
     )
     declare_config_dir = DeclareLaunchArgument(
         'config_dir', default_value=default_config_dir,
-        description=''
+        description='Full path for Cartographer config directory'
     )
     declare_config_name = DeclareLaunchArgument(
         'config_name', default_value=default_config_filename,
-        description=''
+        description='Cartographer config .lua file name.'
     )
     declare_resolution = DeclareLaunchArgument(
         'resolution', default_value='0.025',
-        description=''
+        description='Map resolution'
     )
     declare_publish_period_sec = DeclareLaunchArgument(
         'publish_period_sec', default_value='1.0',
-        description=''
+        description='Map update late.'
     )
 
+    ld.add_action(declare_namespace)
     ld.add_action(declare_use_map_save)
-    #ld.add_action(declare_map_dir)
+    ld.add_action(declare_map_dir)
     ld.add_action(declare_map_name)
     ld.add_action(declare_map_save_late)
+    ld.add_action(declare_use_sim_time)
     ld.add_action(declare_use_rviz)
     ld.add_action(declare_use_navigation)
     ld.add_action(declare_config_dir)
@@ -120,35 +131,43 @@ def generate_launch_description():
     ld.add_action(launch_navigation)
 
 
+    remappings = [
+        (['/', config_namespace, '/cartographer/imu'], ['/', config_namespace, '/imu/imu']),
+        (['/', config_namespace, '/cartographer/scan'], ['/', config_namespace, '/lidar/scan']),
+        (['/', config_namespace, '/cartographer/odom'], ['/', config_namespace, '/odometry/odometry']),
+        ('/cartographer/map', ['/', config_namespace, '/cartographer/map']),
+        ('/map', ['/', config_namespace, '/mapping/map']),
+    ]
+
+
     node_cartographer = Node(
         package='cartographer_ros',
         executable='cartographer_node',
         output='screen',
+        emulate_tty=True,
         parameters=[{'use_sim_time':config_use_sim_time},
                     {'frame_prefix': ''}],
-        remappings=[
-            ('/imu', f'/{NAMESPACE}/imu/imu'),
-            ('/scan', f'/{NAMESPACE}/lidar/scan'),
-            ('/odom', f'/{NAMESPACE}/odometry/odometry'),
-        ],
+        remappings=remappings,
         arguments=[
             '-configuration_directory', config_config_dir,
             '-configuration_basename', config_config_filename,
             #'-load_state_filename',
-        ]
+        ],
+        namespace=[config_namespace, '/cartographer']
     )
     node_occupancy_grid_node = Node(
         package='cartographer_ros',
         executable='cartographer_occupancy_grid_node',
         output='screen',
+        emulate_tty=True,
         parameters=[{'use_sim_time':config_use_sim_time}],
         arguments=[
             '-resolution', config_resolution,
             '-publish_period_sec', config_publish_period_sec,
         ],
-        remappings=[
-            ('/map', '/cartographer/map')
-        ],
+        remappings=remappings,
+        namespace=[config_namespace, '/cartographer']
+
     )
     node_map_saver = Node(
         package='erasers_kachaka_cartographer',
@@ -159,18 +178,21 @@ def generate_launch_description():
             {'map_name': config_map_name},
             {'save_late': config_map_save_late}
         ],
+        namespace=config_namespace,
         condition=IfCondition(config_use_map_save)
     )
     node_map_providor = Node(
         package='erasers_kachaka_cartographer',
         executable='map_providor',
         output='screen',
+        remappings=remappings,
+        namespace=[config_namespace, '/cartographer']
     )
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
         arguments=["-d", default_rviz],
-        #condition=IfCondition(config_use_rviz)
+        condition=IfCondition(config_use_rviz)
     )
     
     ld.add_action(node_cartographer)
