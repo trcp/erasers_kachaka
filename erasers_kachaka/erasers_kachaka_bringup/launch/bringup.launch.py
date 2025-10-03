@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction, LogInfo, GroupAction
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -48,6 +48,8 @@ def generate_launch_description():
 
 
     # config
+    config_namespace = LaunchConfiguration("namespace")
+    config_ip = LaunchConfiguration("robot_ip")
     config_bringup_type = LaunchConfiguration("bringup_type")
     config_bringup_docker = LaunchConfiguration("bringup_docker")
     config_use_rviz = LaunchConfiguration("use_rviz")
@@ -57,6 +59,14 @@ def generate_launch_description():
 
 
     # declare arguments
+    declare_namespace = DeclareLaunchArgument(
+        "namespace", default_value=KACHAKA_NAME,
+        description="Robot Namespace"
+    )
+    declare_ip = DeclareLaunchArgument(
+        "robot_ip", default_value=KACHAKA_IP,
+        description="Robot IP address"
+    )
     declare_bringup_type = DeclareLaunchArgument(
         "bringup_type", default_value="1",
         description="Select bringup docker container type: [0, 1]. Please read doc about detail."
@@ -82,6 +92,8 @@ def generate_launch_description():
         description="Enable publish TOF Pointcloud2 topic from Kachaka front sensor."
     )
 
+    ld.add_action(declare_namespace)
+    ld.add_action(declare_ip)
     ld.add_action(declare_bringup_docker)
     ld.add_action(declare_bringup_type)
     ld.add_action(declare_shelf_type)
@@ -94,57 +106,57 @@ def generate_launch_description():
         package="erasers_kachaka_common",
         executable="kachaka_speak_subscriber",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_emergency_button = Node(
         package="erasers_kachaka_common",
         executable="emergency_button",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_volume_manager = Node(
         package="erasers_kachaka_common",
         executable="volume_manager",
         output="screen",
         emulate_tty=True,
-        parameters=[{'kachaka_ip': KACHAKA_IP}],
-        namespace=KACHAKA_NAME
+        parameters=[{'kachaka_ip': config_ip}],
+        namespace=config_namespace
     )
     node_object_detection_visualizer = Node(
         package="erasers_kachaka_vision",
         executable="object_detection_visualizer",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_lidar_resampler = Node(
         package="erasers_kachaka_common",
         executable="lidar_resampler",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME,
+        namespace=config_namespace,
         remappings=[
             ("input_scan", "lidar/scan"),
             ("output_scan", "sampling_lidar/scan")
@@ -156,7 +168,7 @@ def generate_launch_description():
         output="screen",
         parameters=[param_for_pt_fields_node],
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_leg_finder_node = Node(
         package="erasers_kachaka_navigation",
@@ -164,14 +176,14 @@ def generate_launch_description():
         output="screen",
         parameters=[param_for_leg_finder_node],
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_robot_stopper = Node(
         package="erasers_kachaka_common",
         executable="robot_stopper",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_rviz = Node(
         package="rviz2",
@@ -283,8 +295,20 @@ def generate_launch_description():
         ]
     )
 
+    loggers = GroupAction(
+        actions=[
+            LogInfo(msg="============== eR@sers Kachaka Info =================="),
+            LogInfo(msg=["Kachaka Name: ", config_namespace]),
+            LogInfo(msg=["Kachaka IP: ", config_ip]),
+            LogInfo(msg=["Bringup Type: ", config_bringup_type]),
+            LogInfo(msg=["Shelf Type: ", config_shelf_type]),
+            LogInfo(msg="======================================================"),
+        ]
+    )
+
     ld.add_action(bringup_actions)
     ld.add_action(bringup_msg)
+    ld.add_action(loggers)
 
 
     # LAUNCHERS
@@ -303,12 +327,12 @@ def generate_launch_description():
     )
     launch_kachaka_description_only =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            get_package_share_directory("kachaka_description"),
-            "/launch/robot_description.launch.py"
+            get_package_share_directory("erasers_kachaka_description"),
+            "/launch/description.launch.py"
         ]),
         launch_arguments={
-            "namespace":"",
-            "frame_prefix":"",
+            "namespace":config_namespace,
+            "use_shelf":"false",
         }.items(),
         condition=IfCondition(
             PythonExpression([
