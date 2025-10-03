@@ -319,9 +319,24 @@ def generate_launch_description():
         ]),
         condition=IfCondition(
             PythonExpression([
-                config_shelf_type, " == 1",
+                config_shelf_type, " == 2",
                 #" or ",
                 #config_shelf_type, " == 2",
+            ])
+        )
+    )
+    launch_kachaka_description_with_shelf =  IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory("erasers_kachaka_description"),
+            "/launch/description.launch.py"
+        ]),
+        launch_arguments={
+            "namespace":config_namespace,
+            "use_shelf":"true",
+        }.items(),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 1"
             ])
         )
     )
@@ -359,6 +374,7 @@ def generate_launch_description():
 
 
     ld.add_action(launch_short_shelf_description)
+    ld.add_action(launch_kachaka_description_with_shelf)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
     #ld.add_action(launch_tof_pointcloud)
