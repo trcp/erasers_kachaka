@@ -228,8 +228,13 @@ xhost +
     ```bash
     docker compose up erasers_kachaka official_bridge
     ```
+    <img src="https://i.imgur.com/B7ThilZ.png"/>
 - **マップを持たずに使用する場合**<br>
     自作マップを利用したい場合はこちらを実行してください．
     ```bash
     docker compose up erasers_kachaka nomap_bridge
     ```
+    <img src="https://i.imgur.com/IlfDoiT.png"/>
+
+コンテナ起動時に以下のようなターミナル「Terminator」が起動します．erasers_kachaka コンテナ内で ROS2 などの操作をする場合はこちらで行います．
+<br><img src="https://i.imgur.com/ebz08kS.png"/>
