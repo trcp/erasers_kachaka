@@ -168,6 +168,7 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
  を参照してください。
 
 # Docker から eR@sers Kachaka をセットアップする
+## erasers_kachaka イメージをビルドする
 　以下のコマンドを実行してコンテナ内で使用する任意のパスワードを用意してください．
 ```bash
 export PASSWORD=<password>
@@ -182,3 +183,53 @@ docker compose build erasers_kachaka
 > ```
 > chpasswd: (line 1, user USERNAME) password not changed
 > ```
+
+## Kachaka と接続する設定を行う
+　ビルドが完了したらリポジトリ直下にある [.env](/.env) を開き，変数 `KACHAKA_IP` を接続したい Kachaka の IP アドレスに設定してください．
+```diff
+...
+# IP Address for Kachaka
+- KACHAKA_IP=192.168.195.121
++ KACHAKA_IP=XXX.XXX.XXX.XXX
+...
+```
+
+> [!TIP]
+> Wi-Fi 経由で Kachaka と接続する場合，Kachaka に「ねぇカチャカ，IP アドレスを教えて」と尋ねると IP アドレスを教えてくれます．
+
+他にも .env ファイルには erasers_kachaka を利用するための環境変数をが用意されています．それぞれの値は以下の表を参照してください．
+
+|変数名|意味|
+|:---|:---|
+|**UID**|コンテナ内のユーザー権限設定．編集しないでください．|
+|**USER_ID**|コンテナ内のユーザー権限設定．編集しないでください．|
+|**GID**|コンテナ内のグループ権限設定．編集しないでください．|
+|**GROUP_ID**|コンテナ内のグループ権限設定．編集しないでください．|
+|**ROS_DOMAIN_ID**|コンテ内で利用する ROS_DOMAIN_ID を設定します．他のロボットからの干渉を防ぐには任意の値に設定することを推奨します．|
+|**ROS_LOCALHOST_ONLY**|LAN 上にトピックを公開したくない場合はこの変数に `1` を代入してください．|
+|**RMW_IMPLEMENTATION**|ROS2 通信に使用する DDS プロトコルを設定します．`rmw_fastrtps_cpp` と `rmw_cyclonedds_cpp` を選択できます．|
+|**KACHAKA_NAME**|ロボットの名前空間を定義します．`er_kachaka` の場合，`/er_kachaka/...` のトピックらを取得，出力します．|
+|**KACHAKA_IP**|Kachaka の IP アドレスを定義します．|
+|**USE_RVIZ**|erasers_kachaka コンテナ起動時に RViz を表示，非表示にします．|
+|**BRINGUP_TYPE**|この変数は使われていません．|
+|**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br>１：シェルフを積載した Kachaka<br>２：なにもなし|
+|**GRPC_PORT**|Kachaka との通信に必要な変数です．編集しないでください．|
+|**API_GRPC_BRIDGE_SERVER_URI**|Kachaka との通信に必要な変数です．編集しないでください．|
+
+## erasers_kachaka を起動する
+　使用するコンピュータが起動して初めて利用する場合は以下のコマンドを実行して Docker が GUI を出力できるようにしてください．
+```bash
+xhot +
+```
+　起動方法には２つのオプションがあります．
+
+- **Kachaka App で作成したマップを使用する場合**<br>
+    Kachaka の内蔵マップを使いたい場合はこちらを実行してください．
+    ```bash
+    docker compose up erasers_kachaka official_bridge
+    ```
+- **マップを持たずに使用する場合**<br>
+    自作マップを利用したい場合はこちらを実行してください．
+    ```bash
+    docker compose up erasers_kachaka nomap_bridge
+    ```
