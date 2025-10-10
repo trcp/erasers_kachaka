@@ -179,7 +179,7 @@ docker compose build erasers_kachaka
 ```
 
 > [!WARNING]
-> erasers_kachaka コンテナをビルドしているときに以下のエラーが発生した場合，環境変数 `PASSWORD` が未定義であるか，変数内画からである可能性があります．もう一度この環境変数に任意のパスワードを定義して再実行してください．
+> erasers_kachaka コンテナをビルドしているときに以下のエラーが発生した場合，環境変数 `PASSWORD` が未定義であるか，変数内が空である可能性があります．もう一度この環境変数に任意のパスワードを定義して再実行してください．
 > ```
 > chpasswd: (line 1, user USERNAME) password not changed
 > ```
@@ -212,14 +212,14 @@ docker compose build erasers_kachaka
 |**KACHAKA_IP**|Kachaka の IP アドレスを定義します．|
 |**USE_RVIZ**|erasers_kachaka コンテナ起動時に RViz を表示，非表示にします．|
 |**BRINGUP_TYPE**|この変数は使われていません．|
-|**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br>１：シェルフを積載した Kachaka<br>２：なにもなし|
+|**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br><img src="https://i.imgur.com/3QpGqCA.png" /><br>１：シェルフを積載した Kachaka<br><img src="https://i.imgur.com/LSJ5DwV.png" /><br>２：なにもなし<br><img src="https://i.imgur.com/3HtXu9S.png" />|
 |**GRPC_PORT**|Kachaka との通信に必要な変数です．編集しないでください．|
 |**API_GRPC_BRIDGE_SERVER_URI**|Kachaka との通信に必要な変数です．編集しないでください．|
 
 ## erasers_kachaka を起動する
 　使用するコンピュータが起動して初めて利用する場合は以下のコマンドを実行して Docker が GUI を出力できるようにしてください．
 ```bash
-xhot +
+xhost +
 ```
 　起動方法には２つのオプションがあります．
 
