@@ -1,5 +1,5 @@
 ARG ROS=humble
-FROM gai313/ros2:${ROS}
+FROM gai313/ros2:${ROS}.amd64
 ARG ROS
 
 
