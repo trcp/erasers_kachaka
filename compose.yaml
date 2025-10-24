@@ -71,6 +71,7 @@ services:
     environment:
       - ROS_DOMAIN_ID
       - ROS_LOCALHOST_ONLY
+      - RMW_IMPLEMENTATION
       - ROS_LOG_DIR=/tmp
       - KACHAKA_NAME
       - KACHAKA_IP
@@ -93,6 +94,7 @@ services:
     environment:
       - ROS_DOMAIN_ID
       - ROS_LOCALHOST_ONLY
+      - RMW_IMPLEMENTATION
       - ROS_LOG_DIR=/tmp
       - KACHAKA_NAME
       - KACHAKA_IP
