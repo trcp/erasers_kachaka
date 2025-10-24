@@ -64,8 +64,16 @@ def generate_launch_description():
             }
         ]
     )
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        namespace=namespace,
+        output='screen',
+        emulate_tty=True,
+    )
 
     ld.add_action(robot_state_publisher)
+    ld.add_action(joint_state_publisher)
 
 
     return ld
