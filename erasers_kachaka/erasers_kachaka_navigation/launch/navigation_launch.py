@@ -64,6 +64,7 @@ def generate_launch_description():
         (['/', config_namespace, '/navigation/cmd_vel'], ['/', config_namespace, '/manual_control/cmd_vel']),
         (['/', config_namespace, '/navigation/map'], ['/', config_namespace, '/mapping/map']),
         (['/', config_namespace, '/navigation/goal_pose'], ['/', config_namespace, '/goal_pose']),
+        ('/scan', ['/', config_namespace, '/lidar/scan']),
         ('/odom', ['/', config_namespace, '/odometry/odometry_reliable']),
     ]
     use_map_lifecycle_nodes = [
