@@ -29,7 +29,7 @@ def generate_launch_description():
     )
     default_params_file = os.path.join(
         get_package_share_directory('erasers_kachaka_navigation'),
-        'params', 'nav_carto.yaml'
+        'params', 'navigation.yaml'
     )
 
 
