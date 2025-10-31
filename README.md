@@ -211,6 +211,7 @@ docker compose build erasers_kachaka
 |**KACHAKA_NAME**|ロボットの名前空間を定義します．`er_kachaka` の場合，`/er_kachaka/...` のトピックらを取得，出力します．|
 |**KACHAKA_IP**|Kachaka の IP アドレスを定義します．|
 |**USE_RVIZ**|erasers_kachaka コンテナ起動時に RViz を表示，非表示にします．|
+|**USE_TOF_POINTS**|Kachaka の前方 ToF カメラから PointCloud2 をパブリッシュします．|
 |**BRINGUP_TYPE**|この変数は使われていません．|
 |**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br><img src="https://i.imgur.com/3QpGqCA.png" /><br>１：シェルフを積載した Kachaka<br><img src="https://i.imgur.com/LSJ5DwV.png" /><br>２：なにもなし<br><img src="https://i.imgur.com/3HtXu9S.png" />|
 |**GRPC_PORT**|Kachaka との通信に必要な変数です．編集しないでください．|
