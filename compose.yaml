@@ -47,6 +47,7 @@ services:
       - RMW_IMPLEMENTATION
       - KACHAKA_NAME
       - KACHAKA_IP
+      - USE_TOF_POINTS
       - USE_RVIZ
       - BRINGUP_TYPE
       - SHELF_TYPE
@@ -54,6 +55,7 @@ services:
       \"terminator & sleep 5 && ros2 launch erasers_kachaka_bringup bringup.launch.py 
         bringup_docker:=False \
         use_rviz:=${USE_RVIZ} \
+        publish_tof_pc2:=${USE_TOF_POINTS} \
         bringup_type:=${BRINGUP_TYPE} \
         shelf_type:=${SHELF_TYPE}\""
 
