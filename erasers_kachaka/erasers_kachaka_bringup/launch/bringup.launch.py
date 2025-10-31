@@ -369,6 +369,9 @@ def generate_launch_description():
             prefix_erk_vision,
             "/launch/tof_pointcloud_launch.py"
         ]),
+        launch_arguments={
+            "namespace":config_namespace,
+        }.items(),
         condition=IfCondition(config_publish_tof_pc2)
     )
 
@@ -377,7 +380,7 @@ def generate_launch_description():
     ld.add_action(launch_kachaka_description_with_shelf)
     ld.add_action(launch_kachaka_description_only)
     ld.add_action(launch_teleop)
-    #ld.add_action(launch_tof_pointcloud)
+    ld.add_action(launch_tof_pointcloud)
 
 
     return ld
