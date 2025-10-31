@@ -30,6 +30,7 @@
 <summary>
 ローカル環境で eR@sers Kachaka をセットアップする方法
 </summary>
+
 # ローカル環境で eR@sers Kachaka をセットアップする方法
 　前提として Docker をインストールしてください．
 
@@ -176,6 +177,7 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
 <summary>
 Docker から eR@sers Kachaka をセットアップする
 </summary>
+
 # Docker から eR@sers Kachaka をセットアップする
 ## erasers_kachaka イメージをビルドする
 　以下のコマンドを実行してコンテナ内で使用する任意のパスワードを用意してください．
