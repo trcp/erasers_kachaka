@@ -26,7 +26,10 @@
 
 -->
 
-# セットアップ方法
+<details>
+<summary>
+# ローカル環境で eR@sers Kachaka をセットアップする方法
+</summary>
 
 　前提として Docker をインストールしてください．
 
@@ -167,7 +170,12 @@ ros2 launch erasers_kachaka_bringup bringup.launch.py
  [こちら](/erasers_kachaka/erasers_kachaka_bringup/README.md)
  を参照してください。
 
+</details>
+
+<details>
+<summary>
 # Docker から eR@sers Kachaka をセットアップする
+</summary>
 ## erasers_kachaka イメージをビルドする
 　以下のコマンドを実行してコンテナ内で使用する任意のパスワードを用意してください．
 ```bash
@@ -239,3 +247,4 @@ xhost +
 
 コンテナ起動時に以下のようなターミナル「Terminator」が起動します．erasers_kachaka コンテナ内で ROS2 などの操作をする場合はこちらで行います．
 <br><img src="https://i.imgur.com/ebz08kS.png"/>
+</details>
