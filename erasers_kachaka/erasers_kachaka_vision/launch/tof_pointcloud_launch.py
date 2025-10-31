@@ -26,6 +26,30 @@ def generate_launch_description():
         executable='tof_camera_qos_conv',
         namespace=config_namespace
     )
+    register_node = Node(
+        package='depth_image_proc',
+        executable='register_node',
+        namespace=config_namespace,
+        remappings=[
+            ('rgb/camera_info', ['/', config_namespace, '/front_camera/reliable/camera_info']),
+            ('depth/camera_info', ['/', config_namespace, '/tof_camera/reliable/camera_info']),
+            ('depth/image_rect', ['/', config_namespace, '/tof_camera/reliable/image_raw']),
+            ('depth_registered/camera_info', ['/', config_namespace, '/tof_camera/registered/camera_info']),
+            ('depth_registered/image_rect', ['/', config_namespace, '/tof_camera/registered/image_rect']),
+        ]
+    )
+    xyzrgb_node = Node(
+        package='depth_image_proc',
+        executable='point_cloud_xyzrgb_node',
+        name='point_cloud_xyzrgb_node',
+        namespace=config_namespace,
+        remappings=[
+            ('rgb/camera_info', ['/', config_namespace, '/front_camera/reliable/camera_info']),
+            ('rgb/image_rect_color', ['/', config_namespace, '/front_camera/reliable/image_raw']),
+            ('depth_registered/image_rect', ['/', config_namespace, '/tof_camera/registered/image_rect']),
+            ('points', ['/', config_namespace, '/tof_camera/registered/points']),
+        ],
+    )
 
     node_container = ComposableNodeContainer(
         name="container",
@@ -48,7 +72,9 @@ def generate_launch_description():
     )
 
     ld.add_action(reliable_publisher)
-    ld.add_action(node_container)
+    ld.add_action(register_node)
+    ld.add_action(xyzrgb_node)
+    #ld.add_action(node_container)
 
 
     return ld
