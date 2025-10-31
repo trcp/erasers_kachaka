@@ -20,6 +20,7 @@
   <depend>erasers_kachaka_navigation</depend>
 
   <depend>rmw_cyclonedds_cpp</depend>
+  <depend>rosbag2_storage_mcap</depend>
   
   <export>
     <build_type>ament_cmake</build_type>
