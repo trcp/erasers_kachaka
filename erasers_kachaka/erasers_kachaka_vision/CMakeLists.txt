@@ -32,12 +32,11 @@ ament_target_dependencies(human_track
   OpenCV
 )
 
+
 add_executable(
   object_detection_visualizer
   src/object_detection_visualizer.cpp
 )
-
-
 ament_target_dependencies(
   object_detection_visualizer
   rclcpp
@@ -45,17 +44,23 @@ ament_target_dependencies(
   kachaka_interfaces
   cv_bridge
 )
-
-
 target_link_libraries(
   object_detection_visualizer 
   ${OpenCV_LIBRARIES}
 )
 
 
+add_executable(tof_camera_qos_conv src/tof_camera_qos_cnv.cpp)
+ament_target_dependencies(tof_camera_qos_conv
+  "rclcpp"
+  "sensor_msgs"
+)
+
+
 install(TARGETS
   object_detection_visualizer
   human_track
+  tof_camera_qos_conv
   DESTINATION lib/${PROJECT_NAME}
 )
 
