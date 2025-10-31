@@ -6,3 +6,5 @@
 
 /map/**
 !/map/.gitkeep
+/rosbag/**
+!/rosbag/.gitkeep

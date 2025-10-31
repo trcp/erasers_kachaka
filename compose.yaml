@@ -5,6 +5,7 @@ x-linux: &linux
     - /dev:/dev
     - ./erasers_kachaka:$HOME/colcon_ws/src/erasers_kachaka
     - ./map:$HOME/map
+    - ./rosbag:$HOME/rosbag
   devices:
     - /dev:/dev
 
@@ -58,6 +59,28 @@ services:
         publish_tof_pc2:=${USE_TOF_POINTS} \
         bringup_type:=${BRINGUP_TYPE} \
         shelf_type:=${SHELF_TYPE}\""
+
+  erasers_kachaka_bag:
+    container_name: erasers_kachaka_bag
+    image: gai313/ros2:humble.erk
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - ROS=humble
+        - USERNAME=${USER}
+        - GROUPNAME=${USER}
+        - UID
+        - GID
+        - PASSWORD
+    <<: [*network, *linux]
+    environment:
+      - DISPLAY
+      - ROS_DOMAIN_ID
+      - ROS_LOCALHOST_ONLY
+      - RMW_IMPLEMENTATION
+      - KACHAKA_NAME
+    command: "/bin/bash -ic \"terminator & rviz2 -d $(ros2 pkg prefix --share erasers_kachaka_bringup)/rviz/erasers_kachaka.rviz\""
 
 
   nomap_bridge:
