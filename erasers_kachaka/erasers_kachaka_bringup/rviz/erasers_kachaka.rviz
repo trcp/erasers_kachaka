@@ -4,16 +4,16 @@ Panels:
     Name: Displays
     Property Tree Widget:
       Expanded:
-        - /Global Options1
         - /Front Camera1/Visibility1
         - /Front Camera1/Topic1
         - /Back Camera1/Visibility1
+        - /ToF Camera1/Visibility1
         - /ToF Points1/Topic1
         - /ToF Points1/Autocompute Value Bounds1
         - /Global CostMap1/Topic1
         - /TF1/Tree1
       Splitter Ratio: 0.6872727274894714
-    Tree Height: 774
+    Tree Height: 417
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -26,7 +26,6 @@ Panels:
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
-      - /Current View1/Focal Point1
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz_common/Time
@@ -178,6 +177,8 @@ Visualization Manager:
         Goal Pose: true
         Grid: false
         Kachaka: false
+        Kachaka Detect Object Marker: true
+        Kachaka Detect Object Pose: true
         LiDAR: false
         Local CostMap: true
         Map: false
@@ -221,6 +222,8 @@ Visualization Manager:
         Goal Pose: true
         Grid: false
         Kachaka: false
+        Kachaka Detect Object Marker: true
+        Kachaka Detect Object Pose: true
         LiDAR: true
         Local CostMap: true
         Map: false
@@ -236,7 +239,7 @@ Visualization Manager:
       Far Plane Distance: 100
       Image Rendering: background and overlay
       Name: ToF Camera
-      Overlay Alpha: 0.5
+      Overlay Alpha: 0
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -245,22 +248,24 @@ Visualization Manager:
         Value: /er_kachaka/tof_camera/image_raw
       Value: false
       Visibility:
-        Back Camera: true
+        Back Camera: false
         Front Camera: false
-        Global CostMap: true
-        Goal Pose: true
+        Global CostMap: false
+        Goal Pose: false
         Grid: false
         Kachaka: false
-        LiDAR: true
-        Local CostMap: true
+        Kachaka Detect Object Marker: true
+        Kachaka Detect Object Pose: true
+        LiDAR: false
+        Local CostMap: false
         Map: false
-        Object Detect Image: true
-        Path: true
+        Object Detect Image: false
+        Path: false
         TF: false
         ToF Points: true
         Value: true
       Zoom Factor: 1
-    - Alpha: 0.20000000298023224
+    - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
         Max Value: 3
@@ -270,9 +275,9 @@ Visualization Manager:
       Channel Name: intensity
       Class: rviz_default_plugins/PointCloud2
       Color: 255; 255; 255
-      Color Transformer: AxisColor
+      Color Transformer: RGB8
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -281,19 +286,19 @@ Visualization Manager:
       Name: ToF Points
       Position Transformer: XYZ
       Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.05000000074505806
-      Style: Flat Squares
+      Size (Pixels): 10
+      Size (m): 0.10000000149011612
+      Style: Points
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /er_kachaka/tof_camera/points
+        Value: /er_kachaka/tof_camera/registered/points
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 0.699999988079071
       Class: rviz_default_plugins/Map
       Color Scheme: map
@@ -462,6 +467,40 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /er_kachaka/navigation/plan
       Value: true
+    - Alpha: 1
+      Arrow Length: 0.30000001192092896
+      Axes Length: 0.20000000298023224
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/PoseArray
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.07000000029802322
+      Head Radius: 0.5
+      Name: Kachaka Detect Object Pose
+      Shaft Length: 0.23000000417232513
+      Shaft Radius: 0.009999999776482582
+      Shape: Axes
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /er_kachaka/object_detection/poses
+      Value: true
+    - Class: rviz_default_plugins/MarkerArray
+      Enabled: true
+      Name: Kachaka Detect Object Marker
+      Namespaces:
+        detection_cubes: true
+        detection_labels: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /er_kachaka/object_detection/markers
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 0; 0; 0
@@ -507,26 +546,26 @@ Visualization Manager:
   Value: true
   Views:
     Current:
-      Class: rviz_default_plugins/Orbit
-      Distance: 3.812480926513672
+      Class: rviz_default_plugins/ThirdPersonFollower
+      Distance: 5.124207019805908
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.39038780331611633
-        Y: -0.22878968715667725
-        Z: 0.7418180108070374
+        X: -0.015780121088027954
+        Y: -0.018822789192199707
+        Z: 0
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.5647963285446167
+      Pitch: 0.5547972917556763
       Target Frame: base_link
-      Value: Orbit (rviz)
-      Yaw: 3.274930000305176
+      Value: ThirdPersonFollower (rviz_default_plugins)
+      Yaw: 3.15496826171875
     Saved: ~
 Window Geometry:
   Back Camera:
@@ -537,10 +576,10 @@ Window Geometry:
     collapsed: false
   Height: 2022
   Hide Left Dock: true
-  Hide Right Dock: false
+  Hide Right Dock: true
   Object Detect Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000003bc000006e4fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000af00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df0000035c00000301fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073000000006d000003fc0000018000fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000140054006f0046002000430061006d0065007200610000000475000002dc0000004900ffffff0000000100000412000006e4fc0200000006fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000001800460072006f006e0074002000430061006d006500720061010000006d000001bf0000004900fffffffb00000026004f0062006a006500630074002000440065007400650063007400200049006d00610067006501000002380000025e0000004900fffffffb00000016004200610063006b002000430061006d00650072006101000004a2000001740000004900fffffffb0000000a0056006900650077007301000006220000012f0000012f00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7c0000005cfc0100000002fb0000000800540069006d0065010000000000000e7c0000040600fffffffb0000000800540069006d0065010000000000000450000000000000000000000a5e000006e400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000003bc000004a4fc0200000009fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000af00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df0000035c00000301fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c00610079007300000002ad000002970000018000fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000140054006f0046002000430061006d0065007200610000000550000002010000004900ffffff0000000100000412000004a4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a0056006900650077007300000002ad000004a40000012f00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000e7c00000234fc0100000004fb0000001800460072006f006e0074002000430061006d0065007200610100000000000004ed000000e200fffffffb00000026004f0062006a006500630074002000440065007400650063007400200049006d00610067006501000004f9000004c20000013600fffffffb00000016004200610063006b002000430061006d00650072006101000009c7000004b5000000df00fffffffb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e7c0000005cfc0100000002fb0000000800540069006d0065010000000000000e7c0000040600fffffffb0000000800540069006d0065010000000000000450000000000000000000000e7c000004a400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -550,7 +589,7 @@ Window Geometry:
   Tool Properties:
     collapsed: false
   Views:
-    collapsed: false
+    collapsed: true
   Width: 3708
   X: 132
   Y: 64
