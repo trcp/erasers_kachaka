@@ -33,7 +33,7 @@ def generate_launch_description():
 
     # configs
     config_namespace = LaunchConfiguration('namespace')
-    config_use_sim_time = LaunchConfiguration('use_sim_time', default=False)
+    config_use_sim_time = LaunchConfiguration('use_sim_time')
     config_use_rviz = LaunchConfiguration("use_rviz")
     config_params_file = LaunchConfiguration('params_file')
     config_use_map = LaunchConfiguration('use_map')
@@ -114,12 +114,17 @@ def generate_launch_description():
         'use_respawn', default_value='true',
         description='Enable navigation reboot when occured error.'
     )
+    declare_use_sim_time = DeclareLaunchArgument(
+        'use_sim_time', default_value="False",
+        description="If use rosbag"
+    )
     ld.add_action(declare_namespace)
     ld.add_action(declare_params_file)
     ld.add_action(declare_use_map)
     ld.add_action(declare_map)
     ld.add_action(declare_autostart)
     ld.add_action(declare_use_resparn)
+    ld.add_action(declare_use_sim_time)
 
 
     stdout_linebuf_envvar = SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1')
