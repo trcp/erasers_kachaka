@@ -37,4 +37,4 @@ RUN pip install kachaka-api \
                 numpy==1.22.4
 
 RUN . /opt/ros/${ROS}/setup.bash &&\
-    colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
+    colcon build --symlink-install --packages-up-to erasers_kachaka_bringup --parallel-workers 1
