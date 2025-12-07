@@ -121,7 +121,7 @@ COPY ./customs/dynamic_tf_bridge.cpp /ws/src/kachaka_grpc_ros2_bridge/src/dynami
 COPY ./customs/static_tf_component.cpp /ws/src/kachaka_grpc_ros2_bridge/src/component/static_tf_component.cpp
 
 RUN . /opt/ros/humble/setup.sh && \
-    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
 
 
 #=============================================================================
@@ -147,7 +147,7 @@ COPY --from=kachaka-api-rosdep /kachaka-api/ros2/kachaka_interfaces /ws/src/kach
 COPY --from=kachaka-api-protogen /ws/gen-src/cpp /ws/src/kachaka_grpc_ros2_bridge/gen-src
 
 RUN . /opt/ros/humble/setup.sh && \
-    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
 
 
 #=============================================================================
@@ -177,7 +177,7 @@ COPY --from=kachaka-api-rosdep /kachaka-api/ros2/demos/kachaka_smart_speaker /ws
 COPY --from=kachaka-api-rosdep /kachaka-api/ros2/demos/kachaka_speak /ws/src/kachaka_speak
 COPY --from=kachaka-api-rosdep /kachaka-api/ros2/demos/kachaka_vision /ws/src/kachaka_vision
 RUN . /opt/kachaka/setup.sh && \
-    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release
+    colcon build --install-base ${PREFIX} --merge-install --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Release --parallel-workers 1
 
 #=============================================================================
 FROM kachaka-api-ros-base AS nomap_bridge
