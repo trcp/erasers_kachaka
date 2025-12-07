@@ -248,6 +248,28 @@ xhost +
     ```
     <img src="https://i.imgur.com/IlfDoiT.png"/>
 
-コンテナ起動時に以下のようなターミナル「Terminator」が起動します．erasers_kachaka コンテナ内で ROS2 などの操作をする場合はこちらで行います．
+　コンテナ起動時に以下のようなターミナル「Terminator」が起動します．erasers_kachaka コンテナ内で ROS2 などの操作をする場合はこちらで行います．
 <br><img src="https://i.imgur.com/ebz08kS.png"/>
+
+　Kachaka との接続に成功すると Kachaka から「Kachaka スタート！」と発話します．そして表示される Rviz にロボットからのステータスが表示されます．
+<br><img src="https://i.imgur.com/EUB7G22.jpeg" />
+
+　Rviz に表示されるデフォルトの情報は次のとおりです．
+
+|||
+|:---:|:---:|:---|
+|**Front Camera**|<img src="https://i.imgur.com/OMsDhef.png"/>|　Kachaka 前方カメラからの映像を表示します．また前方カメラから見た検出物体の推定位置も描画されますが，カメラ画像に直接描画されているものではありません．|
+|**Object Detect Image**|<img src="https://i.imgur.com/YQJqMSO.png"/>|　Kachaka 前方カメラから検出した物体情報を可視化した情報を表示します．「 *Not Detected Objects* 」と表示されている場合，Kachaka は物体を検出できていないことを示しています．|
+|**Back Camera**|<img src="https://i.imgur.com/tQFrurW.png"/>|　Kachaka 後方カメラビューを表示します．|
+|**Kachaka**|<img src="https://i.imgur.com/TQKgWtz.png"/>|　Kachaka のロボットモデル（Robot Description）を表示します．[.env](.env) の `SHELF_TYPE` によってロボットの見た目が変わります．|
+|**LiDAR**|<img src="https://i.imgur.com/qymZagf.png"/>|　Kachaka の LiDAR センサーから検出した障害物を紫色のパーティクルで示します．|
+|**Map**|<img src="https://i.imgur.com/NTJoPX0.png"/>|　Kachaka から作成されたマップを描画します．Cartographer, Navigation などを起動すると表示されます．|
+|**LocalCostMap**||
+|**GlobalCostMap**||
+|**TF**|<img src="https://i.imgur.com/8ulIjro.png"/>|　ロボットの現在の座標系を X（赤軸）,Y（緑軸）,Z軸（青軸）で示します．|
+|**Path**||　ナビゲーション時のロボットの起動を描画します．|
+|**Kachaka Detect Object Pose**|<img src="https://i.imgur.com/05aIscc.png"/>|　検出した物体の推定位置を X,Y,Z 軸で描画します．TF と酷似していますがこの軸のほうが太いです．|
+|**Kachaka Detect Object Marker**|<img src="https://i.imgur.com/05aIscc.png"/>|　検出した物体の推定サイズと位置を描画します．描画されたボックスが検出した物体の推定サイズを示し，ボックス内中央に検出した物体名が描画されます．|
+|**Goal Pose**|　ナビゲーション時のロボットの到達位置を描画します．|
+　
 </details>
