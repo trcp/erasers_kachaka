@@ -70,12 +70,12 @@ cp customs/static_tf_component.cpp ~/colcon_ws/src/kachaka-api/ros2/kachaka_grpc
 docker compose build nomap_bridge official_bridge 
 ```
 
-> [!TIP]
+> 
 > ネットワーク状況によってビルドにはかなりの時間がかかります。そのため上記コマンドを実行したら別のターミナルで次の手順を行うことをおすすめします。
 
 ## 4. 必要なパッケージをダウンロード
 
-> [!NOTE]
+>
 > ここから先，手順 9 までの内容は **ローカル環境に ROS2 Humble がインストールされている** ことを前提に解説しています．<br>
 > Docker 環境を使い eR@sers Kachaka を利用したい場合は **Docker から eR@sers Kachaka をセットアップする** を参照してください．
 
@@ -156,7 +156,7 @@ export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ```
 　KACHAKA_IP は実際のカチャカのIPアドレスを指定してください。
 
-> [!IMPORTANT]
+>
 > - `ROS_DOMAIN_ID` は状況に応じて任意の番号にしてください．
 > - `GRPC_PORT=26400` は Kachaka と通信するために必要な変数です．値は変更しないでください．
 > - `ROS_LOCALHOST_ONLY=0` は Kachaka と通信するために必要な変数です．値は変更しないでください．
@@ -189,7 +189,7 @@ export PASSWORD=<password>
 docker compose build erasers_kachaka
 ```
 
-> [!WARNING]
+> 
 > erasers_kachaka コンテナをビルドしているときに以下のエラーが発生した場合，環境変数 `PASSWORD` が未定義であるか，変数内が空である可能性があります．もう一度この環境変数に任意のパスワードを定義して再実行してください．
 > ```
 > chpasswd: (line 1, user USERNAME) password not changed
@@ -205,7 +205,7 @@ docker compose build erasers_kachaka
 ...
 ```
 
-> [!TIP]
+> 
 > Wi-Fi 経由で Kachaka と接続する場合，Kachaka に「ねぇカチャカ，IP アドレスを教えて」と尋ねると IP アドレスを教えてくれます．
 
 他にも .env ファイルには erasers_kachaka を利用するための環境変数をが用意されています．それぞれの値は以下の表を参照してください．
@@ -265,7 +265,7 @@ xhost +
 |**Front Camera**|<img src="https://i.imgur.com/OMsDhef.png"/>|　Kachaka 前方カメラからの映像を表示します．また前方カメラから見た検出物体の推定位置も描画されますが，カメラ画像に直接描画されているものではありません．|
 |**Object Detect Image**|<img src="https://i.imgur.com/YQJqMSO.png"/>|　Kachaka 前方カメラから検出した物体情報を可視化した情報を表示します．「 *Not Detected Objects* 」と表示されている場合，Kachaka は物体を検出できていないことを示しています．|
 |**Back Camera**|<img src="https://i.imgur.com/tQFrurW.png"/>|　Kachaka 後方カメラビューを表示します．|
-|**Kachaka**|<img src="https://i.imgur.com/TQKgWtz.png"/>|　Kachaka のロボットモデル（Robot Description）を表示します．[.env](.env) の `SHELF_TYPE` によってロボットの見た目が変わります．|
+|**Kachaka**|<img src="https://i.imgur.com/TQKgWtz.png"/>|　Kachaka のロボットモデル（Robot Description）を表示します．Docker から起動するとき，[.env](.env) の `SHELF_TYPE` によってロボットの見た目が変わります．|
 |**LiDAR**|<img src="https://i.imgur.com/qymZagf.png"/>|　Kachaka の LiDAR センサーから検出した障害物を紫色のパーティクルで示します．|
 |**Map**|<img src="https://i.imgur.com/NTJoPX0.png"/>|　Kachaka から作成されたマップを描画します．Cartographer, Navigation などを起動すると表示されます．|
 |**LocalCostMap**||　ナビゲーション時のロボット周囲の障害物に対するコストマップを描画します．|
