@@ -1,0 +1,9 @@
+<library path="joystick_panel">
+  <class name="erasers_kachaka_teleop/JoystickPanel"
+         type="erasers_kachaka_teleop::JoystickPanel"
+         base_class_type="rviz_common::Panel">
+    <description>
+      A virtual joystick panel for teleoperating Kachaka.
+    </description>
+  </class>
+</library>
