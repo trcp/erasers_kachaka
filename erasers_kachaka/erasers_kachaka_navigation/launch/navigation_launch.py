@@ -61,7 +61,7 @@ def generate_launch_description():
         (['/', config_namespace, '/navigation/imu'], ['/', config_namespace, '/imu/imu']),
         (['/', config_namespace, '/navigation/scan'], ['/', config_namespace, '/lidar/scan']),
         #(['/', config_namespace, '/navigation/odom'], ['/', config_namespace, '/odometry/odometry']),
-        (['/', config_namespace, '/navigation/cmd_vel'], ['/', config_namespace, '/manual_control/cmd_vel']),
+        #(['/', config_namespace, '/navigation/cmd_vel'], ['/', config_namespace, '/manual_control/cmd_vel']),
         (['/', config_namespace, '/navigation/map'], ['/', config_namespace, '/mapping/map']),
         (['/', config_namespace, '/navigation/goal_pose'], ['/', config_namespace, '/goal_pose']),
         ('/scan', ['/', config_namespace, '/lidar/scan']),
@@ -198,7 +198,7 @@ def generate_launch_description():
         respawn_delay=2.0,
         parameters=[configured_params],
         arguments=["--ros-args", "--log-level", 'info'],
-        remappings=remappings,
+        remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]
     )
     node_bt_navigator = Node(
         package="nav2_bt_navigator",
@@ -231,8 +231,10 @@ def generate_launch_description():
         respawn_delay=2.0,
         parameters=[configured_params],
         arguments=["--ros-args", "--log-level", 'info'],
-        remappings=remappings
-        + [("cmd_vel", "cmd_vel_nav"), ("cmd_vel_smoothed", "cmd_vel")],
+        remappings=remappings + [
+            ("cmd_vel", "cmd_vel_nav"),
+            ("cmd_vel_smoothed", ['/', config_namespace, '/manual_control/cmd_vel'])
+        ]
     )
     use_map_node_lifecycle_manager =  Node(
         package="nav2_lifecycle_manager",
@@ -260,17 +262,17 @@ def generate_launch_description():
     )
 
     node_odom_relay = Node(
-        package='topic_tools',
-        executable='relay',
-        name='odom_relay',
+        package='erasers_kachaka_navigation',
+        executable='odom_relay_node',
+        name='odom_relay_node',
         namespace=config_namespace,
         output='screen',
-        parameters=[{
-            'input_topic': 'odometry/odometry',
-            'output_topic': 'odometry/odometry_reliable',
-            'reliability': 'reliable',
-            'durability': 'volatile'
-        }]
+        #parameters=[{
+        #    'input_topic': 'odometry/odometry',
+        #    'output_topic': 'odometry/odometry_reliable',
+        #    'reliability': 'reliable',
+        #    'durability': 'volatile'
+        #}]
     )
 
 

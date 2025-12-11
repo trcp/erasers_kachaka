@@ -10,6 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 
@@ -29,11 +30,17 @@ ament_target_dependencies(leg_finder_node
   visualization_msgs
   std_srvs
 )
+add_executable(odom_relay_node src/odom_relay.cpp)
+ament_target_dependencies(odom_relay_node
+  rclcpp
+  nav_msgs
+)
 
 # install targets
 install(TARGETS
   pot_fields_node
   leg_finder_node
+  odom_relay_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
