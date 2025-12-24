@@ -141,6 +141,14 @@ def generate_launch_description():
         parameters=[{'kachaka_ip': config_ip}],
         namespace=config_namespace
     )
+    node_dock_manager = Node(
+        package="erasers_kachaka_common",
+        executable="dock_manager",
+        output="screen",
+        emulate_tty=True,
+        parameters=[{'kachaka_ip': config_ip}],
+        namespace=config_namespace
+    )
     node_object_detection_visualizer = Node(
         package="erasers_kachaka_vision",
         executable="object_detection_visualizer",
@@ -374,6 +382,7 @@ def generate_launch_description():
             node_emergency_button,
             node_battery_manager,
             node_volume_manager,
+            node_dock_manager,
             node_object_detection_visualizer,
             node_lidar_observer,
             #node_lidar_resampler,

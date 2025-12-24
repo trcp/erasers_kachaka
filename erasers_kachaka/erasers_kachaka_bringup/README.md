@@ -20,7 +20,7 @@ colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
 Docker を使用している場合
 </summary>
 
-1. **erasers_kachaka 内にある [.env](/.env) を編集します．**<br>
+1. **erasers_kachaka 内にある [kachaka_env](/kachaka_env) を編集します．**<br>
     このファイルの `KACHAKA_IP` に記述されている IP アドレスを接続したい kachaka の IP アドレスに変更してください．
     ```
     KACHAKA_IP=<接続先の IP アドレス>
@@ -31,11 +31,11 @@ Docker を使用している場合
     ```
     # 推奨
     # Kachaka 内蔵マップなしで起動したい場合
-    docker compose up erasers_kachaka nomap_bridge
+    docker compose --env-file kachaka_env up erasers_kachaka nomap_bridge
     ```
     ```
     # Kachaka 内蔵マップ有りで起動したい場合
-    docker compose up erasers_kachaka official_bridge
+    docker compose --env-file kachaka_env up erasers_kachaka official_bridge
     ```
 </details>
 

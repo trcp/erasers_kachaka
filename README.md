@@ -59,11 +59,11 @@
     ```
     以下のコマンドを実行して `nomap_bridge` コンテナをビルドします。
     ```bash
-    docker compose build nomap_bridge
+    docker compose --env-file kachaka_env build nomap_bridge
     ```
     以下のコマンドを実行して `official_bridge` コンテナをビルドします。
     ```bash
-    docker compose build official_bridge
+    docker compose --env-file kachaka_env build official_bridge
     ```
     以下のコマンドを実行して次のような結果が得られるか確認してください。
     ```bash
@@ -218,7 +218,7 @@ export PASSWORD=<password>
 ```
 　以下のコマンドを実行して eR@sers Kachaka コンテナをビルドします．
 ```bash
-docker compose build erasers_kachaka
+docker compose build --env-file kachaka_env erasers_kachaka
 ```
 
 > 
@@ -228,7 +228,7 @@ docker compose build erasers_kachaka
 > ```
 
 ## Kachaka と接続する設定を行う
-　ビルドが完了したらリポジトリ直下にある [.env](/.env) を開き，変数 `KACHAKA_IP` を接続したい Kachaka の IP アドレスに設定してください．
+　ビルドが完了したらリポジトリ直下にある [kachaka_env](/kachaka_env) を開き，変数 `KACHAKA_IP` を接続したい Kachaka の IP アドレスに設定してください．
 ```diff
 ...
 # IP Address for Kachaka
@@ -240,7 +240,7 @@ docker compose build erasers_kachaka
 > 
 > Wi-Fi 経由で Kachaka と接続する場合，Kachaka に「ねぇカチャカ，IP アドレスを教えて」と尋ねると IP アドレスを教えてくれます．
 
-他にも .env ファイルには erasers_kachaka を利用するための環境変数をが用意されています．それぞれの値は以下の表を参照してください．
+他にも kachaka_env ファイルには erasers_kachaka を利用するための環境変数をが用意されています．それぞれの値は以下の表を参照してください．
 
 |変数名|意味|
 |:---|:---|
@@ -270,13 +270,13 @@ xhost +
 - **Kachaka App で作成したマップを使用する場合**<br>
     Kachaka の内蔵マップを使いたい場合はこちらを実行してください．
     ```bash
-    docker compose up erasers_kachaka official_bridge
+    docker compose --env-file kachaka_env up erasers_kachaka official_bridge
     ```
     <img src="https://i.imgur.com/B7ThilZ.png"/>
 - **マップを持たずに使用する場合**<br>
     自作マップを利用したい場合はこちらを実行してください．
     ```bash
-    docker compose up erasers_kachaka nomap_bridge
+    docker compose --env-file kachaka_env up erasers_kachaka nomap_bridge
     ```
     <img src="https://i.imgur.com/IlfDoiT.png"/>
 
@@ -298,7 +298,7 @@ xhost +
 |**Object Detect Image**|<img src="https://i.imgur.com/YQJqMSO.png"/>|　Kachaka 前方カメラから検出した物体情報を可視化した情報を表示します．「 *Not Detected Objects* 」と表示されている場合，Kachaka は物体を検出できていないことを示しています．|
 |**Back Camera**|<img src="https://i.imgur.com/tQFrurW.png"/>|　Kachaka 後方カメラビューを表示します．|
 |**JoyStick Panel**|<img src="https://i.imgur.com/rVkfEyI.png"/>|　Kachaka をジョイスティックで移動したり，バッテリー残量の確認，発話テキストの送信ができるパネルです．|
-|**Kachaka**|<img src="https://i.imgur.com/TQKgWtz.png"/>|　Kachaka のロボットモデル（Robot Description）を表示します．Docker から起動するとき，[.env](.env) の `SHELF_TYPE` によってロボットの見た目が変わります．|
+|**Kachaka**|<img src="https://i.imgur.com/TQKgWtz.png"/>|　Kachaka のロボットモデル（Robot Description）を表示します．Docker から起動するとき，[kachaka_env](kachaka_env) の `SHELF_TYPE` によってロボットの見た目が変わります．|
 |**LiDAR**|<img src="https://i.imgur.com/qymZagf.png"/>|　Kachaka の LiDAR センサーから検出した障害物を紫色のパーティクルで示します．|
 |**Map**|<img src="https://i.imgur.com/NTJoPX0.png"/>|　Kachaka から作成されたマップを描画します．Cartographer, Navigation などを起動すると表示されます．|
 |**LocalCostMap**|<img src="https://i.imgur.com/ZRfBbVL.png"/>|　ナビゲーション時のロボット周囲の障害物に対するコストマップを描画します（明るい水色と赤のパーティクル）．|
