@@ -14,6 +14,10 @@ import os
 
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 KACHAKA_IP = os.environ.get('KACHAKA_IP')
+BRINGUP_TYPE = os.environ.get('BRINGUP_TYPE')
+SHELF_TYPE = os.environ.get('SHELF_TYPE')
+USE_RVIZ = os.environ.get('USE_RVIZ')
+USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
 if BRINGUP_MSG == None:
@@ -68,7 +72,7 @@ def generate_launch_description():
         description="Robot IP address"
     )
     declare_bringup_type = DeclareLaunchArgument(
-        "bringup_type", default_value="1",
+        "bringup_type", default_value=BRINGUP_TYPE,
         description="Select bringup docker container type: [0, 1]. Please read doc about detail."
     )
     declare_bringup_docker = DeclareLaunchArgument(
@@ -76,11 +80,11 @@ def generate_launch_description():
         description="Launch docker container automatic."
     )
     declare_use_rviz = DeclareLaunchArgument(
-        "use_rviz", default_value="False",
+        "use_rviz", default_value=USE_RVIZ,
         description="Launch Rviz2"
     )
     declare_shelf_type = DeclareLaunchArgument(
-        "shelf_type", default_value="1",
+        "shelf_type", default_value=SHELF_TYPE,
         description="Select shelf model type:[0, 1, 2]/ Please read doc about detail."
     )
     declare_bringup_msg = DeclareLaunchArgument(
@@ -88,7 +92,7 @@ def generate_launch_description():
         description="Define speak bringup message from Kachaka."
     )
     declare_publish_tof_pc2 = DeclareLaunchArgument(
-        "publish_tof_pc2", default_value="True",
+        "publish_tof_pc2", default_value=USE_TOF_POINTS,
         description="Enable publish TOF Pointcloud2 topic from Kachaka front sensor."
     )
 
@@ -244,7 +248,7 @@ def generate_launch_description():
         cmd=[[
             "docker compose",
             " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
-            " up kachaka"
+            " up nomap_bridge"
         ]],
         shell=True,
         condition=IfCondition(
@@ -259,7 +263,7 @@ def generate_launch_description():
         cmd=[[
             "docker compose",
             " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
-            " up default_kachaka"
+            " up official_bridge"
         ]],
         shell=True,
         condition=IfCondition(

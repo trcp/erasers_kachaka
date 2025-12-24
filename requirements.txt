@@ -1,0 +1,5 @@
+kachaka-api
+scipy>=1.13.0
+transform3d
+matplotlib
+numpy==1.22.4

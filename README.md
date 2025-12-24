@@ -2,175 +2,209 @@
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
 
-<!-- 
-# 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
-## 📝マニュアル
-- [⏩カチャカと接続する方法](/docs/howtoconnect.md)
-  - [🔌有線接続する方法](/docs/howtoconnect.md#ethernet)
-  - [🛜無線接続する方法](/docs/howtoconnect.md#wireless)
-- [⏩カチャカを起動する方法](/docs/howtobringup.md)
-  - [🕹️起動モードについて](/docs/howtobringup.md#mode)
-  - [🚀Launchファイルについて](/docs/howtobringup.md#launch) 
-- [🎮カチャカをコントローラーで操作する方法](/docs/howtocontrol.md)
-- [🔈カチャカから発話させる方法](/docs/howtospeak.md)
-- [🗺マップの作成方法](/docs/howtomap.md)
-
-## ⚒開発関連
-- [🐱開発のはじめ方](/docs/develop.md)
-- [🐳ros2_bridge kachaka Docker コンテナの起動チェック](/docs/erk_docker.md)
-
-## 🗒チュートリアル
-- [🚗カチャカを移動させる方法](/docs/howtomove.md)
-- [🗺マップの作成方法](/docs/howtomap.md)
-- [💫ナビゲーション方法](/docs/howtonav.md)
-
--->
-
 <details>
 <summary>
 ローカル環境で eR@sers Kachaka をセットアップする方法
 </summary>
 
-# ローカル環境で eR@sers Kachaka をセットアップする方法
-　前提として Docker をインストールしてください．
+# ローカル環境または WSL で eR@sers Kachaka をセットアップする方法
 
-## 1. ワークスペースの作成
-　以下のコマンドを実行してホームディレクトリに `colcon_ws` ディレクトリを作成します。
-```bash
-cd && mkdir -p colcon_ws/src
-```
+> [!IMPORTANT]
+> WSL で使用する推奨ディストリビューションは **Ubuntu-22.04** です。
 
-## 2. リポジトリ erasers_kachaka のダウンロード
-　以下のコマンドを実行して`colcon_ws/src` ディレクトリに移動します。
-```bash
-cd colcon_ws/src
-```
-　以下のコマンドを実行して erasers_kachaka をダウンロードします。
-```bash
-git clone https://github.com/trcp/erasers_kachaka.git
-```
+1. **Docker をインストールする**<br>
+    以下のコマンドを実行して Docker をインストールしてください。
+    ```bash
+    sudo apt update && sudo apt install -y ca-certificates curl gnupg lsb-release &&\
+    sudo mkdir -p /etc/apt/keyrings &&\
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg &&\
+    echo   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+      $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null &&\
+    sudo apt update && sudo apt install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin &&\
+    sudo usermod -aG docker $USER
+    ```
+    インストールが完了したらコンピューターを再起動してください。WSL の場合は PowerShell で以下のコマンドを実行します。
+    ```
+    # Windows PowerShell 上で実行します。
+    wsl --shutdown
+    ```
+    再起動後ターミナルを開き、以下のコマンドを実行して Docker のバージョン情報が表示されたら成功です。
+    ```bash
+    docker -v
+    ```
 
-## 3, ros2_bridge コンテナのビルド
-<!-- 
-　以下のコマンドを実行して `erasers_kachaka` ディレクトリに移動します。
-```bash
-cd ./erasers_kachaka
-```
-　以下のコマンドを実行して kachaka-api に必要なファイルをコピーします。
-```bash
-cp docker/Dockerfile.erk ../kachaka-api/
-cp customs/grpc_ros2_bridge.trcp.launch.xml ../kachaka-api/ros2/kachaka_grpc_ros2_bridge/launch/
-cp customs/dynamic_tf_bridge.cpp ~/colcon_ws/src/kachaka-api/ros2/kachaka_grpc_ros2_bridge/src/dynamic_tf_bridge.cpp
-cp customs/static_tf_component.cpp ~/colcon_ws/src/kachaka-api/ros2/kachaka_grpc_ros2_bridge/src/component/static_tf_component.cpp
-```
--->
+1. **ワークスペースを作成する**<br>
+    以下のコマンドを実行してホームディレクトリに移動します。
+    ```bash
+    cd
+    ```
+    以下のコマンドを実行してワークスペースディレクトリを作成します。
+    ```bash
+    mkdir -p ~/colcon_ws/src
+    ```
 
-　以下のコマンドを実行して Kachaka と通信するための Docker コンテナをビルドします．
-```bash
-docker compose build nomap_bridge official_bridge 
-```
+1. **erasers_kachaka をダウンロードする**<br>
+    以下のコマンドを実行して ` ~/colcon_ws/src` に移動します。
+    ```bash
+    cd  ~/colcon_ws/src
+    ```
+    以下のコマンドを実行して erasers_kachaka をダウンロードします。
+    ```bash
+    ```
+    
+1. **Kachaka Bridge コンテナをビルドする**<br>
+    erasers_kachaka ディレクトリに移動します。
+    ```bash
+    cd erasers_kachaka
+    ```
+    以下のコマンドを実行して `nomap_bridge` コンテナをビルドします。
+    ```bash
+    docker compose build nomap_bridge
+    ```
+    以下のコマンドを実行して `official_bridge` コンテナをビルドします。
+    ```bash
+    docker compose build official_bridge
+    ```
+    以下のコマンドを実行して次のような結果が得られるか確認してください。
+    ```bash
+    docker images
+    ```
+    ```
+    # 実行結果
+    IMAGE               ID             DISK USAGE   CONTENT SIZE   EXTRA
+    gai313/ros2:kachaka_bridge.nomap
+                        fde902fd84e2       2.48GB          550MB
+    gai313/ros2:kachaka_bridge.official
+                        5abff5c97387       2.48GB          550MB
+    ```
 
-> 
-> ネットワーク状況によってビルドにはかなりの時間がかかります。そのため上記コマンドを実行したら別のターミナルで次の手順を行うことをおすすめします。
+1. **erasrs_kachaka の依存関係パッケージをダウンロードする**<br>
+    以下のコマンドを実行して依存関係パッケージを自動ダウンロードします。
+    ```bash
+    # カレントディレクトリが erasers_kachaka であることを事前に確認してください。
+    vcs import .. < ./setup.repos
+    ```
+    上記コマンドを実行した後、以下のコマンドを実行して `colcon_ws/src` 内に依存関係パッケージがダウンロードされていることを確認してください。
+    ```
+    $ ls ~/colcon_ws/src
+    cartographer_ros_kachaka  erasers_kachaka  rclpy_util
+    emcl2                     kachaka-api      shelf_description
+    ```
 
-## 4. 必要なパッケージをダウンロード
+1. **pip をインストールする**<br>
+    以下のコマンドを実行して Python 管理パッケージ `pip` をインストールします。
+    ```bash
+    sudo apt install -y python3-pip
+    ```
+    次に以下のコマンドを実行してインストールした pip を最新バージョンに更新します。
+    ```bash
+    python3 -m pip install --upgrade pip
+    ```
+    
+1. **Python 依存関係パッケージをインストールする**<br>
+    以下のコマンドを実行して Python 依存パッケージをインストールします。
+    ```bash
+    # カレントディレクトリが erasers_kachaka であることを事前に確認してください。
+    vcs import .. < ./setup.repos
+    ```bash
+    pip3 install -r requirements.txt
+    ```
+    以下のコマンドを実行して `kachaka-api` が利用可能か確認します。実行結果に何も応答がなければ成功です。
+    ```bash
+    python3 -c "import kachaka_api"
+    ```
 
->
-> ここから先，手順 9 までの内容は **ローカル環境に ROS2 Humble がインストールされている** ことを前提に解説しています．<br>
-> Docker 環境を使い eR@sers Kachaka を利用したい場合は **Docker から eR@sers Kachaka をセットアップする** を参照してください．
+1. **ROS2 依存関係を自動解決する**<br>
+    `~/colcon_ws` ディレクトリに移動します。
+    ```bash
+    cd ~/colcon_ws
+    ```
+    以下のコマンドを実行して apt と rosdep を更新します。
+    ```bash
+    sudo apt update && rosdep update
+    ```
+    以下のコマンドを実行して ROS2 依存関係パッケージを自動インストールします。
+    ```bash
+    rosdep install -y -i --from-path src --skip-keys=ros2_aruco_interfaces --skip-keys=ros2_aruco
+    ```
 
-　以下のコマンドを実行し、erasers_kachaka をビルドするために必要なパッケージを src ディレクトリにダウンロードします。
-```bash
-vcs import . < ./erasers_kachaka/setup.repos
-```
-　このコマンドを実行すると、以下のパッケージが src ディレクトリにダウンロードされます。
+1. **ワークスペースをビルドする**<br>
+    以下のコマンドを実行してワークスペースをビルドします。
+    ```bash
+    # カレントディレクトリが colcon_ws  であることを事前に確認してください。
+    colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
+    ```
 
-- [**kachaka-api**](https://github.com/pf-robotics/kachaka-api.git)
-- [kachaka shelf description](https://github.com/GAI-313/kachaka_shelf_description.git)
-- [rclpy_util](https://github.com/GAI-313/rclpy_util.git)
-- [cartographer](https://github.com/ros2/cartographer.git)
-- [cartographer_ros_kachaka](https://github.com/GAI-313/cartographer_ros_kachaka.git)
-- [emcl2](https://github.com/GAI-313/emcl2_for_kachaka.git)
+1. **`~/.bashrc` に環境変数を追記する**<br>
+    ~/.bashrc に以下の環境変数を追記してください。
+    ```bash
+    # kachaka
+    source ~/colcon_ws/install/setup.bash
+    export KACHAKA_NAME="er_kachaka"
+    export KACHAKA_IP=192.168.195.125
+    export USE_TOF_POINTS=True
+    export USE_RVIZ=True
+    export BRINGUP_TYPE=0
+    export SHELF_TYPE=0
+    export KACHAKA_ERK_PATH=~/colcon_ws/src/erasers_kachaka
+    ## DO NOT EDIT !!!!
+    export GRPC_PORT=26400 
+    export API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
 
+    # ROS
+    export ROS_DOMAIN_ID=0
+    export ROS_LOCALHOST_ONLY=0
+    export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    ```
+    書き込んだらいかのコマンドを実行して ~/.bashrc を再読み込みします。
+    ```bash
+    source ~/.bashrc
+    ```
+    以下のコマンドを実行して環境変数の内容が launcher の引数に対応しているかどうか確認してください。
+    ```bash
+    ros2 launch erasers_kachaka_bringup bringup.launch.py --show-args
+    ```
+    初期設定では以下のように表示されるはずです。
+    ```
+    Arguments (pass arguments as '<name>:=<value>'):
 
-> OPL 使用にしたい場合は続けて以下のコマンドを実行してください。
-> ```bash
-> vcs import . < ./erasers_kachaka/opl.repos
-> ```
+    'namespace':
+        Robot Namespace
+        (default: 'er_kachaka')
 
-## 5. Python kachaka-api インストール
-　pip3 がインストールされていない場合は以下のコマンドを実行して pip3 をインストールしてください。
-```bash
-sudo apt install -y python3-pip
-```
-　次に以下のコマンドを実行して pip を更新してください。
-```bash
-python3 -m pip install --upgrade pip
-```
-　実環境上にインストールする場合、以下のコマンドを実行して kachaka-api をインストールしてください。
-```bash
-pip install kachaka-api
-pip install "scipy>=1.13.0" transform3d matplotlib numpy==1.22.4
-```
-　正常にインストールが完了したら以下のコマンドを実行して正常に kachaka-api がインスt−おるされたか確認してください。
-以下のコマンドを実行したとき、なにもメッセージが表示されなければ成功です。
-```bash
-python3 -c "import kachaka_api"
-```
+    'robot_ip':
+        Robot IP address
+        (default: '192.168.195.125')
 
-## 6. 依存関係のインストール
-　以下のコマンドを実行して必要な依存関係を自動インストールします．
-```bash
-cd ~/colcon_ws
-sudo apt update && rosdep update
-```
-```bash
-rosdep install -y -i --from-path src --skip-keys=ros2_aruco_interfaces --skip-keys=ros2_aruco
-```
+    'bringup_docker':
+        Launch docker container automatic.
+        (default: 'True')
 
+    'bringup_type':
+        Select bringup docker container type: [0, 1]. Please read doc about detail.
+        (default: '0')
 
-## 7. ビルド
-　`~/colcon_ws` ディレクトリに移動します。
-```bash
-cd ~/colcon_ws
-```
-　以下のコマンドを実行してワークスペース内のパッケージをビルドします。
-```bash
-colcon build --symlink-install --packages-up-to erasers_kachaka_bringup
-```
+    'shelf_type':
+        Select shelf model type:[0, 1, 2]/ Please read doc about detail.
+        (default: '0')
 
-## 8. 環境変数の設定
-　~/.bashrc を開き、以下のコードを下に追加してください。
-```bash
-# kachaka
-export KACHAKA_NAME="er_kachaka"
-export KACHAKA_IP=192.168.195.125
-export KACHAKA_ERK_PATH=~/colcon_ws/src/erasers_kachaka
-export GRPC_PORT=26400
-export API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"
+    'publish_tof_pc2':
+        Enable publish TOF Pointcloud2 topic from Kachaka front sensor.
+        (default: 'True')
 
-# ROS
-export ROS_DOMAIN_ID=0
-export ROS_LOCALHOST_ONLY=0
-export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-```
-　KACHAKA_IP は実際のカチャカのIPアドレスを指定してください。
+    'use_rviz':
+        Launch Rviz2
+        (default: 'True')
 
->
-> - `ROS_DOMAIN_ID` は状況に応じて任意の番号にしてください．
-> - `GRPC_PORT=26400` は Kachaka と通信するために必要な変数です．値は変更しないでください．
-> - `ROS_LOCALHOST_ONLY=0` は Kachaka と通信するために必要な変数です．値は変更しないでください．
-> - `RMW_IMPLEMENTATION=rmw_cyclonedds_cpp` は状況に応じて任意の DDS を使用してください．
+    'use_shelf':
+        Docking shelf
+        (default: 'false')
 
-# 起動方法
-　以下のコマンドを実行して eR@sers Kachaka を起動します．
-```bash
-ros2 launch erasers_kachaka_bringup bringup.launch.py
-```
-　ロボットの起動方法に関する詳しい情報は
- [こちら](/erasers_kachaka/erasers_kachaka_bringup/README.md)
- を参照してください。
-
+    'use_sim_time':
+        simulation time
+        (default: 'false')
+    ```
+    
 </details>
 
 <details>
