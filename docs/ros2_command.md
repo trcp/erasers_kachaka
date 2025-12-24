@@ -15,7 +15,7 @@
 /er_kachaka/kachaka_speak
 ```
 　このトピックは
-$\text{std_msgs/String}$
+$\text{std\\_msgs/String}$
 メッセージで構成されています．以下のコマンドを実行すると，Kachaka から「こんにちは」と１度だけ発話します．
 ```bash
 ros2 topic pub --once /er_kachaka/kachaka_speak std_msgs/msg/String "data: こんにちは"
@@ -38,7 +38,7 @@ ros2 topic pub --once /er_kachaka/kachaka_speak std_msgs/msg/String "data: <発�
 /er_kachaka/volume
 ```
 　このトピックは
-$\text{std_msgs/Int8}$
+$\text{std\\_msgs/Int8}$
 メッセージで構成されています．以下のコマンドを実行すると，Kachaka の音量を 10 にセットします．音量調整が成功すると Kachaka から「ポン♪」とレスポンスのビープ音がなります．
 ```bash
 ros2 topic pub --once /er_kachaka/volume std_msgs/msg/Int8 "data: 10"
@@ -70,7 +70,7 @@ ros2 topic pub --once /er_kachaka/volume std_msgs/msg/Int8 "data: <調整した�
 /er_kachaka/torch/back
 ```
 　このトピックは
-$\text{std_msgs/Int8}$
+$\text{std\\_msgs/Int8}$
 メッセージで構成されています．以下のコマンドを実行すると，Kachaka の前方 LED の明るさを 5 にセットします．
 ```bash
 ros2 topic pub --once /er_kachaka/torch/front std_msgs/msg/UInt8 "data: 5"
@@ -93,7 +93,7 @@ ros2 topic pub --once /er_kachaka/torch/front std_msgs/msg/UInt8 "data: <調整�
 /er_kachaka/manual_control/cmd_vel
 ```
 　このトピックは
-$\text{geometry_msgs/Twist}$
+$\text{geometry\\_msgs/Twist}$
 メッセージで構成されています．以下のコマンドを実行すると Kachaka は５秒間その場で回転します．
 
 > [!WARNING]
@@ -119,7 +119,7 @@ ros2 topic pub /er_kachaka/manual_control/cmd_vel geometry_msgs/msg/Twist "{line
 /er_kachaka/emergency
 ````
 　このトピックは
-$\text{std_srvs/srv/Trigger}$
+$\text{std\\_srvs/srv/Trigger}$
 メッセージで構成されています．以下のコマンドを実行すると，Kachaka の LED リングが黄色になり，非常停止状態になります．
 ```bash
 ros2 service call /er_kachaka/emergency std_srvs/srv/Trigger
@@ -138,7 +138,7 @@ ros2 service call /er_kachaka/emergency std_srvs/srv/Trigger
 /er_kachaka/robot_stopper
 ```
 このトピックは
-$\text{std_srvs/srv/SetBool}$
+$\text{std\\_srvs/srv/SetBool}$
 メッセージで構成されています．以下のコマンドを実行すると，Kachaka は小刻みに前後して擬似的にブレーキがかかった状態になります．
 ```bash
 ros2 service call /er_kachaka/robot_stopper std_srvs/srv/SetBool "data: true"
