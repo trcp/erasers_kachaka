@@ -247,7 +247,7 @@ def generate_launch_description():
     bringup_trcp_docker = ExecuteProcess(
         cmd=[[
             "docker compose",
-            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " -f %s/compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
             " up nomap_bridge"
         ]],
         shell=True,
@@ -262,7 +262,7 @@ def generate_launch_description():
     bringup_default_docker = ExecuteProcess(
         cmd=[[
             "docker compose",
-            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " -f %s/compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
             " up official_bridge"
         ]],
         shell=True,
