@@ -153,7 +153,7 @@ ros2 service call /er_kachaka/robot_stopper std_srvs/srv/SetBool "data: false"
 /er_kachaka/docking_shelf
 ```
 このトピックは
-$\text{std_srvs/srv/SetBool}$
+$\text{std\\_srvs/srv/SetBool}$
 メッセージで構成されています．以下のコマンドを実行すると，前方のシェルフを載せます．
 ```bash
 ros2 service call /er_kachaka/docking_shelf std_srvs/srv/SetBool "data: true"
