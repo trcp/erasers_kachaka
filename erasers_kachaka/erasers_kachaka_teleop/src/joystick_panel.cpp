@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QPolygon>
 #include <cmath>
+#include <algorithm>
 
 namespace erasers_kachaka_teleop
 {
@@ -15,72 +16,151 @@ namespace erasers_kachaka_teleop
 // JoystickWidget Implementation
 // =========================================================================
 JoystickWidget::JoystickWidget(QWidget * parent) : QWidget(parent) {
-  // サイズを大きくしたので最小サイズも少し大きく確保
   setMinimumSize(250, 250);
+  
+  // ★変更点1: StrongFocusに変更（ClickFocusより強力で、プログラムからのフォーカス移動を受け入れやすい）
+  setFocusPolicy(Qt::StrongFocus);
+}
+
+float JoystickWidget::getLinear() const {
+  return std::clamp(mouse_linear_ + key_linear_, -1.0f, 1.0f);
+}
+
+float JoystickWidget::getAngular() const {
+  return std::clamp(mouse_angular_ + key_angular_, -1.0f, 1.0f);
+}
+
+bool JoystickWidget::isActive() const {
+  return mouse_pressed_ || w_down_ || s_down_ || a_down_ || d_down_;
 }
 
 void JoystickWidget::resizeEvent(QResizeEvent * /*event*/) {
   center_ = QPoint(width() / 2, height() / 2);
-  if (!mouse_pressed_) stick_pos_ = center_;
+  // 操作中でなければ中央に戻す
+  if (!isActive()) {
+    stick_pos_ = center_;
+  }
+}
+
+void JoystickWidget::changeEvent(QEvent * event) {
+  if (event->type() == QEvent::EnabledChange) {
+    if (!isEnabled()) {
+      // 無効化されたら全リセット
+      w_down_ = s_down_ = a_down_ = d_down_ = false;
+      key_linear_ = 0.0f;
+      key_angular_ = 0.0f;
+      mouse_pressed_ = false;
+      stick_pos_ = center_;
+    }
+    update();
+  }
+  QWidget::changeEvent(event);
+}
+
+void JoystickWidget::focusInEvent(QFocusEvent * /*event*/) {
+  update(); // 枠線を表示するために再描画
+}
+
+void JoystickWidget::focusOutEvent(QFocusEvent * /*event*/) {
+  // フォーカスが外れたらキー入力をリセット（安全のため）
+  w_down_ = s_down_ = a_down_ = d_down_ = false;
+  key_linear_ = 0.0f;
+  key_angular_ = 0.0f;
+  
+  // マウス操作中でなければ見た目も戻す
+  if (!mouse_pressed_) {
+    stick_pos_ = center_;
+  }
+  update();
 }
 
 void JoystickWidget::paintEvent(QPaintEvent * /*event*/) {
   QPainter painter(this);
   painter.setRenderHint(QPainter::Antialiasing);
   
-  // 背景クリア
-  painter.fillRect(rect(), QColor(240, 240, 240));
+  bool enabled = isEnabled();
+  bool has_focus = hasFocus();
 
-  // --- 矢印の描画 ---
-  painter.setBrush(QColor(150, 150, 150));
+  QColor bg_color = enabled ? QColor(255, 255, 255) : QColor(100, 100, 100);
+  QColor base_color = enabled ? QColor(220, 220, 220) : QColor(80, 80, 80);
+  QColor stick_color = enabled ? QColor(60, 60, 60) : QColor(150, 150, 150, 150);
+  QColor arrow_color = enabled ? QColor(150, 150, 150) : QColor(80, 80, 80);
+
+  painter.fillRect(rect(), bg_color);
+
+  // 青いフォーカス枠の描画
+  if (enabled && has_focus) {
+    QPen pen(QColor(0, 120, 255), 4); // 少し太くしました
+    painter.setPen(pen);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawRect(rect().adjusted(2, 2, -2, -2));
+    
+    // ガイドテキスト
+    painter.setPen(QColor(0, 120, 255));
+    painter.setFont(QFont("Arial", 10, QFont::Bold));
+    painter.drawText(rect().adjusted(8, 8, -8, -8), Qt::AlignTop | Qt::AlignLeft, "WASD Active");
+  }
+
+  // 矢印
   painter.setPen(Qt::NoPen);
-
-  // 矢印の位置オフセット
+  painter.setBrush(arrow_color);
   int arrow_dist = joy_radius_ + 20; 
   int arrow_size = 15;
-
-  // 上下左右に矢印を描くために座標変換を利用
   for (int i = 0; i < 4; ++i) {
     painter.save();
     painter.translate(center_);
-    painter.rotate(i * 90); // 0, 90, 180, 270度回転
-
-    // Y軸マイナス方向（画面上）へ描画
+    painter.rotate(i * 90); 
     QPolygon arrow;
-    arrow << QPoint(0, -arrow_dist - arrow_size)         // 先端
-          << QPoint(-arrow_size / 2, -arrow_dist)        // 左下
-          << QPoint(arrow_size / 2, -arrow_dist);        // 右下
-    
+    arrow << QPoint(0, -arrow_dist - arrow_size)
+          << QPoint(-arrow_size / 2, -arrow_dist)
+          << QPoint(arrow_size / 2, -arrow_dist);
     painter.drawPolygon(arrow);
     painter.restore();
   }
 
-  // --- ベース円 ---
-  painter.setBrush(QColor(220, 220, 220));
+  // ベース円
+  painter.setBrush(base_color);
   painter.drawEllipse(center_, joy_radius_, joy_radius_);
 
-  // --- スティック (濃い灰色) ---
-  painter.setBrush(QColor(60, 60, 60)); // Dark Gray
+  // スティック
+  painter.setBrush(stick_color);
   painter.drawEllipse(stick_pos_, stick_radius_, stick_radius_);
 }
 
 void JoystickWidget::mousePressEvent(QMouseEvent * event) {
+  if (!isEnabled()) return;
+  
+  setFocus(); // クリックでフォーカス取得
+
   QPoint diff = event->pos() - center_;
   if (std::sqrt(diff.x()*diff.x() + diff.y()*diff.y()) < joy_radius_) {
     mouse_pressed_ = true;
     updateStickPos(event->pos());
   }
 }
+
 void JoystickWidget::mouseMoveEvent(QMouseEvent * event) {
-  if (mouse_pressed_) updateStickPos(event->pos());
+  if (!isEnabled()) return;
+  if (mouse_pressed_) {
+    updateStickPos(event->pos());
+  }
 }
+
 void JoystickWidget::mouseReleaseEvent(QMouseEvent * /*event*/) {
   mouse_pressed_ = false;
-  stick_pos_ = center_;
-  linear_val_ = 0.0f;
-  angular_val_ = 0.0f;
+  
+  // キー入力がなければ中央に戻す
+  if (key_linear_ == 0.0f && key_angular_ == 0.0f) {
+    stick_pos_ = center_;
+  } else {
+    calcStickPosFromVelocity(); // キー入力があるならその位置へ
+  }
+
+  mouse_linear_ = 0.0f;
+  mouse_angular_ = 0.0f;
   update();
 }
+
 void JoystickWidget::updateStickPos(const QPoint & pos) {
   QPoint diff = pos - center_;
   double dist = std::sqrt(diff.x()*diff.x() + diff.y()*diff.y());
@@ -91,9 +171,63 @@ void JoystickWidget::updateStickPos(const QPoint & pos) {
   } else {
     stick_pos_ = pos;
   }
-  linear_val_ = -((float)(stick_pos_.y() - center_.y()) / joy_radius_);
-  angular_val_ = -((float)(stick_pos_.x() - center_.x()) / joy_radius_);
+  
+  mouse_linear_ = -((float)(stick_pos_.y() - center_.y()) / joy_radius_);
+  mouse_angular_ = -((float)(stick_pos_.x() - center_.x()) / joy_radius_);
   update();
+}
+
+void JoystickWidget::keyPressEvent(QKeyEvent * event)
+{
+  if (!isEnabled()) return;
+
+  switch (event->key()) {
+    case Qt::Key_W: w_down_ = true; break;
+    case Qt::Key_S: s_down_ = true; break;
+    case Qt::Key_A: a_down_ = true; break;
+    case Qt::Key_D: d_down_ = true; break;
+    default: QWidget::keyPressEvent(event); return;
+  }
+  updateVelocity();
+}
+
+void JoystickWidget::keyReleaseEvent(QKeyEvent * event)
+{
+  switch (event->key()) {
+    case Qt::Key_W: w_down_ = false; break;
+    case Qt::Key_S: s_down_ = false; break;
+    case Qt::Key_A: a_down_ = false; break;
+    case Qt::Key_D: d_down_ = false; break;
+    default: QWidget::keyReleaseEvent(event); return;
+  }
+  updateVelocity();
+}
+
+void JoystickWidget::updateVelocity()
+{
+  key_linear_ = 0.0f;
+  key_angular_ = 0.0f;
+
+  if (w_down_) key_linear_ += 1.0f;
+  if (s_down_) key_linear_ -= 1.0f;
+  if (a_down_) key_angular_ += 1.0f;
+  if (d_down_) key_angular_ -= 1.0f;
+  
+  // マウス操作中でなければ、キー入力に合わせてスティックの絵を動かす
+  if (!mouse_pressed_) {
+    calcStickPosFromVelocity();
+  }
+  update(); 
+}
+
+// キー入力に応じてスティックを擬似的に動かす（視覚効果）
+void JoystickWidget::calcStickPosFromVelocity()
+{
+  float target_x = -key_angular_ * joy_radius_; // angularはX軸反転
+  float target_y = -key_linear_ * joy_radius_;  // linearはY軸反転
+
+  stick_pos_.setX(center_.x() + target_x);
+  stick_pos_.setY(center_.y() + target_y);
 }
 
 
@@ -137,7 +271,14 @@ void JoystickPanel::initControlTab()
   QWidget * tab = new QWidget;
   QVBoxLayout * layout = new QVBoxLayout;
 
-  // Battery
+  // --- Enable Switch ---
+  enable_check_ = new QCheckBox("Enable Drive (Click Joystick to use WASD)");
+  enable_check_->setStyleSheet("QCheckBox { font-weight: bold; font-size: 14px; }");
+  enable_check_->setChecked(false);
+  layout->addWidget(enable_check_);
+  connect(enable_check_, SIGNAL(stateChanged(int)), this, SLOT(onEnableChanged(int)));
+
+  // --- Battery ---
   battery_bar_ = new QProgressBar;
   battery_bar_->setRange(0, 100);
   battery_bar_->setValue(0);
@@ -145,16 +286,17 @@ void JoystickPanel::initControlTab()
   battery_bar_->setFormat("%p%");
   layout->addWidget(battery_bar_);
 
-  // Joystick
+  // --- Joystick ---
   joystick_widget_ = new JoystickWidget;
-  // センタリングするためにレイアウト調整
+  joystick_widget_->setEnabled(false);
+  
   QHBoxLayout * joy_layout = new QHBoxLayout;
   joy_layout->addStretch();
   joy_layout->addWidget(joystick_widget_);
   joy_layout->addStretch();
   layout->addLayout(joy_layout);
 
-  // Speak Input
+  // --- Speak Input ---
   QHBoxLayout * speak_layout = new QHBoxLayout;
   speak_layout->addWidget(new QLabel("Speak:"));
   speak_line_edit_ = new QLineEdit;
@@ -162,7 +304,6 @@ void JoystickPanel::initControlTab()
   speak_layout->addWidget(speak_line_edit_);
   layout->addLayout(speak_layout);
 
-  // Enterキーで送信
   connect(speak_line_edit_, SIGNAL(returnPressed()), this, SLOT(sendSpeak()));
 
   tab->setLayout(layout);
@@ -174,7 +315,6 @@ void JoystickPanel::initSettingsTab()
   QWidget * tab = new QWidget;
   QVBoxLayout * layout = new QVBoxLayout;
 
-  // --- Twist Settings ---
   QGroupBox * cmd_group = new QGroupBox("Command (Twist) Settings");
   QFormLayout * cmd_form = new QFormLayout;
   cmd_topic_combo_ = new QComboBox; cmd_topic_combo_->setEditable(true);
@@ -186,7 +326,6 @@ void JoystickPanel::initSettingsTab()
   cmd_group->setLayout(cmd_form);
   layout->addWidget(cmd_group);
 
-  // --- Battery Settings ---
   QGroupBox * batt_group = new QGroupBox("Battery Settings");
   QFormLayout * batt_form = new QFormLayout;
   battery_topic_combo_ = new QComboBox; battery_topic_combo_->setEditable(true);
@@ -198,7 +337,6 @@ void JoystickPanel::initSettingsTab()
   batt_group->setLayout(batt_form);
   layout->addWidget(batt_group);
 
-  // --- Speak Settings ---
   QGroupBox * speak_group = new QGroupBox("Speak (String) Settings");
   QFormLayout * speak_form = new QFormLayout;
   speak_topic_combo_ = new QComboBox; speak_topic_combo_->setEditable(true);
@@ -215,7 +353,6 @@ void JoystickPanel::initSettingsTab()
   tab->setLayout(layout);
   tab_widget_->addTab(tab, "Settings");
 
-  // Connect Signals
   connect(cmd_topic_combo_, SIGNAL(currentTextChanged(QString)), this, SLOT(recreateCmdPublisher()));
   connect(cmd_reliability_combo_, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCmdPublisher()));
   connect(cmd_durability_combo_, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateCmdPublisher()));
@@ -227,6 +364,19 @@ void JoystickPanel::initSettingsTab()
   connect(speak_topic_combo_, SIGNAL(currentTextChanged(QString)), this, SLOT(recreateSpeakPublisher()));
   connect(speak_reliability_combo_, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateSpeakPublisher()));
   connect(speak_durability_combo_, SIGNAL(currentIndexChanged(int)), this, SLOT(recreateSpeakPublisher()));
+}
+
+// ★変更点2: 有効化時にフォーカスをジョイスティックへ移動
+void JoystickPanel::onEnableChanged(int state)
+{
+  bool enabled = (state == Qt::Checked);
+  joystick_widget_->setEnabled(enabled);
+  
+  if (enabled) {
+    joystick_widget_->setFocus(); // 即座にフォーカスを渡す
+  } else {
+    sent_stop_ = false;
+  }
 }
 
 rclcpp::QoS JoystickPanel::getQoS(const QString & reliability, const QString & durability)
@@ -289,14 +439,10 @@ void JoystickPanel::sendSpeak()
 {
   QString text = speak_line_edit_->text();
   if (text.isEmpty() || !speak_publisher_) return;
-
   std_msgs::msg::String msg;
   msg.data = text.toStdString();
   speak_publisher_->publish(msg);
-  
-  // 送信後にクリアする
   speak_line_edit_->clear();
-  RCLCPP_INFO(node_->get_logger(), "Sent speak: %s", msg.data.c_str());
 }
 
 void JoystickPanel::spinNode() {
@@ -305,10 +451,42 @@ void JoystickPanel::spinNode() {
 
 void JoystickPanel::sendVel() {
   if (rclcpp::ok() && velocity_publisher_) {
-    geometry_msgs::msg::Twist msg;
-    msg.linear.x = joystick_widget_->getLinear() * max_linear_vel_;
-    msg.angular.z = joystick_widget_->getAngular() * max_angular_vel_;
-    velocity_publisher_->publish(msg);
+    
+    bool drive_enabled = enable_check_->isChecked();
+    bool is_active = joystick_widget_->isActive();
+
+    if (drive_enabled) {
+      if (is_active) {
+        geometry_msgs::msg::Twist msg;
+        
+        float final_linear = joystick_widget_->getLinear();
+        float final_angular = joystick_widget_->getAngular();
+
+        msg.linear.x = final_linear * max_linear_vel_;
+        msg.angular.z = final_angular * max_angular_vel_;
+
+        velocity_publisher_->publish(msg);
+        sent_stop_ = false;
+      }
+      else {
+        if (!sent_stop_) {
+          geometry_msgs::msg::Twist msg;
+          msg.linear.x = 0.0;
+          msg.angular.z = 0.0;
+          velocity_publisher_->publish(msg);
+          sent_stop_ = true;
+        }
+      }
+    }
+    else {
+      if (!sent_stop_) {
+        geometry_msgs::msg::Twist msg;
+        msg.linear.x = 0.0;
+        msg.angular.z = 0.0;
+        velocity_publisher_->publish(msg);
+        sent_stop_ = true;
+      }
+    }
   }
 }
 
