@@ -283,3 +283,4 @@ xhost +
 - [erasers_kachaka 起動方法と設定方法](/erasers_kachaka/erasers_kachaka_bringup/README.md)
 - [Kachaka を JoyStick Panel から操作する](/erasers_kachaka/erasers_kachaka_teleop/README.md)
 - [cartographer でマップを作成する方法](/erasers_kachaka/erasers_kachaka_cartographer/README.md)
+- [Kachaka を Navigation で自律移動させる方法](/erasers_kachaka/erasers_kachaka_navigation/README.md)
