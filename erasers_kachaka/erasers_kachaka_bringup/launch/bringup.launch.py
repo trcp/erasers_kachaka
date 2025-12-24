@@ -227,21 +227,6 @@ def generate_launch_description():
         )
     )
 
-    ld.add_action(node_kachaka_speak_subscriber)
-    ld.add_action(node_emergency_manager)
-    ld.add_action(node_emergency_button)
-    ld.add_action(node_battery_manager)
-    ld.add_action(node_volume_manager)
-    ld.add_action(node_object_detection_visualizer)
-    ld.add_action(node_lidar_observer)
-    #ld.add_action(node_lidar_resampler)
-    #ld.add_action(node_pt_field)
-    #ld.add_action(node_leg_finder_node)
-    ld.add_action(node_robot_stopper)
-    ld.add_action(node_rviz)
-    ld.add_action(node_default_rviz)
-    ld.add_action(node_mapprovider)
-
 
     # PROCESS
     bringup_trcp_docker = ExecuteProcess(
@@ -292,7 +277,7 @@ def generate_launch_description():
     )
 
     bringup_actions = TimerAction(
-        period=2.0,
+        period=3.0,
         actions=[
             bringup_trcp_docker,
             bringup_default_docker,
@@ -380,11 +365,33 @@ def generate_launch_description():
     )
 
 
-    ld.add_action(launch_short_shelf_description)
-    ld.add_action(launch_kachaka_description_with_shelf)
-    ld.add_action(launch_kachaka_description_only)
-    ld.add_action(launch_teleop)
-    ld.add_action(launch_tof_pointcloud)
+    erasers_kachaka_bringup = TimerAction(
+        period=10.0,
+        actions=[
+            # nodes
+            node_kachaka_speak_subscriber,
+            node_emergency_manager,
+            node_emergency_button,
+            node_battery_manager,
+            node_volume_manager,
+            node_object_detection_visualizer,
+            node_lidar_observer,
+            #node_lidar_resampler,
+            #node_pt_field,
+            #node_leg_finder_node,
+            node_robot_stopper,
+            node_rviz,
+            node_default_rviz,
+            node_mapprovider,
+            # launchers
+            launch_short_shelf_description,
+            launch_kachaka_description_with_shelf,
+            launch_kachaka_description_only,
+            launch_teleop,
+            launch_tof_pointcloud
+        ]
+    )
+    ld.add_action(erasers_kachaka_bringup)
 
 
     return ld
