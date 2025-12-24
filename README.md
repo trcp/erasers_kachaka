@@ -105,8 +105,6 @@
     以下のコマンドを実行して Python 依存パッケージをインストールします。
     ```bash
     # カレントディレクトリが erasers_kachaka であることを事前に確認してください。
-    vcs import .. < ./setup.repos
-    ```bash
     pip3 install -r requirements.txt
     ```
     以下のコマンドを実行して `kachaka-api` が利用可能か確認します。実行結果に何も応答がなければ成功です。
