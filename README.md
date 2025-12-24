@@ -280,5 +280,5 @@ xhost +
 ---
 
 # Tutorials
-
+- [erasers_kachaka 起動方法と設定方法](/erasers_kachaka/erasers_kachaka_bringup/README.md)
 - [Kachaka を JoyStick Panel から操作する](/erasers_kachaka/erasers_kachaka_teleop/README.md)
