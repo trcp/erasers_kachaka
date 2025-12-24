@@ -146,3 +146,19 @@ ros2 service call /er_kachaka/robot_stopper std_srvs/srv/SetBool "data: true"
 ```bash
 ros2 service call /er_kachaka/robot_stopper std_srvs/srv/SetBool "data: false"
 ```
+
+## Kachaka にシェルフを乗せる / シェルフを下ろす
+　Kachaka にシェルフを載せるか，積載しているシェルフを下ろすには以下のサービスを使用します．
+```
+/er_kachaka/docking_shelf
+```
+このトピックは
+$\text{std_srvs/srv/SetBool}$
+メッセージで構成されています．以下のコマンドを実行すると，前方のシェルフを載せます．
+```bash
+ros2 service call /er_kachaka/docking_shelf std_srvs/srv/SetBool "data: true"
+```
+以下のコマンドを実行すると 積載しているシェルフをおろします．
+```bash
+ros2 service call /er_kachaka/docking_shelf std_srvs/srv/SetBool "data: false"
+```
