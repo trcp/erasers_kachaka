@@ -55,7 +55,7 @@ Docker を使用している場合
     　以下の例では現実の Kachaka の位置が赤い矢印だとしたときのシナリオです．このように自己位置がずれている場合は RViz の「2D Pose Estimate」をクリックして Kachaka の本来の位置に矢印を置くと位置が修正されます．
     |実行例|
     |:---:|
-    |<img src="https://i.imgur.com/swGicb8.gif" width=70%/>|
+    |<img src="https://i.imgur.com/TGBtzGb.gif" width=70%/>|
 
 
 1. **2D Goal Pose をつかい kachaka を任意の場所へ自律移動させる**<br>
