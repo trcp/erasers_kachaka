@@ -50,6 +50,7 @@
     ```
     以下のコマンドを実行して erasers_kachaka をダウンロードします。
     ```bash
+    git clone -b wsl https://github.com/trcp/erasers_kachaka.git
     ```
     
 1. **Kachaka Bridge コンテナをビルドする**<br>
