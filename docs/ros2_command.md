@@ -106,7 +106,7 @@ ros2 topic pub /er_kachaka/manual_control/cmd_vel geometry_msgs/msg/Twist "{angu
 ros2 topic pub /er_kachaka/manual_control/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 1.0}}" --times 1
 ```
 
-> [!HINT]
+> [!TIP]
 > Kachaka は負の値を与えられるとそれぞれ時計回り，または後方に移動します．
 
 

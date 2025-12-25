@@ -9,7 +9,7 @@
 
 # ローカル環境または WSL で eR@sers Kachaka をセットアップする方法
 
-> [!IMPORTANT]
+> **重要**<br>
 > WSL で使用する推奨ディストリビューションは **Ubuntu-22.04** です。
 
 1. **Docker をインストールする**<br>
