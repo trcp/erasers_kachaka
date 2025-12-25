@@ -43,4 +43,65 @@ Docker を使用している場合
 <summary>
 ローカル環境の場合
 </summary>
+
+1. **`KACHAKA_IP` を確認します。**<br>
+    　以下のコマンドを実行して設定されている `KACHAKA_IP` の IP アドレスで Kachaka と通信可能か確認してください。
+    ```bash
+    ping $KACHAKA_IP
+    ```
+
+    > 上記コマンドは「Control + C」で停止できます。
+
+    　もし、上記コマンドを実行して何もレスポンスがない場合は以下の作業を行い Kachaka と接続できるようにしてください。
+
+    1. **`~/.bashrc` を編集する**<br>
+        　`~/.bashrc` 内で設定されている環境変数 `KACHAKA_IP` の IP アドレス値を接続したい Kachaka の IP アドレスに書き換えてください。
+        ```diff
+        - export KACHAKA_IP=192.168.195.125
+        + export KACHAKA_IP=<接続先の IP アドレス>
+        ```
+
+        > Wi-Fi 経由で接続したい場合、接続先の Kachaka の IP アドレスは Kachaka に「ねぇカチャカ、IP アドレスを教えて。」とリクエストすることで確認できます。
+
+    1. **`~/.bashrc` を再読み込みする**<br>
+        ```
+        source ~/.bashrc
+        ```
+
+    1. **再度接続確認する**<br>
+        ```bash
+        ping $KACHAKA_IP
+        ```
+
+1. **erasers_kachaka の起動設定を確認する**<br>
+    　`~/.bashrc` 内に記述した各環境変数はそれぞれ次の意味を持ちます。
+
+    |変数名|意味|
+    |:---|:---|
+    |**ROS_DOMAIN_ID**|コンテ内で利用する ROS_DOMAIN_ID を設定します．他のロボットからの干渉を防ぐには任意の値に設定することを推奨します．|
+    |**ROS_LOCALHOST_ONLY**|LAN 上にトピックを公開したくない場合はこの変数に `1` を代入してください．|
+    |**RMW_IMPLEMENTATION**|ROS2 通信に使用する DDS プロトコルを設定します．`rmw_fastrtps_cpp` と `rmw_cyclonedds_cpp` を選択できます．|
+    |**KACHAKA_NAME**|ロボットの名前空間を定義します．`er_kachaka` の場合，`/er_kachaka/...` のトピックらを取得，出力します．|
+    |**KACHAKA_IP**|Kachaka の IP アドレスを定義します．|
+    |**USE_RVIZ**|erasers_kachaka コンテナ起動時に RViz を表示，非表示にします．|
+    |**USE_TOF_POINTS**|Kachaka の前方 ToF カメラから PointCloud2 をパブリッシュします．|
+    |**BRINGUP_TYPE**|０，１のいづれかを定義します。<br>０：マップを持たずに起動する。<br>１：Kachaka 内臓マップを持たせて起動する。|
+    |**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br><img src="https://i.imgur.com/3QpGqCA.png" /><br>１：シェルフを積載した Kachaka<br><img src="https://i.imgur.com/LSJ5DwV.png" /><br>２：なにもなし<br><img src="https://i.imgur.com/3HtXu9S.png" />|
+    |**GRPC_PORT**|Kachaka との通信に必要な変数です．編集しないでください．|
+    |**API_GRPC_BRIDGE_SERVER_URI**|Kachaka との通信に必要な変数です．編集しないでください．|
+
+    `~/.bashrc` を編集するか、`export` コマンドで環境変数を上書きして起動方法を設定してください。
+
+    > `~/.bashrc` を編集した場合は以下のコマンドを実行して変更内容を反映させてください。
+    > ```bash
+    > source ~/.bashrc
+    > ```
+
+1. **erasers_kachaka を起動する**<br>
+    ```bash
+    ros2 launch erasers_kachaka_bringup bringup.launch.py
+    ```
+
+    > Kachaka から「Kachaka、スタート。」と発話すれば起動成功です。
+
 </details>

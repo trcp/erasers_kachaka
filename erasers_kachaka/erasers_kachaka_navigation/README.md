@@ -47,6 +47,30 @@ Docker を使用している場合
 <summary>
 ローカル環境の場合
 </summary>
+
+1. **erasers_kachaka を起動します。**<br>
+    　このとき、環境変数 `BRINGUP_TYPE` が `0` であることを確認してください。
+    ```bash
+    ros2 launch erasers_kachaka bringup.launch.py
+    ```
+
+    > 詳細は [erasers_kachaka 起動方法](/erasers_kachaka/erasers_kachaka_bringup/README.md) を参照してください。
+
+    マップを持たずに Kachaka が起動すれば成功です。
+
+1. **別ターミナルで以下のコマンドを実行してください．**
+    ```bash
+    ros2 launch erasers_kachaka_navigation navigation_launch.py
+    ```
+    上記コマンドを実行するとデフォルトでは `~/map/test_field` マップを読み込んでナビゲーションを実行します．もし，任意のマップを読み込ませてナビゲーションを起動させたい場合は以下のコマンドを参考にしてください．以下の例では 220 という名前のマップを読み込ませています．このように手動で任意のマップを読み込ませるにはマップを作成したときに保存される YAML ファイルまでの絶対パスを `map:=` 引数に渡す必要があります．
+    ```bash
+    ros2 launch erasers_kachaka_navigation navigation_launch.py map:=$HOME/map/220.yaml
+    ```
+
+    |実行例|
+    |:---:|
+    |<img src="https://i.imgur.com/swGicb8.gif" width=70%/>|
+
 </details>
 
 ## Navigation の操作方法
