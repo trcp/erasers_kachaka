@@ -25,7 +25,8 @@ RUN . /opt/ros/${ROS}/setup.bash &&\
     apt-get update && rosdep update &&\
     rosdep install -y -i --from-path . \
         --skip-keys=ros2_aruco_interfaces \
-        --skip-keys=ros2_aruco
+        --skip-keys=ros2_aruco \
+        --skip-keys=erasers_kachaka_tasks
 
     
 USER $USERNAME
