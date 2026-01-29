@@ -2,6 +2,8 @@
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
 
+[English](README_en.md) | 日本語
+
 <!-- 
 # 開発に関する手引きとマニュアル、トラブルシューティングドキュメント一覧
 ## 📝マニュアル
