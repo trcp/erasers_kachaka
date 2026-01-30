@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="shelf">
+
+  <xacro:property name="gray" value="0.5 0.5 0.5 1"/>
+  <xacro:property name="red" value="1 0 0 1"/>
+  <xacro:property name="shelf_distance_long" value="0.331"/>
+  <xacro:property name="shelf_distance_short" value="0.231"/>
+  
+  <!-- Base Link -->
+  <link name="shelf_base_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://kachaka_shelf_description/stl/kachaka_shelf.stl" scale="0.001 0.001 0.001"/> <!-- BaseのSTLファイル -->
+      </geometry>
+      <material name="gray_material">
+        <color rgba="${gray}"/>
+      </material>
+      <origin xyz="-0.13 0 0" rpy="0 0 1.5708"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kachaka_shelf_description/stl/kachaka_shelf.stl" scale="0.001 0.001 0.001"/> <!-- BaseのSTLファイル -->
+      </geometry>
+      <origin xyz="-0.13 0 0" rpy="0 0 1.5708"/>
+    </collision>
+  </link>
+
+  <!-- Middle Plate Link -->
+  <link name="shelf_middle_plate_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://kachaka_shelf_description/stl/kachaka_shelf.stl" scale="0.001 0.001 0.001"/> <!-- PlateのSTLファイル -->
+      </geometry>
+       <material name="gray_material">
+        <color rgba="${gray}"/>
+      </material>
+      <!-- origin xyz="-0.13 0 -${shelf_distance_long}" rpy="0 0 1.5708"/ -->
+      <origin xyz="-0.13 0 0" rpy="0 0 1.5708"/>
+    </visual>
+    <collision>
+      <geometry>
+        <mesh filename="package://kachaka_shelf_description/stl/kachaka_shelf.stl" scale="0.001 0.001 0.001"/> <!-- PlateのSTLファイル -->
+      </geometry>
+      <!--origin xyz="-0.13 0 -${shelf_distance_long}" rpy="0 0 1.5708"/-->
+      <origin xyz="-0.13 0 0" rpy="0 0 1.5708"/>
+    </collision>
+  </link>
+
+  <!-- Joint between Base and Middle Plate -->
+  <joint name="base_to_middle" type="fixed">
+    <parent link="shelf_base_link"/>
+    <child link="shelf_middle_plate_link"/>
+    <origin xyz="0 0 ${shelf_distance_short}"/> <!-- Z軸方向に0.15m上 -->
+  </joint>
+</robot>
