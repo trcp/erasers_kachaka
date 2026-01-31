@@ -5,7 +5,7 @@
   <xacro:include filename="$(find kachaka_description)/urdf/_values.urdf.xacro" />
 
   <!-- args -->
-  <xacro:arg name="use_shelf" default="false" />
+  <xacro:arg name="use_shelf" default="true" />
 
   <!-- connect robot base -->
   <link name="base_footprint" />
