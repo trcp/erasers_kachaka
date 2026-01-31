@@ -1,11 +1,11 @@
 [Unit]
 Description=Bringup erasers_kachaka
-Wants=chrony-wait.service navigation.service
+Wants=chrony-wait.service
 After=chrony-wait.service
 
 [Service]
 User=roboworks
-EnvironmentFile=-/etc/erasers_kachaka.d/erasers_kachaka
+EnvironmentFile=-/home/roboworks/erk_env
 ExecStart=/home/roboworks/colcon_ws/src/erasers_kachaka/bringup.bash
 Type=simple
 

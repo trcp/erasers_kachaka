@@ -19,6 +19,8 @@ SHELF_TYPE = os.environ.get('SHELF_TYPE')
 USE_RVIZ = os.environ.get('USE_RVIZ')
 USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
+NAVIGATION = os.environ.get('NAVIGATION')
+MAP_PATH = os.environ.get('MAP_PATH')
 
 if BRINGUP_MSG == None:
     BRINGUP_MSG = "Kachaka!スタート!"
@@ -60,6 +62,8 @@ def generate_launch_description():
     config_shelf_type = LaunchConfiguration("shelf_type")
     config_bringup_msg = LaunchConfiguration("bringup_msg")
     config_publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
+    config_use_navigation = LaunchConfiguration("use_navigation")
+    config_map_path = LaunchConfiguration("map_path")
 
 
     # declare arguments
@@ -95,6 +99,14 @@ def generate_launch_description():
         "publish_tof_pc2", default_value=USE_TOF_POINTS,
         description="Enable publish TOF Pointcloud2 topic from Kachaka front sensor."
     )
+    declare_use_navigation = DeclareLaunchArgument(
+        "use_navigation", default_value=NAVIGATION,
+        description="Enable navigation."
+    )
+    declare_map_path = DeclareLaunchArgument(
+        "map_path", default_value=MAP_PATH,
+        description="Path to the map file."
+    )
 
     ld.add_action(declare_namespace)
     ld.add_action(declare_ip)
@@ -103,6 +115,8 @@ def generate_launch_description():
     ld.add_action(declare_shelf_type)
     ld.add_action(declare_publish_tof_pc2)
     ld.add_action(declare_use_rviz)
+    ld.add_action(declare_use_navigation)
+    ld.add_action(declare_map_path)
 
 
     # NODES
@@ -371,6 +385,17 @@ def generate_launch_description():
         }.items(),
         condition=IfCondition(config_publish_tof_pc2)
     )
+    launch_navigation = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            prefix_erk_navigation,
+            "/launch/navigation_launch.py"
+        ]),
+        launch_arguments={
+            "namespace":config_namespace,
+            'map':config_map_path
+        }.items(),
+        condition=IfCondition(config_use_navigation)
+    )
 
 
     erasers_kachaka_bringup = TimerAction(
@@ -397,7 +422,8 @@ def generate_launch_description():
             launch_kachaka_description_with_shelf,
             launch_kachaka_description_only,
             launch_teleop,
-            launch_tof_pointcloud
+            launch_tof_pointcloud,
+            launch_navigation
         ]
     )
     ld.add_action(erasers_kachaka_bringup)
