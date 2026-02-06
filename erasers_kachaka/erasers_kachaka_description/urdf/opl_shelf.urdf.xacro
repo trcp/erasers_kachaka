@@ -50,6 +50,6 @@
   <joint name="base_to_middle" type="fixed">
     <parent link="shelf_base_link"/>
     <child link="shelf_middle_plate_link"/>
-    <origin xyz="0 0 ${shelf_distance_short}"/> <!-- Z軸方向に0.15m上 -->
+    <origin xyz="0 0 ${shelf_distance_long}"/> <!-- Z軸方向に0.15m上 -->
   </joint>
 </robot>
