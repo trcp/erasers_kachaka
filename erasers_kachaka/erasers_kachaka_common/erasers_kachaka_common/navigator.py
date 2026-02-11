@@ -36,7 +36,7 @@ import os  # OS依存機能
 import math  # 数学関数
 import copy  # オブジェクトコピー
 import time  # 時間関連関数
-from typing import List, Tuple, Optional  # 型ヒント
+from typing import List, Tuple, Optional, Union  # 型ヒント
 
 
 NS = os.environ.get("KACHAKA_NAME")
@@ -221,6 +221,9 @@ class Nav2Navigation():
         """
         # ノードインスタンスをプライベート変数に保存
         self.__node = node
+
+        # 名前空間
+        self.__namespace = namespace
         
         # 現在のゴールハンドルと姿勢情報を初期化
         self.__current_goal_handle = None
@@ -304,11 +307,14 @@ class Nav2Navigation():
         return False
 
     
-    def get_current_pose(self) -> PoseStamped:
+    def get_current_pose(self, get_simple_pose:bool=False) -> Union[PoseStamped, List[float]]:
         """現在のロボットの位置姿勢を取得
 
+        Args:
+            get_simple_pose (bool, optional): Trueの場合、[x, y, yaw]のリストを返す. Defaults to False.
+
         Returns:
-            PoseStamped: map座標系における現在の姿勢
+            Union[PoseStamped, List[float]]: Defaults to PoseStamped. If get_simple_pose is True, returns [x, y, yaw].
             
         Note:
             explorationモードがTrueの場合はTFから姿勢を取得し、
@@ -324,6 +330,13 @@ class Nav2Navigation():
                     # mapからbase_linkへのTF変換を取得
                     transform = self.__tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
                     
+                    # タイムスタンプの鮮度を確認 (1.0秒以上古いデータは無視)
+                    current_time = self.__node.get_clock().now()
+                    transform_time = rclpy.time.Time.from_msg(transform.header.stamp)
+                    if (current_time - transform_time).nanoseconds > 1.0 * 1e9:
+                        # self.__node.get_logger().warn(f"Stale TF data detected. Diff: {(current_time - transform_time).nanoseconds / 1e9}s")
+                        continue
+
                     # TF変換結果をPoseStampedに変換
                     pose = PoseStamped()
                     pose.header = transform.header
@@ -331,6 +344,16 @@ class Nav2Navigation():
                     pose.pose.position.y = transform.transform.translation.y
                     pose.pose.position.z = transform.transform.translation.z
                     pose.pose.orientation = transform.transform.rotation
+
+                    if get_simple_pose:
+                        _, _, yaw = euler_from_quaternion([
+                            pose.pose.orientation.x,
+                            pose.pose.orientation.y,
+                            pose.pose.orientation.z,
+                            pose.pose.orientation.w
+                        ])
+                        return [pose.pose.position.x, pose.pose.position.y, yaw]
+                    
                     return pose
                 except Exception as e:
                     continue
@@ -346,7 +369,7 @@ class Nav2Navigation():
             with TemporarySubscriber(
                 self.__node,
                 msg=PoseWithCovarianceStamped,
-                topic=f'/{NS}/pose',
+                topic=f'/{self.__namespace}/navigation/mcl_pose',
                 qos_profile=10,
                 cb=__cb
             ):
@@ -358,10 +381,20 @@ class Nav2Navigation():
                 pose = PoseStamped()
                 pose.header = self.__pose.header
                 pose.pose = self.__pose.pose.pose
+
+                if get_simple_pose:
+                    _, _, yaw = euler_from_quaternion([
+                        pose.pose.orientation.x,
+                        pose.pose.orientation.y,
+                        pose.pose.orientation.z,
+                        pose.pose.orientation.w
+                    ])
+                    return [pose.pose.position.x, pose.pose.position.y, yaw]
+
             return pose
 
     
-    def move_abs(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True, consider_angle:bool=True) -> bool:
+    def move_abs(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True, consider_angle:bool=True, tolerance:float=0.0) -> bool:
         """指定された絶対座標に移動
 
         Args:
@@ -371,6 +404,7 @@ class Nav2Navigation():
             wait (bool, optional): 移動完了まで待機するか. Defaults to True.
             consider_angle (bool, optional): 目標角度を考慮するか. Falseの場合、目標位置への方向を自動計算.
                                           Defaults to True.
+            tolerance (float, optional): 目標地点からの許容誤差(m). Defaults to 0.0.
 
         Returns:
             bool: 移動が成功した場合はTrue、失敗した場合はFalse
@@ -410,14 +444,25 @@ class Nav2Navigation():
         # アクションゴールメッセージを作成
         goal_msg = NavigateToPose.Goal(pose=goal_pose)
         
+        # フィードバック変数を初期化
+        self.__distance_remaining = float('inf')
+
+        # フィードバックコールバック
+        def _feedback_callback(feedback_msg):
+            self.__distance_remaining = feedback_msg.feedback.distance_remaining
+
         # 非同期でゴールを送信
-        future = self.__action_client.send_goal_async(goal_msg)
+        future = self.__action_client.send_goal_async(goal_msg, feedback_callback=_feedback_callback)
 
         # 結果を待機する場合
         if wait:
             try:
-                # ゴール送信結果を待機
-                rclpy.spin_until_future_complete(self.__node, future, timeout_sec=10.0)
+                # ゴール送信結果を待機するためのループ
+                while rclpy.ok():
+                    rclpy.spin_once(self.__node, timeout_sec=0.1)
+                    if future.done():
+                        break
+
                 if not future.done():
                     self.__node.get_logger().error("Send goal timed out")
                     return False
@@ -433,102 +478,120 @@ class Nav2Navigation():
 
                 # 実行結果を待機
                 result_future = goal_handle.get_result_async()
-                rclpy.spin_until_future_complete(self.__node, result_future)
-
-                # 結果が返ってきていない場合
-                if not result_future.done():
-                    self.__node.get_logger().error("Result timed out")
-                    return False
-
-                # 結果を取得
-                result = result_future.result()
-                if result is None:
-                    self.__node.get_logger().error("Action result is None")
-                    return False
-
-                # ステータスを確認
-                status = result.status
-                if status == GoalStatus.STATUS_SUCCEEDED:
-
-                    # PID制御パラメータ設定
-                    KP = 0.8    # 比例ゲイン
-                    KI = 0.05   # 積分ゲイン
-                    KD = 0.2    # 微分ゲイン
-                    MAX_ANGULAR = 0.5  # 最大角速度[rad/s]
-                    MIN_ANGULAR = 0.05 # 最小角速度[rad/s]
-                    TOLERANCE = math.radians(1.0)  # 許容誤差[rad]
-                    DT = 0.1  # 制御周期[s]
-
-                    # PID制御変数の初期化
-                    integral = 0.0
-                    prev_error = 0.0
-                    start_time = time.time()
-                    last_time = start_time
-                    max_adjust_time = 15.0
-
+                
+                # 結果待ちループ（toleranceチェックとKeyboardInterrupt対応）
+                while rclpy.ok():
                     try:
-                        # 角度調整ループ
-                        while (time.time() - start_time) < max_adjust_time and rclpy.ok():
-                            current_time = time.time()
-                            dt = current_time - last_time
-                            if dt < DT:
-                                continue
+                        rclpy.spin_once(self.__node, timeout_sec=0.1)
+                        
+                        # 結果が出た場合
+                        if result_future.done():
+                            result = result_future.result()
+                            if result is None:
+                                self.__node.get_logger().error("Action result is None")
+                                return False
                             
-                            # 現在姿勢を取得
-                            current_pose = self.get_current_pose()
-                            current_ori = current_pose.pose.orientation
-                            current_q = [current_ori.x, current_ori.y, current_ori.z, current_ori.w]
-                            _, _, current_yaw = euler_from_quaternion(current_q)
+                            status = result.status
+                            if status == GoalStatus.STATUS_SUCCEEDED:
+                                # PID制御パラメータ設定
+                                KP = 0.8    # 比例ゲイン
+                                KI = 0.05   # 積分ゲイン
+                                KD = 0.2    # 微分ゲイン
+                                MAX_ANGULAR = 0.5  # 最大角速度[rad/s]
+                                MIN_ANGULAR = 0.05 # 最小角速度[rad/s]
+                                TOLERANCE = math.radians(1.0)  # 許容誤差[rad]
+                                DT = 0.1  # 制御周期[s]
 
-                            # 角度誤差を計算（正規化）
-                            error = yaw - current_yaw
-                            error = math.atan2(math.sin(error), math.cos(error))
+                                # PID制御変数の初期化
+                                integral = 0.0
+                                prev_error = 0.0
+                                start_time = time.time()
+                                last_time = start_time
+                                max_adjust_time = 15.0
 
-                            # PID計算
-                            P = KP * error
-                            integral += KI * error * dt
-                            derivative = KD * (error - prev_error) / dt
+                                try:
+                                    # 角度調整ループ
+                                    while (time.time() - start_time) < max_adjust_time and rclpy.ok():
+                                        current_time = time.time()
+                                        dt = current_time - last_time
+                                        if dt < DT:
+                                            # 少し待つ
+                                            time.sleep(0.01)
+                                            continue
+                                        
+                                        # 現在姿勢を取得
+                                        current_pose = self.get_current_pose()
+                                        current_ori = current_pose.pose.orientation
+                                        current_q = [current_ori.x, current_ori.y, current_ori.z, current_ori.w]
+                                        _, _, current_yaw = euler_from_quaternion(current_q)
 
-                            # 積分項の制限（アンチワインドアップ）
-                            integral = max(min(integral, MAX_ANGULAR), -MAX_ANGULAR)
+                                        # 角度誤差を計算（正規化）
+                                        error = yaw - current_yaw
+                                        error = math.atan2(math.sin(error), math.cos(error))
 
-                            # 角速度を計算
-                            angular_z = P + integral + derivative
+                                        # PID計算
+                                        P = KP * error
+                                        integral += KI * error * dt
+                                        derivative = KD * (error - prev_error) / dt
 
-                            # 角速度を制限
-                            angular_z = max(min(angular_z, MAX_ANGULAR), -MAX_ANGULAR)
-                            
-                            # 許容誤差以下の場合停止
-                            if abs(error) < TOLERANCE:
-                                angular_z = 0.0
-                                break
-                            # 最小速度以下の場合でもある程度の誤差があれば最小速度を維持
-                            elif abs(angular_z) < MIN_ANGULAR and abs(error) < math.radians(5):
-                                angular_z = math.copysign(MIN_ANGULAR, angular_z)
+                                        # 積分項の制限（アンチワインドアップ）
+                                        integral = max(min(integral, MAX_ANGULAR), -MAX_ANGULAR)
 
-                            # 速度指令を発行
-                            twist = Twist()
-                            twist.angular.z = angular_z
-                            self.__twist_publisher.publish(twist)
+                                        # 角速度を計算
+                                        angular_z = P + integral + derivative
 
-                            # 前回誤差を更新
-                            prev_error = error
-                            last_time = current_time
+                                        # 角速度を制限
+                                        angular_z = max(min(angular_z, MAX_ANGULAR), -MAX_ANGULAR)
+                                        
+                                        # 許容誤差以下の場合停止
+                                        if abs(error) < TOLERANCE:
+                                            angular_z = 0.0
+                                            break
+                                        # 最小速度以下の場合でもある程度の誤差があれば最小速度を維持
+                                        elif abs(angular_z) < MIN_ANGULAR and abs(error) < math.radians(5):
+                                            angular_z = math.copysign(MIN_ANGULAR, angular_z)
 
-                        else:
-                            self.__node.get_logger().warn("角度調整タイムアウト")
-                    finally:
-                        # 最終的に停止指令を発行
+                                        # 速度指令を発行
+                                        twist = Twist()
+                                        twist.angular.z = angular_z
+                                        self.__twist_publisher.publish(twist)
+
+                                        # 前回誤差を更新
+                                        prev_error = error
+                                        last_time = current_time
+
+                                    else:
+                                        self.__node.get_logger().warn("角度調整タイムアウト")
+                                finally:
+                                    # 最終的に停止指令を発行
+                                    twist = Twist()
+                                    self.__twist_publisher.publish(twist)
+
+                                return True
+                            elif status == GoalStatus.STATUS_CANCELED:
+                                self.__node.get_logger().info("Navigation canceled")
+                                return False # キャンセル時はFalseとするかTrueとするかは仕様次第だが、ここではFalseとする
+                            else:
+                                self.__node.get_logger().warn(f"ナビゲーション失敗 ステータスコード: {status}")
+                                return False
+
+                        # toleranceチェック
+                        if tolerance > 0.0 and self.__distance_remaining <= tolerance:
+                            self.__node.get_logger().info(f"Reached within tolerance {tolerance}m. Current distance: {self.__distance_remaining}m")
+                            self.cancel()
+                            # キャンセルリクエストは非同期なので、ループを回して結果を待つか、ここで成功として抜けるか。
+                            # ここではcancel()メソッドが非同期キャンセルをリクエストし、完了を待つ実装になっていることを確認。
+                            # Nav2Navigation.cancel()を確認すると、ブロッキングでキャンセル完了を待っている。
+                            # なのでcancel()が戻ってきた時点でキャンセル完了。成功とみなす。
+                            return True
+
+                    except KeyboardInterrupt:
+                        self.__node.get_logger().warn("KeyboardInterrupt detected. Cancelling navigation...")
+                        self.cancel()
+                        # 停止指令
                         twist = Twist()
                         self.__twist_publisher.publish(twist)
-
-                    return True
-                else:
-                    self.__node.get_logger().warn(f"ナビゲーション失敗 ステータスコード: {status}")
-                    return False
-
-            except KeyboardInterrupt:
-                return False
+                        return False
 
             except Exception as e:
                 self.__node.get_logger().error(f"ナビゲーションエラー: {str(e)}")
@@ -543,7 +606,7 @@ class Nav2Navigation():
             return True
 
     
-    def move_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
+    def move_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True, tolerance:float=0.0) -> bool:
         """現在位置からの相対座標で移動
 
         Args:
@@ -551,6 +614,7 @@ class Nav2Navigation():
             y (float, optional): 左方向への移動量(m). Defaults to 0.0.
             yaw (float, optional): 反時計回りの回転量(rad). Defaults to 0.0.
             wait (bool, optional): 移動完了まで待機するか. Defaults to True.
+            tolerance (float, optional): 目標地点からの許容誤差(m). Defaults to 0.0.
 
         Returns:
             bool: 移動が成功した場合はTrue、失敗した場合はFalse
@@ -579,7 +643,7 @@ class Nav2Navigation():
         new_yaw = current_yaw + yaw
         
         # 絶対座標移動を実行
-        return self.move_abs(new_x, new_y, new_yaw, wait)
+        return self.move_abs(new_x, new_y, new_yaw, wait, tolerance=tolerance)
 
     
     def create_waypoint(self, x:float, y:float, yaw:float) -> PoseStamped:
