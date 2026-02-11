@@ -35,6 +35,17 @@ class TTS():
 
 
     def say(self, text:str, wait=True):
+        """
+        指定されたテキストをカチャカに発話させます。
+
+        Args:
+            text (str): 発話するテキスト。
+            wait (bool): 発話が完了するまで待機するかどうか。デフォルトは True。
+
+        Returns:
+            bool: 発話が正常に終了した場合は True、失敗した場合は False。
+        """
+
         self.__cmd.speak_command_text = text
         self.__goal_msg.kachaka_command = self.__cmd
         
