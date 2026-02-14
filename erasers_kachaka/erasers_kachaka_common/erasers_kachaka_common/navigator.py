@@ -17,8 +17,8 @@ from kachaka_interfaces.msg import KachakaCommand  # カチャカコマンドメ
 # ================================================
 # ナビゲーション関連
 # ================================================
-from nav2_msgs.action import NavigateToPose, FollowWaypoints  # NAV2ナビゲーションアクション
-from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped  # 位置姿勢情報
+from nav2_msgs.action import NavigateToPose, FollowWaypoints, BackUp, Spin, AssistedTeleop  # NAV2ナビゲーションアクション
+from geometry_msgs.msg import PoseStamped, PoseWithCovarianceStamped, Point  # 位置姿勢情報
 from geometry_msgs.msg import Twist  # 速度指令
 
 # ================================================
@@ -61,7 +61,9 @@ class DefaultNavigation():
         self.__tf_buffer = tf_buffer
         if self.__tf_buffer is None:
             self.__tf_buffer = Buffer()
-        self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
+            self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
+        else:
+            self.__tf_listener = None # Assume listener is managed externally or attached to buffer
 
         # Action クライアントの作成
         self.__action_client = ActionClient(self.__node, ExecKachakaCommand, "/%s/kachaka_command/execute"%NS)
@@ -200,7 +202,10 @@ class Nav2Navigation():
         __tf_buffer (Buffer): TF2バッファ
         __tf_listener (TransformListener): TF2リスナー
         __action_client (ActionClient): NavigateToPoseアクションクライアント
+        __action_client (ActionClient): NavigateToPoseアクションクライアント
         __waypoints_client (ActionClient): FollowWaypointsアクションクライアント
+        __backup_client (ActionClient): BackUpアクションクライアント
+        __spin_client (ActionClient): Spinアクションクライアント
         __twist_publisher (Publisher): 手動制御用のTwistパブリッシャー
     """
     
@@ -236,10 +241,12 @@ class Nav2Navigation():
         self.use_tf_for_pose = exploration 
         
         # TFバッファの初期化（引数で指定がない場合は新規作成）
-        self.__tf_buffer = tf_buffer or Buffer()
-        
-        # TFリスナーの初期化
-        self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
+        if tf_buffer:
+            self.__tf_buffer = tf_buffer
+            self.__tf_listener = None # Assume listener is managed externally
+        else:
+            self.__tf_buffer = Buffer()
+            self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
         
         # NavigateToPoseアクションクライアントの作成
         self.__action_client = ActionClient(self.__node, NavigateToPose, f"/{namespace}/navigation/navigate_to_pose")
@@ -247,8 +254,23 @@ class Nav2Navigation():
         # FollowWaypointsアクションクライアントの作成
         self.__waypoints_client = ActionClient(self.__node, FollowWaypoints, f"/{namespace}/navigation/follow_waypoints")
         
+        # BackUpアクションクライアントの作成
+        self.__backup_client = ActionClient(self.__node, BackUp, f"/{namespace}/navigation/backup")
+
+        # Spinアクションクライアントの作成
+        self.__spin_client = ActionClient(self.__node, Spin, f"/{namespace}/navigation/spin")
+
+        # AssistedTeleopアクションクライアントの作成
+        self.__assisted_teleop_client = ActionClient(self.__node, AssistedTeleop, f"/{namespace}/navigation/assisted_teleop")
+        
         # 手動制御用のTwistパブリッシャーの作成
         self.__twist_publisher = self.__node.create_publisher(Twist, f'/{namespace}/manual_control/cmd_vel', 10)
+
+        # AssistedTeleop用のTwistパブリッシャーの作成
+        self.__teleop_publisher = self.__node.create_publisher(Twist, f'/{namespace}/navigation/cmd_vel_teleop', 10)
+
+        # AssistedTeleopモードフラグ
+        self._use_assisted_teleop = False
 
         # ナビゲーションアクションサーバーの接続確認
         if not self.__action_client.wait_for_server(timeout_sec=wait_time):
@@ -263,6 +285,14 @@ class Nav2Navigation():
         except Exception as e:
             self.__node.get_logger().error(f"Error connecting to waypoints server: {str(e)}")
             self.__waypoints_client = None
+
+        # AssistedTeleopアクションサーバーの接続確認 (オプション扱い)
+        try:
+            if not self.__assisted_teleop_client.wait_for_server(timeout_sec=5.0):
+                self.__node.get_logger().warn("AssistedTeleop action server not available...")
+        except Exception as e:
+            self.__node.get_logger().warn(f"Error checking AssistedTeleop server: {e}")
+
 
     
     def __goal_response_callback(self, future):
@@ -576,7 +606,7 @@ class Nav2Navigation():
                                 return False
 
                         # toleranceチェック
-                        if tolerance > 0.0 and self.__distance_remaining <= tolerance:
+                        if self.__distance_remaining != 0.0 and tolerance > 0.0 and self.__distance_remaining <= tolerance:
                             self.__node.get_logger().info(f"Reached within tolerance {tolerance}m. Current distance: {self.__distance_remaining}m")
                             self.cancel()
                             # キャンセルリクエストは非同期なので、ループを回して結果を待つか、ここで成功として抜けるか。
@@ -847,21 +877,192 @@ class Nav2Navigation():
             return True
     
 
-    def move_forward(self, speed:float, sec:float):
-        """指定した速度で指定時間前進
+    
+    def enable_assisted_teleop(self, enable:bool) -> None:
+        """Assisted Teleopモードの有効/無効切り替え
 
         Args:
-            speed (float): 移動速度(m/s)
-            sec (float): 移動時間(秒)
+            enable (bool): Trueで有効、Falseで無効
         """
-        # 速度指令メッセージを作成
-        twist = Twist()
-        twist.linear.x = speed
+        self._use_assisted_teleop = enable
+        self.__node.get_logger().info(f"Assisted Teleop mode set to: {enable}")
+
+
+    def move_forward(self, distance:float, speed:float=0.1) -> bool:
+        """指定距離だけ前進
+
+        Args:
+            distance (float): 前進距離(m) (正の値)
+            speed (float, optional): 移動速度(m/s). Defaults to 0.1.
+
+        Returns:
+            bool: 成功した場合はTrue
+        """
+        self.enable_assisted_teleop(True)
+        if self.__assisted_teleop_client is None:
+            self.__node.get_logger().error("AssistedTeleop client is not initialized")
+            return False
+
+        goal_msg = AssistedTeleop.Goal()
+        # タイムアウトを設定 (移動予測時間 + 余裕)
+        estimated_time = abs(distance) / abs(speed)
+        goal_msg.time_allowance.sec = int(estimated_time * 2.0 + 10.0)
+                    
+        # アクション送信
+        future = self.__assisted_teleop_client.send_goal_async(goal_msg)
+        rclpy.spin_until_future_complete(self.__node, future, timeout_sec=5.0)
         
-        # 開始時間を記録
-        init_time = time.time()
+        if not future.done():
+            self.__node.get_logger().error("AssistedTeleop send goal timed out")
+            return False
+
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.__node.get_logger().error("AssistedTeleop goal rejected")
+            return False
+
+        # 開始位置を取得
+        start_pose = self.get_current_pose(get_simple_pose=True)
+        if start_pose is None:
+            self.__node.get_logger().error("Failed to get start pose")
+            goal_handle.cancel_goal_async()
+            return False
         
-        # 指定時間まで速度指令を発行
-        while rclpy.ok() and time.time() - init_time < sec:
-            rclpy.spin_once(self.__node, timeout_sec=0.1)
-            self.__twist_publisher.publish(twist)
+        start_x, start_y = start_pose[0], start_pose[1]
+        
+        # ループ制御用変数
+        moved_distance = 0.0
+        cmd_vel = Twist()
+        cmd_vel.linear.x = abs(speed)
+
+        # 結果待ちFutureを取得
+        result_future = goal_handle.get_result_async()
+
+        try:
+            while moved_distance < distance:
+                # アクションが終了していないか確認
+                if result_future.done():
+                        self.__node.get_logger().warn("AssistedTeleop action finished unexpectedly")
+                        return False
+
+                # 速度指令を送信 (cmd_vel_teleop)
+                self.__teleop_publisher.publish(cmd_vel)
+                
+                # 現在位置を取得して移動距離を計算
+                current_pose = self.get_current_pose(get_simple_pose=True)
+                if current_pose:
+                    curr_x, curr_y = current_pose[0], current_pose[1]
+                    moved_distance = math.sqrt((curr_x - start_x)**2 + (curr_y - start_y)**2)
+                
+                # 少し待機
+                time.sleep(0.1)
+
+            self.enable_assisted_teleop(False)
+            return True
+
+        except Exception as e:
+            self.__node.get_logger().error(f"Error during AssistedTeleop loop: {e}")
+            self.enable_assisted_teleop(False)
+            return False
+        finally:
+            # 停止指令
+            stop_vel = Twist()
+            self.__teleop_publisher.publish(stop_vel)
+            self.enable_assisted_teleop(False)
+            # アクションキャンセルまたは終了待ち
+            if not result_future.done():
+                goal_handle.cancel_goal_async()
+            return False
+
+
+    def move_back(self, distance:float, speed:float=0.1) -> bool:
+        """BackUpアクションを使用して指定距離だけ後退
+
+        Args:
+            distance (float): 後退距離(m) (正の値)
+            speed (float, optional): 移動速度(m/s). Defaults to 0.1.
+
+        Returns:
+            bool: 成功した場合はTrue
+        """
+        if self.__backup_client is None:
+            self.__node.get_logger().error("BackUp client is not initialized")
+            return False
+
+        goal_msg = BackUp.Goal()
+        # 後退するためには正のターゲットを指定
+        goal_msg.target.x = abs(distance)
+        goal_msg.speed = abs(speed)
+        
+        # タイムアウト計算
+        timeout_sec = (abs(distance) / abs(speed)) * 1.5 + 5.0
+        goal_msg.time_allowance.sec = int(timeout_sec)
+        
+        return self._send_action_goal(self.__backup_client, goal_msg)
+
+
+    def move_yaw(self, angle:float, speed:float=0.3) -> bool:
+        """Spinアクションを使用して指定角度だけ旋回
+
+        Args:
+            angle (float): 旋回角度(rad) (正:反時計回り, 負:時計回り)
+            speed (float, optional): 旋回速度(rad/s). Defaults to 0.3.
+                                   注: SpinアクションのGoalにspeedフィールドがない場合はtime_allowanceで調整
+
+        Returns:
+            bool: 成功した場合はTrue
+        """
+        if self.__spin_client is None:
+            self.__node.get_logger().error("Spin client is not initialized")
+            return False
+
+        goal_msg = Spin.Goal()
+        goal_msg.target_yaw = angle
+        
+        # タイムアウト計算
+        timeout_sec = (abs(angle) / abs(speed)) * 1.5 + 5.0
+        goal_msg.time_allowance.sec = int(timeout_sec)
+        
+        return self._send_action_goal(self.__spin_client, goal_msg)
+    
+
+    def _send_action_goal(self, client, goal_msg):
+        """アクションゴール送信・待機用ヘルパーメソッド"""
+        future = client.send_goal_async(goal_msg)
+        
+        try:
+            # ゴール送信を待機
+            rclpy.spin_until_future_complete(self.__node, future, timeout_sec=5.0)
+            if not future.done():
+                self.__node.get_logger().error("Send goal timed out")
+                return False
+
+            goal_handle = future.result()
+            if not goal_handle.accepted:
+                self.__node.get_logger().error("Goal rejected")
+                return False
+
+            # 結果を待機
+            result_future = goal_handle.get_result_async()
+            # タイムアウトを設定 (余裕を持って30秒)
+            # アクション自体のタイムアウト(time_allowance)より少し長く待つべき
+            rclpy.spin_until_future_complete(self.__node, result_future, timeout_sec=30.0)
+            
+            if not result_future.done():
+                self.__node.get_logger().error("Result future timed out")
+                # キャンセルを試みる
+                goal_handle.cancel_goal_async()
+                return False
+
+            result = result_future.result()
+            status = result.status
+
+            if status == GoalStatus.STATUS_SUCCEEDED:
+                return True
+            else:
+                self.__node.get_logger().warn(f"Action failed with status: {status}")
+                return False
+
+        except Exception as e:
+            self.__node.get_logger().error(f"Action execution failed: {str(e)}")
+            return False
