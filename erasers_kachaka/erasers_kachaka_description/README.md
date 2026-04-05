@@ -1,5 +1,5 @@
 # erasers_kachaka_description
-　erasers_kachaka のロボットモデルをスポーンさせるパッケージです．以下の２つのオプションモデルを提供します．
+　erasers_kachaka のロボットモデルをスポーンさせるパッケージです．以下の３つのオプションモデルを提供します．
 
 |Kachaka 単体|Kachaka + ２段シェルフ|Kachaka + ３段シェルフ|
 |:---:|:---:|:---:|
@@ -16,7 +16,7 @@
     ```bash
     ros2 launch erasers_kachaka_description description.launch.py debug:=true use_shelf:=true
     ```
-- kachaka + ２段シェルフ
+- kachaka + ３段シェルフ
     ```bash
     ros2 launch erasers_kachaka_description description.launch.py debug:=true use_shelf:=true shelf_type:=3
     ```
