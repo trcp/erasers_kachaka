@@ -5,6 +5,8 @@
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
 
+[English](README_en.md) | 日本語
+
 <details>
 <summary>
 ローカル環境で eR@sers Kachaka をセットアップする方法
