@@ -1,0 +1,34 @@
+# -----------------------------
+# user settings (DO NOT EDIT!)
+# -----------------------------
+UID=1000
+USER_ID=1000
+GID=1000
+GROUP_ID=1000
+
+# --------------
+# Robot settings
+# --------------
+ROS_DOMAIN_ID=1
+ROS_LOCALHOST_ONLY=0
+RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+# ----------------------------
+# Kachaka connection setting
+# ----------------------------
+KACHAKA_NAME="er_kachaka"
+KACHAKA_IP=192.168.8.12
+
+# ---------------
+# Launch options
+# ---------------
+USE_TOF_POINTS=True
+USE_RVIZ=True
+BRINGUP_TYPE=0
+SHELF_TYPE=0
+
+# --------------
+# DO NOT EDIT!
+# --------------
+GRPC_PORT=26400
+API_GRPC_BRIDGE_SERVER_URI="${KACHAKA_IP}:${GRPC_PORT}"

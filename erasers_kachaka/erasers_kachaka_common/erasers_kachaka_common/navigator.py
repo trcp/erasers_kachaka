@@ -205,7 +205,7 @@ class Nav2Navigation():
     """
     
     
-    def __init__(self, node:Node, exploration:bool=False, wait_time=10, tf_buffer:Buffer=None):
+    def __init__(self, node:Node, namespace:str=os.environ.get("KACHAKA_NAME"), exploration:bool=False, wait_time=10, tf_buffer:Buffer=None):
         """Nav2Navigationクラスのコンストラクタ
 
         Args:
@@ -239,13 +239,13 @@ class Nav2Navigation():
         self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
         
         # NavigateToPoseアクションクライアントの作成
-        self.__action_client = ActionClient(self.__node, NavigateToPose, "/navigate_to_pose")
+        self.__action_client = ActionClient(self.__node, NavigateToPose, f"/{namespace}/navigation/navigate_to_pose")
         
         # FollowWaypointsアクションクライアントの作成
-        self.__waypoints_client = ActionClient(self.__node, FollowWaypoints, "/follow_waypoints")
+        self.__waypoints_client = ActionClient(self.__node, FollowWaypoints, f"/{namespace}/navigation/follow_waypoints")
         
         # 手動制御用のTwistパブリッシャーの作成
-        self.__twist_publisher = self.__node.create_publisher(Twist, f'/{NS}/manual_control/cmd_vel', 10)
+        self.__twist_publisher = self.__node.create_publisher(Twist, f'/{namespace}/manual_control/cmd_vel', 10)
 
         # ナビゲーションアクションサーバーの接続確認
         if not self.__action_client.wait_for_server(timeout_sec=wait_time):

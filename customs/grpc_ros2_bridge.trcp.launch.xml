@@ -195,10 +195,10 @@
                  value="false" />
     </composable_node>
   </node_container>
-  <include file="$(find-pkg-share kachaka_description)/launch/robot_description.launch.py" >
+  <!-- include file="$(find-pkg-share kachaka_description)/launch/robot_description.launch.py" >
     <arg name="namespace"
          value="$(var namespace)" />
     <arg name="frame_prefix"
-         value="$(var frame_prefix)" /> <!-- frame_prefixを追加 -->
-  </include>
+         value="$(var frame_prefix)" />
+  </include -->
 </launch>

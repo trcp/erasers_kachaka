@@ -149,11 +149,11 @@
     <joint name="tof_joint"
           type="fixed">
       <parent link="base_link" />
-      <child link="tof_link" />
+      <child link="tof_camera" />
       <origin rpy="-${PI / 4.0} 0 -${PI / 2.0}"
               xyz="0.221 0.0 0.0418" />
     </joint>
-    <link name="tof_link" />
+    <link name="tof_camera" />
 
     <!-- Docking -->
     <joint name="docking_joint"

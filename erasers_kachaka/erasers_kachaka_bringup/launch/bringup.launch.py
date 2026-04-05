@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction
+from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler, DeclareLaunchArgument, TimerAction, LogInfo, GroupAction
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -14,6 +14,10 @@ import os
 
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 KACHAKA_IP = os.environ.get('KACHAKA_IP')
+BRINGUP_TYPE = os.environ.get('BRINGUP_TYPE')
+SHELF_TYPE = os.environ.get('SHELF_TYPE')
+USE_RVIZ = os.environ.get('USE_RVIZ')
+USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG')
 
 if BRINGUP_MSG == None:
@@ -48,6 +52,8 @@ def generate_launch_description():
 
 
     # config
+    config_namespace = LaunchConfiguration("namespace")
+    config_ip = LaunchConfiguration("robot_ip")
     config_bringup_type = LaunchConfiguration("bringup_type")
     config_bringup_docker = LaunchConfiguration("bringup_docker")
     config_use_rviz = LaunchConfiguration("use_rviz")
@@ -57,8 +63,16 @@ def generate_launch_description():
 
 
     # declare arguments
+    declare_namespace = DeclareLaunchArgument(
+        "namespace", default_value=KACHAKA_NAME,
+        description="Robot Namespace"
+    )
+    declare_ip = DeclareLaunchArgument(
+        "robot_ip", default_value=KACHAKA_IP,
+        description="Robot IP address"
+    )
     declare_bringup_type = DeclareLaunchArgument(
-        "bringup_type", default_value="1",
+        "bringup_type", default_value=BRINGUP_TYPE,
         description="Select bringup docker container type: [0, 1]. Please read doc about detail."
     )
     declare_bringup_docker = DeclareLaunchArgument(
@@ -66,11 +80,11 @@ def generate_launch_description():
         description="Launch docker container automatic."
     )
     declare_use_rviz = DeclareLaunchArgument(
-        "use_rviz", default_value="False",
+        "use_rviz", default_value=USE_RVIZ,
         description="Launch Rviz2"
     )
     declare_shelf_type = DeclareLaunchArgument(
-        "shelf_type", default_value="1",
+        "shelf_type", default_value=SHELF_TYPE,
         description="Select shelf model type:[0, 1, 2]/ Please read doc about detail."
     )
     declare_bringup_msg = DeclareLaunchArgument(
@@ -78,10 +92,12 @@ def generate_launch_description():
         description="Define speak bringup message from Kachaka."
     )
     declare_publish_tof_pc2 = DeclareLaunchArgument(
-        "publish_tof_pc2", default_value="True",
+        "publish_tof_pc2", default_value=USE_TOF_POINTS,
         description="Enable publish TOF Pointcloud2 topic from Kachaka front sensor."
     )
 
+    ld.add_action(declare_namespace)
+    ld.add_action(declare_ip)
     ld.add_action(declare_bringup_docker)
     ld.add_action(declare_bringup_type)
     ld.add_action(declare_shelf_type)
@@ -94,57 +110,65 @@ def generate_launch_description():
         package="erasers_kachaka_common",
         executable="kachaka_speak_subscriber",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_emergency_button = Node(
         package="erasers_kachaka_common",
         executable="emergency_button",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_volume_manager = Node(
         package="erasers_kachaka_common",
         executable="volume_manager",
         output="screen",
         emulate_tty=True,
-        parameters=[{'kachaka_ip': KACHAKA_IP}],
-        namespace=KACHAKA_NAME
+        parameters=[{'kachaka_ip': config_ip}],
+        namespace=config_namespace
+    )
+    node_dock_manager = Node(
+        package="erasers_kachaka_common",
+        executable="dock_manager",
+        output="screen",
+        emulate_tty=True,
+        parameters=[{'kachaka_ip': config_ip}],
+        namespace=config_namespace
     )
     node_object_detection_visualizer = Node(
         package="erasers_kachaka_vision",
         executable="object_detection_visualizer",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_lidar_resampler = Node(
         package="erasers_kachaka_common",
         executable="lidar_resampler",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME,
+        namespace=config_namespace,
         remappings=[
             ("input_scan", "lidar/scan"),
             ("output_scan", "sampling_lidar/scan")
@@ -156,7 +180,7 @@ def generate_launch_description():
         output="screen",
         parameters=[param_for_pt_fields_node],
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_leg_finder_node = Node(
         package="erasers_kachaka_navigation",
@@ -164,14 +188,14 @@ def generate_launch_description():
         output="screen",
         parameters=[param_for_leg_finder_node],
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_robot_stopper = Node(
         package="erasers_kachaka_common",
         executable="robot_stopper",
         output="screen",
         emulate_tty=True,
-        namespace=KACHAKA_NAME
+        namespace=config_namespace
     )
     node_rviz = Node(
         package="rviz2",
@@ -211,28 +235,13 @@ def generate_launch_description():
         )
     )
 
-    ld.add_action(node_kachaka_speak_subscriber)
-    ld.add_action(node_emergency_manager)
-    ld.add_action(node_emergency_button)
-    ld.add_action(node_battery_manager)
-    ld.add_action(node_volume_manager)
-    ld.add_action(node_object_detection_visualizer)
-    ld.add_action(node_lidar_observer)
-    #ld.add_action(node_lidar_resampler)
-    #ld.add_action(node_pt_field)
-    #ld.add_action(node_leg_finder_node)
-    ld.add_action(node_robot_stopper)
-    ld.add_action(node_rviz)
-    ld.add_action(node_default_rviz)
-    ld.add_action(node_mapprovider)
-
 
     # PROCESS
     bringup_trcp_docker = ExecuteProcess(
         cmd=[[
             "docker compose",
-            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
-            " up kachaka"
+            " -f %s/compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " up nomap_bridge"
         ]],
         shell=True,
         condition=IfCondition(
@@ -246,8 +255,8 @@ def generate_launch_description():
     bringup_default_docker = ExecuteProcess(
         cmd=[[
             "docker compose",
-            " -f %s/docker/docker-compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
-            " up default_kachaka"
+            " -f %s/compose.yaml"%os.environ.get('KACHAKA_ERK_PATH'),
+            " up official_bridge"
         ]],
         shell=True,
         condition=IfCondition(
@@ -276,15 +285,27 @@ def generate_launch_description():
     )
 
     bringup_actions = TimerAction(
-        period=2.0,
+        period=3.0,
         actions=[
             bringup_trcp_docker,
             bringup_default_docker,
         ]
     )
 
+    loggers = GroupAction(
+        actions=[
+            LogInfo(msg="============== eR@sers Kachaka Info =================="),
+            LogInfo(msg=["Kachaka Name: ", config_namespace]),
+            LogInfo(msg=["Kachaka IP: ", config_ip]),
+            LogInfo(msg=["Bringup Type: ", config_bringup_type]),
+            LogInfo(msg=["Shelf Type: ", config_shelf_type]),
+            LogInfo(msg="======================================================"),
+        ]
+    )
+
     ld.add_action(bringup_actions)
     ld.add_action(bringup_msg)
+    ld.add_action(loggers)
 
 
     # LAUNCHERS
@@ -295,20 +316,35 @@ def generate_launch_description():
         ]),
         condition=IfCondition(
             PythonExpression([
-                config_shelf_type, " == 1",
+                config_shelf_type, " == 2",
                 #" or ",
                 #config_shelf_type, " == 2",
             ])
         )
     )
-    launch_kachaka_description_only =  IncludeLaunchDescription(
+    launch_kachaka_description_with_shelf =  IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            get_package_share_directory("kachaka_description"),
-            "/launch/robot_description.launch.py"
+            get_package_share_directory("erasers_kachaka_description"),
+            "/launch/description.launch.py"
         ]),
         launch_arguments={
-            "namespace":"",
-            "frame_prefix":"",
+            "namespace":config_namespace,
+            "use_shelf":"true",
+        }.items(),
+        condition=IfCondition(
+            PythonExpression([
+                config_shelf_type, " == 1"
+            ])
+        )
+    )
+    launch_kachaka_description_only =  IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory("erasers_kachaka_description"),
+            "/launch/description.launch.py"
+        ]),
+        launch_arguments={
+            "namespace":config_namespace,
+            "use_shelf":"false",
         }.items(),
         condition=IfCondition(
             PythonExpression([
@@ -330,14 +366,41 @@ def generate_launch_description():
             prefix_erk_vision,
             "/launch/tof_pointcloud_launch.py"
         ]),
+        launch_arguments={
+            "namespace":config_namespace,
+        }.items(),
         condition=IfCondition(config_publish_tof_pc2)
     )
 
 
-    ld.add_action(launch_short_shelf_description)
-    ld.add_action(launch_kachaka_description_only)
-    ld.add_action(launch_teleop)
-    #ld.add_action(launch_tof_pointcloud)
+    erasers_kachaka_bringup = TimerAction(
+        period=10.0,
+        actions=[
+            # nodes
+            node_kachaka_speak_subscriber,
+            node_emergency_manager,
+            node_emergency_button,
+            node_battery_manager,
+            node_volume_manager,
+            node_dock_manager,
+            node_object_detection_visualizer,
+            node_lidar_observer,
+            #node_lidar_resampler,
+            #node_pt_field,
+            #node_leg_finder_node,
+            node_robot_stopper,
+            node_rviz,
+            node_default_rviz,
+            node_mapprovider,
+            # launchers
+            launch_short_shelf_description,
+            launch_kachaka_description_with_shelf,
+            launch_kachaka_description_only,
+            launch_teleop,
+            launch_tof_pointcloud
+        ]
+    )
+    ld.add_action(erasers_kachaka_bringup)
 
 
     return ld
