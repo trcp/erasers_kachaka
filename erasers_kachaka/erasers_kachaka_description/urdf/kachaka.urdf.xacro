@@ -3,18 +3,21 @@
   <xacro:include filename="$(find erasers_kachaka_description)/urdf/_kachaka.urdf.xacro" />
   <xacro:include filename="$(find kachaka_description)/urdf/_materials.urdf.xacro" />
   <xacro:include filename="$(find kachaka_description)/urdf/_values.urdf.xacro" />
-  <xacro:include filename="$(find kachaka_shelf_description)/urdf/shelf_description.urdf.xacro" />
-  <!-- xacro:include filename="$(find kachaka_shelf_description)/urdf/short_shelf_description.urdf.xacro" /-->
 
+  <!-- args -->
+  <xacro:arg name="use_shelf" default="false" />
+  <xacro:arg name="shelf_type" default="2" />
+
+  <!-- connect robot base -->
   <link name="base_footprint" />
   <xacro:kachaka_robot parent="base_footprint">
     <origin xyz="0 0 0" rpy="0 0 0"/>
   </xacro:kachaka_robot>
-  
-  <joint name="base_to_shelf" type="fixed">
-    <parent link="base_link" />
-    <child link="shelf_base_link" />
-    <origin xyz="0 0 0.15" rpy="0 0 0" />
-  </joint>
-  
+
+  <!-- mount shelf -->
+  <xacro:if value="$(arg use_shelf)">
+    <xacro:include filename="$(find erasers_kachaka_description)/urdf/shelf.urdf.xacro" />
+    <xacro:kachaka_shelf shelf_type="$(arg shelf_type)" />
+  </xacro:if>
+
 </robot>
