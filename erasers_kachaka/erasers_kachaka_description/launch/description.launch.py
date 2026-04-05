@@ -67,9 +67,9 @@ def generate_launch_description():
 
 
     # Xacro -> URDF
-    xacro_file = os.path.join(
-        default_robot_description
-    )
+    #xacro_file = os.path.join(
+    #    robot_description
+    #)
 
 
     # node
@@ -83,7 +83,7 @@ def generate_launch_description():
         parameters=[
             {
                 'robot_description': Command([
-                    'xacro ', xacro_file, ' ',
+                    'xacro ', robot_description, ' ',
                     'use_shelf:=', use_shelf, ' ',
                     'shelf_type:=', shelf_type
                 ]),
