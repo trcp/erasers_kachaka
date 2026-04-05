@@ -1,3 +1,6 @@
+> [!WARNING]
+> 個人開発用ブランチです．将来的に main にマージ予定ですが，このブランチをフォークすることは推奨しません．
+
 # erasers_kachaka
 
 <img width=25% /><img src="/imgs/erasers_kachaka_description.png" width=50% />
