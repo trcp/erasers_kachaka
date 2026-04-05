@@ -147,7 +147,8 @@
     export USE_TOF_POINTS=True
     export USE_RVIZ=True
     export BRINGUP_TYPE=0
-    export SHELF_TYPE=0
+    export USE_SHELF=True
+    export SHELF_TYPE=2
     export KACHAKA_ERK_PATH=~/colcon_ws/src/erasers_kachaka
     ## DO NOT EDIT !!!!
     export GRPC_PORT=26400 
@@ -259,8 +260,9 @@ docker compose build --env-file kachaka_env erasers_kachaka
 |**KACHAKA_IP**|Kachaka の IP アドレスを定義します．|
 |**USE_RVIZ**|erasers_kachaka コンテナ起動時に RViz を表示，非表示にします．|
 |**USE_TOF_POINTS**|Kachaka の前方 ToF カメラから PointCloud2 をパブリッシュします．|
-|**BRINGUP_TYPE**|この変数は使われていません．|
-|**SHELF_TYPE**|0, 1, 2 のいづれかを定義します．起動時に使われる Robot Description の種類を選択します．<br>０：Kachaka のみ<br><img src="https://i.imgur.com/3QpGqCA.png" /><br>１：シェルフを積載した Kachaka<br><img src="https://i.imgur.com/LSJ5DwV.png" /><br>２：なにもなし<br><img src="https://i.imgur.com/3HtXu9S.png" />|
+|**BRINGUP_TYPE**|Kachaka の起動モードを 0 または 1 で選択します．**Docker** 環境では使用されません．<br>0: Map なしで起動<br><img src="https://i.imgur.com/IlfDoiT.png"/><br>1: アプリ内蔵 Map ありで起動<br><img src="https://i.imgur.com/B7ThilZ.png"/>|
+|**USE_SHELF**|カチャカシェルフを積載するか否かを選択します．<br>`True` の場合，後述する変数 `SHELF_TYPE` に準じたシェルフが積載されます．<br><img src="https://i.imgur.com/9MUNfMY.png" /><br>`False` の場合，カチャカ単体が表示されます．<br><img src="https://i.imgur.com/GqBfB6Q.png"/>|
+|**SHELF_TYPE**|2, 3 のいづれかを定義します．積載するシェルフの種類を選択します．<br>2：２段シェルフ<br><img src="https://i.imgur.com/9MUNfMY.png" /><br>3 : ３段シェルフ<br><img src="https://i.imgur.com/7ds35UQ.png" />|
 |**GRPC_PORT**|Kachaka との通信に必要な変数です．編集しないでください．|
 |**API_GRPC_BRIDGE_SERVER_URI**|Kachaka との通信に必要な変数です．編集しないでください．|
 
