@@ -308,7 +308,6 @@ def generate_launch_description():
             "robot_description":config_robot_description,
             "use_shelf":config_use_shelf,
             "shelf_type":config_shelf_type,
-            "use_shelf":"false",
         }.items(),
     )
                    
