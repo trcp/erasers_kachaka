@@ -225,7 +225,7 @@ export PASSWORD=<password>
 ```
 　以下のコマンドを実行して eR@sers Kachaka コンテナをビルドします．
 ```bash
-docker compose build --env-file kachaka_env erasers_kachaka
+docker compose build --env-file kachaka_env erasers_kachaka nomap_bridge
 ```
 
 > 
