@@ -17,14 +17,15 @@ RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # Kachaka connection setting
 # ----------------------------
 KACHAKA_NAME="er_kachaka"
-KACHAKA_IP=192.168.8.12
+KACHAKA_IP=192.168.234.100
 
 # ---------------
 # Launch options
 # ---------------
 USE_TOF_POINTS=True
-USE_RVIZ=True
+USE_RVIZ=False
 BRINGUP_TYPE=0
+USE_SHELF=False
 SHELF_TYPE=0
 
 # --------------

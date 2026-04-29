@@ -15,11 +15,11 @@ import os
 
 KACHAKA_NAME = os.environ.get('KACHAKA_NAME')
 KACHAKA_IP = os.environ.get('KACHAKA_IP')
-BRINGUP_TYPE = os.environ.get('BRINGUP_TYPE', 0)
-SHELF_TYPE = os.environ.get('SHELF_TYPE', 2)
-USE_SHELF = os.environ.get('USE_SHELF', False)
-USE_RVIZ = os.environ.get('USE_RVIZ', False)
-USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS', True)
+BRINGUP_TYPE = os.environ.get('BRINGUP_TYPE', '0')
+SHELF_TYPE = os.environ.get('SHELF_TYPE', '2')
+USE_SHELF = os.environ.get('USE_SHELF', 'False')
+USE_RVIZ = os.environ.get('USE_RVIZ', 'False')
+USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS', 'True')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG', 'erasers_kachaka, start! DOMAIN number is %s'%os.environ.get('ROS_DOMAIN_ID', 0))
 
 
