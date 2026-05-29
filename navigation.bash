@@ -14,7 +14,7 @@ send_tts() {
 }
 
 stop_sequence() {
-    if [ "$USE_SLAM" = "True" ]; then
+    if [ "$USE_SLAM" = "True" -a "$BRINGUP_TYPE" = 0 ]; then
         echo "Stopping SLAM mode..."
         send_tts "マップデータ ${MAP_NAME} の作成を終了します"
     fi
@@ -29,11 +29,11 @@ case "$1" in
         #echo "Waiting 30 seconds for bringup to stabilize..."
         #sleep 30
 
-        if [ "$USE_SLAM" = "True" ]; then
+        if [ "$USE_SLAM" = "True" -a "$BRINGUP_TYPE" = 0 ]; then
             send_tts "マップデータ ${MAP_NAME} の作成を開始します"
             ros2 launch erasers_kachaka_cartographer cartographer_launch.py \
                 map_dir:=${MAP_DIR} map_name:=${MAP_NAME} use_navigation:=${USE_NAVIGATION}
-        elif [ "$USE_NAVIGATION" = "True" ]; then
+        elif [ "$USE_NAVIGATION" = "True" -a "$BRINGUP_TYPE" = 0  ]; then
             send_tts "マップデータ ${MAP_NAME} を読み込みます"
             ros2 launch erasers_kachaka_navigation navigation_launch.py \
                 map_dir:=${MAP_DIR} map_name:=${MAP_NAME}
