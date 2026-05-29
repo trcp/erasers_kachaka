@@ -8,6 +8,10 @@ from .tts import TTS
 from .kachaka import *
 from .navigator import Nav2Navigation
 
+import os
+
+KACHAKA_NAME = os.environ.get('KACHAKA_NAME', 'er_kachaka')
+
 class Kachaka():
     def __init__(self, node:Node, buffer:Buffer):
         self.ros_node = node
@@ -22,6 +26,6 @@ class Kachaka():
         self.volume = self.volume.volume
 
         try:
-            self.navigation = Nav2Navigation(self.ros_node, 3.0, buffer)
+            self.navigation = Nav2Navigation(self.ros_node, KACHAKA_NAME, buffer)
         except RuntimeError:
-            __node.get_logger().error('navigation is not running. can not use navigation command.')
+            self.ros_node.get_logger().error('navigation is not running. can not use navigation command.')

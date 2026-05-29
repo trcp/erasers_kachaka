@@ -1,0 +1,16 @@
+[Unit]
+Description=Bringup erasers_kachaka navigation
+Wants=chrony-wait.service docker.service
+After=chrony-wait.service isc-dhcp-server.service docker.service
+
+[Service]
+User=administrator
+EnvironmentFile=/home/administrator/kachaka_env
+ExecStart=/home/administrator/colcon_ws/src/erasers_kachaka/navigation.bash
+ExecStop=/home/administrator/colcon_ws/src/erasers_kachaka/navigation.bash stop
+Type=simple
+KillSignal=SIGTERM
+TimeoutStopSec=20
+
+[Install]
+WantedBy=kachaka.bringup.service

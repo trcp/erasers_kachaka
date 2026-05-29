@@ -1,3 +1,4 @@
+# [Canvas]修正された cartographer 起動 launch ファイル
 #!/usr/bin/env python3
 from launch import LaunchDescription
 from launch.substitutions import LaunchConfiguration
@@ -9,9 +10,6 @@ from ament_index_python.packages import get_package_share_directory
 import os
 
 
-NAMESPACE = os.environ.get('KACHAKA_NAME')
-
-
 def generate_launch_description():
 
     ld = LaunchDescription()
@@ -19,9 +17,9 @@ def generate_launch_description():
     # 各コンフィグのデフォルト値
     default_map_dir = os.path.join(os.environ.get('HOME'), 'map')
     default_map_name = "test_field"
-    defaulr_map_save_late = "5"
+    default_map_save_rate = "5"
     default_config_dir = os.path.join(
-        get_package_share_directory("erasers_kachaka_cartographer"),"config"
+        get_package_share_directory("erasers_kachaka_cartographer"), "config"
     )
     default_config_filename = "cartographer.lua"
     default_rviz = os.path.join(
@@ -32,24 +30,23 @@ def generate_launch_description():
         'params', 'navigation.yaml'
     )
 
+    # Launch Configurations
+    namespace = LaunchConfiguration('namespace')
+    use_map_save = LaunchConfiguration("use_map_save")
+    map_dir = LaunchConfiguration("map_dir")
+    map_name = LaunchConfiguration("map_name")
+    map_save_late = LaunchConfiguration("map_save_late")
+    use_rviz = LaunchConfiguration("use_rviz")
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    use_navigation = LaunchConfiguration("use_navigation")
+    config_dir = LaunchConfiguration("config_dir")
+    config_filename = LaunchConfiguration("config_name")
+    resolution = LaunchConfiguration('resolution')
+    publish_period_sec = LaunchConfiguration('publish_period_sec')
 
-    # configs
-    config_namespace = LaunchConfiguration('namespace')
-    config_use_map_save = LaunchConfiguration("use_map_save")
-    config_map_dir = LaunchConfiguration("map_dir")
-    config_map_name = LaunchConfiguration("map_name")
-    config_map_save_late = LaunchConfiguration("map_save_late")
-    config_use_rviz = LaunchConfiguration("use_rviz")
-    config_use_sim_time = LaunchConfiguration("use_sim_time")
-    config_use_navigation = LaunchConfiguration("use_navigation")
-    config_config_dir = LaunchConfiguration("config_dir")
-    config_config_filename = LaunchConfiguration("config_name")
-    config_resolution = LaunchConfiguration('resolution')
-    config_publish_period_sec = LaunchConfiguration('publish_period_sec')
-
-
+    # Declare Launch Arguments
     declare_namespace = DeclareLaunchArgument(
-        'namespace', default_value=NAMESPACE,
+        'namespace', default_value='er_kachaka',
         description="Robot's name"
     )
     declare_use_map_save = DeclareLaunchArgument(
@@ -77,8 +74,8 @@ def generate_launch_description():
         description="Enable navigation"
     )
     declare_map_save_late = DeclareLaunchArgument(
-        'map_save_late', default_value=defaulr_map_save_late,
-        description="Define save map late [sec]"
+        'map_save_late', default_value=default_map_save_rate,
+        description="Define save map rate [sec]"
     )
     declare_config_dir = DeclareLaunchArgument(
         'config_dir', default_value=default_config_dir,
@@ -94,7 +91,7 @@ def generate_launch_description():
     )
     declare_publish_period_sec = DeclareLaunchArgument(
         'publish_period_sec', default_value='1.0',
-        description='Map update late.'
+        description='Map update period.'
     )
 
     ld.add_action(declare_namespace)
@@ -110,7 +107,6 @@ def generate_launch_description():
     ld.add_action(declare_resolution)
     ld.add_action(declare_publish_period_sec)
 
-
     # navigation
     launch_navigation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -122,77 +118,76 @@ def generate_launch_description():
         launch_arguments={
             'use_map': 'False',
             'params_file': default_params_file,
-            'use_rviz':'False'
-            
+            'use_rviz': 'False'
         }.items(),
-        condition=IfCondition(config_use_navigation)
+        condition=IfCondition(use_navigation)
     )
     
     ld.add_action(launch_navigation)
 
-
     remappings = [
-        (['/', config_namespace, '/cartographer/imu'], ['/', config_namespace, '/imu/imu']),
-        (['/', config_namespace, '/cartographer/scan'], ['/', config_namespace, '/lidar/scan']),
-        (['/', config_namespace, '/cartographer/odom'], ['/', config_namespace, '/odometry/odometry']),
-        ('/cartographer/map', ['/', config_namespace, '/cartographer/map']),
-        ('/map', ['/', config_namespace, '/mapping/map']),
+        (['/', namespace, '/cartographer/imu'], ['/', namespace, '/imu/imu']),
+        (['/', namespace, '/cartographer/scan'], ['/', namespace, '/lidar/scan']),
+        (['/', namespace, '/cartographer/odom'], ['/', namespace, '/odometry/odometry']),
+        ('/cartographer/map', ['/', namespace, '/cartographer/map']),
+        ('/map', ['/', namespace, '/mapping/map']),
     ]
-
 
     node_cartographer = Node(
         package='cartographer_ros',
         executable='cartographer_node',
         output='screen',
         emulate_tty=True,
-        parameters=[{'use_sim_time':config_use_sim_time},
+        parameters=[{'use_sim_time': use_sim_time},
                     {'frame_prefix': ''}],
         remappings=remappings,
         arguments=[
-            '-configuration_directory', config_config_dir,
-            '-configuration_basename', config_config_filename,
-            #'-load_state_filename',
+            '-configuration_directory', config_dir,
+            '-configuration_basename', config_filename,
         ],
-        namespace=[config_namespace, '/cartographer']
+        namespace=[namespace, '/cartographer']
     )
+    
     node_occupancy_grid_node = Node(
         package='cartographer_ros',
         executable='cartographer_occupancy_grid_node',
         output='screen',
         emulate_tty=True,
-        parameters=[{'use_sim_time':config_use_sim_time}],
+        parameters=[{'use_sim_time': use_sim_time}],
         arguments=[
-            '-resolution', config_resolution,
-            '-publish_period_sec', config_publish_period_sec,
+            '-resolution', resolution,
+            '-publish_period_sec', publish_period_sec,
         ],
         remappings=remappings,
-        namespace=[config_namespace, '/cartographer']
-
+        namespace=[namespace, '/cartographer']
     )
+    
     node_map_saver = Node(
         package='erasers_kachaka_cartographer',
         executable='map_saver',
         output='screen',
         parameters=[
-            #{'map_path': config_map_dir},
-            {'map_name': config_map_name},
-            {'save_late': config_map_save_late}
+            {'map_path': map_dir},
+            {'map_name': map_name},
+            {'save_late': map_save_late}
         ],
-        namespace=config_namespace,
-        condition=IfCondition(config_use_map_save)
+        namespace=namespace,
+        condition=IfCondition(use_map_save)
     )
+    
     node_map_providor = Node(
         package='erasers_kachaka_cartographer',
         executable='map_providor',
         output='screen',
         remappings=remappings,
-        namespace=[config_namespace, '/cartographer']
+        namespace=[namespace, '/cartographer']
     )
+    
     node_rviz = Node(
         package="rviz2",
         executable="rviz2",
         arguments=["-d", default_rviz],
-        condition=IfCondition(config_use_rviz)
+        condition=IfCondition(use_rviz)
     )
     
     ld.add_action(node_cartographer)
@@ -200,6 +195,5 @@ def generate_launch_description():
     ld.add_action(node_map_saver)
     ld.add_action(node_map_providor)
     ld.add_action(node_rviz)
-
 
     return ld

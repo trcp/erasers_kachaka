@@ -92,7 +92,7 @@ ros2 pkg list | grep erasers_kachaka_common
 - **相対座標でロボットを移動させる**<br>
     　相対座標でロボットを移動させるには、DefaultNavigation の以下のメソッドを使用します。
     ```python
-    DefaultNavigation.move_rlt(x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool
+    DefaultNavigation.move_rel(x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool
     ```
     　先ほどのプログラムに続けて、以下のように `move_rtl` メソッドを使用します。
     ```python
@@ -100,49 +100,49 @@ ros2 pkg list | grep erasers_kachaka_common
     navigation = DefaultNavigation(node)
     
     # 相対座標でロボットを移動させる
-    navigation.move_rlt()
+    navigation.move_rel()
     ```
-    　前に $0.5m$ 進むコードを書いてみましょう。相対的に前に $0.5m$ 進むには、このように `move_rlt` メソッドの引数 `x` に $0.5$ を代入します。
+    　前に $0.5m$ 進むコードを書いてみましょう。相対的に前に $0.5m$ 進むには、このように `move_rel` メソッドの引数 `x` に $0.5$ を代入します。
     ```python
      # 相対座標でロボットを 0.5m 前に移動させる
-    navigation.move_rlt(x=0.5)
+    navigation.move_rel(x=0.5)
     ```
     この状態で作成したプログラムを実行してみましょう。するとロボットが現在座標から x 軸方向へ $0.5m$ 前進します。
-  <br><img width=50% src="/imgs/move_rlt.png" /><br>
+  <br><img width=50% src="/imgs/move_rel.png" /><br>
     $1m$ 前に進みたい場合は引数 `x` に $1.0$ を代入します。この時 **必ず引数に入れる値が foat 型になるように書きましょう。`x=1` と、整数を代入するとエラーになります。**
     ```python
      # 相対座標でロボットを 1.0m 前に移動させる
-    navigation.move_rlt(x=1.0)
+    navigation.move_rel(x=1.0)
     ```
     $0.5m$ ロボットを後退させるには負の値を代入します。
     ```python
      # 相対座標でロボットを 0.5m 後方に移動させる
-    navigation.move_rlt(x=0.5)
+    navigation.move_rel(x=0.5)
     ```
     　ロボットを左右に移動させたい場合は引数 `y` を使用します。以下のコードを実行するとカチャカは左側に $0.5m$ 移動します。
      ```python
      # 相対座標でロボットを 0.5m 左側に移動させる
-    navigation.move_rlt(y=0.5)
+    navigation.move_rel(y=0.5)
     ```
     以下のコードを実行するとカチャカは右側に $0.5m$ 移動します。
      ```python
      # 相対座標でロボットを 0.5m 右側に移動させる
-    navigation.move_rlt(y=-0.5)
+    navigation.move_rel(y=-0.5)
     ```
     　以下のコードのように、引数 `x` と `y` を組み合わせることでカチャカを任意の座標に移動させることができます。
     ```python
      # 相対座標でロボットを前に 0.5m、左に 0.5m 移動させる
-    navigation.move_rlt(x=0.5, y=0.5)
+    navigation.move_rel(x=0.5, y=0.5)
     ```
     　ロボットを旋回させるには引数 `yaw` を使用します。引数 `yaw` には **弧度法** で角度を指定します。以下のコードを実行するとカチャカはその場で $180^{\circ}$ 旋回します。
     ```python
      # 相対座標でロボットを 180° 旋回させる
-    navigation.move_rlt(yaw=1.57)
+    navigation.move_rel(yaw=1.57)
     ```
     　以下のコードのように他の引数と組み合わせることができます。以下のコードを実行すると前に $1.0m$、右に $0.5m$ 移動して $180^{\circ}$ 旋回します。
     ```python
      # 相対座標でロボットを 180° 旋回させる
-    navigation.move_rlt(x=1.0, y=-0.5, yaw=1.57)
+    navigation.move_rel(x=1.0, y=-0.5, yaw=1.57)
     ```
   
 

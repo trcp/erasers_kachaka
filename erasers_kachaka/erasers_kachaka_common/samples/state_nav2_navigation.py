@@ -2,7 +2,7 @@
 from rclpy.node import Node
 import rclpy
 
-from erasers_kachaka_common.state.navigator import Nav2MoveAbsState, Nav2MoveRltState
+from erasers_kachaka_common.state.navigator import Nav2MoveAbsState, Nav2MoverelState
 from erasers_kachaka_common.navigator import Nav2Navigation, DefaultNavigation
 from erasers_kachaka_common.tts import TTS
 
@@ -28,12 +28,12 @@ def main():
                                                             navigation=navigation,
                                                             tts_say=say),
                                     transitions={
-                                        'success': 'MOVE_RLT',
+                                        'success': 'MOVE_rel',
                                         'failure': 'failure'
                                     }
                                 )
 
-        smach.StateMachine.add('MOVE_RLT', Nav2MoveRltState(node=node,
+        smach.StateMachine.add('MOVE_rel', Nav2MoverelState(node=node,
                                                             navigation=navigation,
                                                             tts_say=say),
                                     transitions={

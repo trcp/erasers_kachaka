@@ -20,6 +20,7 @@ SHELF_TYPE = os.environ.get('SHELF_TYPE', '2')
 USE_SHELF = os.environ.get('USE_SHELF', 'False')
 USE_RVIZ = os.environ.get('USE_RVIZ', 'False')
 USE_TOF_POINTS = os.environ.get('USE_TOF_POINTS', 'True')
+USE_EMC = os.environ.get('USE_EMC', 'False')
 BRINGUP_MSG = os.environ.get('BRINGUP_MSG', 'erasers_kachaka, start! DOMAIN number is %s'%os.environ.get('ROS_DOMAIN_ID', 0))
 
 
@@ -55,16 +56,17 @@ def generate_launch_description():
 
 
     # config
-    config_namespace = LaunchConfiguration("namespace")
-    config_ip = LaunchConfiguration("robot_ip")
-    config_bringup_type = LaunchConfiguration("bringup_type")
-    config_bringup_docker = LaunchConfiguration("bringup_docker")
-    config_use_rviz = LaunchConfiguration("use_rviz")
-    config_robot_description = LaunchConfiguration('robot_description')
-    config_use_shelf = LaunchConfiguration('use_shelf')
-    config_shelf_type = LaunchConfiguration("shelf_type")
-    config_bringup_msg = LaunchConfiguration("bringup_msg")
-    config_publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
+    namespace = LaunchConfiguration("namespace")
+    ip = LaunchConfiguration("robot_ip")
+    bringup_type = LaunchConfiguration("bringup_type")
+    bringup_docker = LaunchConfiguration("bringup_docker")
+    robot_description = LaunchConfiguration('robot_description')
+    use_shelf = LaunchConfiguration('use_shelf')
+    use_rviz = LaunchConfiguration("use_rviz")
+    use_emc = LaunchConfiguration("use_emc")
+    shelf_type = LaunchConfiguration("shelf_type")
+    bringup_msg = LaunchConfiguration("bringup_msg")
+    publish_tof_pc2 = LaunchConfiguration("publish_tof_pc2")
 
 
     # declare arguments
@@ -96,6 +98,10 @@ def generate_launch_description():
         'use_shelf', default_value=USE_SHELF,
         description='Docking shelf'
     )
+    declare_use_emc = DeclareLaunchArgument(
+        'use_emc', default_value=USE_EMC,
+        description='Enable Emergency Button'
+    )
     declare_shelf_type = DeclareLaunchArgument(
         "shelf_type", default_value=SHELF_TYPE,
         description="Select shelf model type:[0, 1, 2]/ Please read doc about detail."
@@ -118,6 +124,7 @@ def generate_launch_description():
     ld.add_action(declare_use_rviz)
     ld.add_action(declare_robot_descriptione)
     ld.add_action(declare_use_shelf)
+    ld.add_action(declare_use_emc)
     ld.add_action(declare_bringup_msg)
 
 
@@ -126,65 +133,65 @@ def generate_launch_description():
         package="erasers_kachaka_common",
         executable="kachaka_speak_subscriber",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_emergency_manager = Node(
         package="erasers_kachaka_common",
         executable="emergency_manager",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_emergency_button = Node(
         package="erasers_kachaka_common",
         executable="emergency_button",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_battery_manager = Node(
         package="erasers_kachaka_common",
         executable="battery_manager",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_volume_manager = Node(
         package="erasers_kachaka_common",
         executable="volume_manager",
         output="screen",
         emulate_tty=True,
-        parameters=[{'kachaka_ip': config_ip}],
-        namespace=config_namespace
+        parameters=[{'kachaka_ip': ip}],
+        namespace=namespace
     )
     node_dock_manager = Node(
         package="erasers_kachaka_common",
         executable="dock_manager",
         output="screen",
         emulate_tty=True,
-        parameters=[{'kachaka_ip': config_ip}],
-        namespace=config_namespace
+        parameters=[{'kachaka_ip': ip}],
+        namespace=namespace
     )
     node_object_detection_visualizer = Node(
         package="erasers_kachaka_vision",
         executable="object_detection_visualizer",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_lidar_observer = Node(
         package="erasers_kachaka_common",
         executable="lidar_observer",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_robot_stopper = Node(
         package="erasers_kachaka_common",
         executable="robot_stopper",
         output="screen",
         emulate_tty=True,
-        namespace=config_namespace
+        namespace=namespace
     )
     node_rviz = Node(
         package="rviz2",
@@ -193,9 +200,9 @@ def generate_launch_description():
         emulate_tty=True,
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 0 ",
+                bringup_type, " == 0 ",
                 " and ",
-                config_use_rviz
+                use_rviz
             ])
         )
     )
@@ -206,9 +213,9 @@ def generate_launch_description():
         arguments=["-d", prefix_default_rviz],
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 1",
+                bringup_type, " == 1",
                 " and ",
-                config_use_rviz
+                use_rviz
             ])
         )
     )
@@ -219,7 +226,7 @@ def generate_launch_description():
         output="own_log",
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 0"
+                bringup_type, " == 0"
             ])
         )
     )
@@ -235,9 +242,9 @@ def generate_launch_description():
         shell=True,
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 0",
+                bringup_type, " == 0",
                 " and ",
-                config_bringup_docker
+                bringup_docker
             ])
         )
     )
@@ -250,9 +257,9 @@ def generate_launch_description():
         shell=True,
         condition=IfCondition(
             PythonExpression([
-                config_bringup_type, " == 1",
+                bringup_type, " == 1",
                 " and ",
-                config_bringup_docker
+                bringup_docker
             ])
         )
     )
@@ -284,11 +291,11 @@ def generate_launch_description():
     loggers = GroupAction(
         actions=[
             LogInfo(msg="============== eR@sers Kachaka Info =================="),
-            LogInfo(msg=["Kachaka Name: ", config_namespace]),
-            LogInfo(msg=["Kachaka IP: ", config_ip]),
-            LogInfo(msg=["Bringup Type: ", config_bringup_type]),
-            LogInfo(msg=["Use Shelf: ", config_use_shelf]),
-            LogInfo(msg=["Shelf Type: ", config_shelf_type]),
+            LogInfo(msg=["Kachaka Name: ", namespace]),
+            LogInfo(msg=["Kachaka IP: ", ip]),
+            LogInfo(msg=["Bringup Type: ", bringup_type]),
+            LogInfo(msg=["Use Shelf: ", use_shelf]),
+            LogInfo(msg=["Shelf Type: ", shelf_type]),
             LogInfo(msg="======================================================"),
         ]
     )
@@ -304,10 +311,10 @@ def generate_launch_description():
             "/launch/description.launch.py"
         ]),
         launch_arguments={
-            "namespace":config_namespace,
-            "robot_description":config_robot_description,
-            "use_shelf":config_use_shelf,
-            "shelf_type":config_shelf_type,
+            "namespace":namespace,
+            "robot_description":robot_description,
+            "use_shelf":use_shelf,
+            "shelf_type":shelf_type,
         }.items(),
     )
                    
@@ -316,7 +323,11 @@ def generate_launch_description():
         PythonLaunchDescriptionSource([
             prefix_erk_teleop,
             "/launch/teleop.launch.py"
-        ])
+        ]),
+        launch_arguments={
+            "namespace":namespace,
+            "use_emc":use_emc
+        }.items(),
     )
 
     launch_tof_pointcloud = IncludeLaunchDescription(
@@ -325,9 +336,9 @@ def generate_launch_description():
             "/launch/tof_pointcloud_launch.py"
         ]),
         launch_arguments={
-            "namespace":config_namespace,
+            "namespace":namespace,
         }.items(),
-        condition=IfCondition(config_publish_tof_pc2)
+        condition=IfCondition(publish_tof_pc2)
     )
 
 

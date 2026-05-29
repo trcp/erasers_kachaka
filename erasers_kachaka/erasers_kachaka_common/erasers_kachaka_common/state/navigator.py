@@ -49,7 +49,7 @@ class Nav2MoveAbsState(smach.State):
             return 'failure'
 
 
-class Nav2MoveRltState(smach.State):
+class Nav2MoverelState(smach.State):
     def __init__(self, 
                     node:Node,
                     navigation:Nav2Navigation,
@@ -79,7 +79,7 @@ class Nav2MoveRltState(smach.State):
         x = userdata.abs_pose[0]
         y = userdata.abs_pose[1]
         yaw = userdata.abs_pose[2]
-        result = self._navigation.move_rlt(x, y, yaw)
+        result = self._navigation.move_rel(x, y, yaw)
 
         if result:
             self._say(self._success_msg)

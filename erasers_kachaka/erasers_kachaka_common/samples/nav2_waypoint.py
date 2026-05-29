@@ -24,7 +24,7 @@ navigation = Nav2Navigation(node, exploration=True)
 # Waypoint 作成
 init_time = time.time()
 while time.time() - init_time < 15:
-    navigation.add_waypoint_rlt()
+    navigation.add_waypoint_rel()
     time.sleep(3)
 
 

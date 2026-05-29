@@ -146,7 +146,7 @@ class DefaultNavigation():
                 return False
 
 
-    def move_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
+    def move_rel(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
         """現在位置からの相対座標で移動
 
         Args:
@@ -543,7 +543,7 @@ class Nav2Navigation():
             return True
 
     
-    def move_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
+    def move_rel(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True) -> bool:
         """現在位置からの相対座標で移動
 
         Args:
@@ -636,7 +636,7 @@ class Nav2Navigation():
         self.add_waypoint(waypoint)
     
     
-    def add_waypoint_rlt(self, x:float=0.0, y:float=0.0, yaw:float=0.0) -> None:
+    def add_waypoint_rel(self, x:float=0.0, y:float=0.0, yaw:float=0.0) -> None:
         """現在位置からの相対座標でウェイポイントを追加
 
         Args:

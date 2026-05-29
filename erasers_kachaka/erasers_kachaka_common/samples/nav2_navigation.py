@@ -26,5 +26,5 @@ print(result) # 結果が True なら成功
 result = navigation.move_abs(0.0, 0.0, 1.57) # マップ原点で90度左方向へ旋回
 print(result)
 
-result = navigation.move_rlt(yaw=-1.57, wait=True) # 現在の姿勢から90度右費方向へ旋回
+result = navigation.move_rel(yaw=-1.57, wait=True) # 現在の姿勢から90度右費方向へ旋回
 print(result)

@@ -60,6 +60,7 @@ install(TARGETS
 # include dirs
 install(DIRECTORY
   launch
+  params
   DESTINATION share/${PROJECT_NAME}/
 )
 

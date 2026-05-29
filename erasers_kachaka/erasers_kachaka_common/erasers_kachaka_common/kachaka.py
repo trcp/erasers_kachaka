@@ -35,7 +35,7 @@ class RobotStopper():
 
         self.__client = self.__node.create_client(SetBool, f'/{NS}/robot_stopper')
         while not self.__client.wait_for_service(timeout_sec=5.0):
-            self._node.get_logger().error('May be KACHAKA is not running ...')
+            self.__node.get_logger().error('May be KACHAKA is not running ...')
             raise RuntimeError('May be KACHAKA is not running ...')
 
     def __send_req(self, req:SetBool.Request):

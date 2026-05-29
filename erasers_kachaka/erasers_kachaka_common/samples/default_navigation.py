@@ -24,27 +24,27 @@ print(navigation.get_current_pose())
 # ナビゲーションする（相対）
 # 前に 50 cm 進む
 print("move forward")
-navigation.move_rlt(x=0.5)
+navigation.move_rel(x=0.5)
 
 # 後方に 50 cm 進む　
 print("move back")
-navigation.move_rlt(x=-0.5)
+navigation.move_rel(x=-0.5)
 
 # 左に 50 cm 進む　
 print("move left")
-navigation.move_rlt(y=0.5)
+navigation.move_rel(y=0.5)
 
 # 右に 50 cm 進む　
 print("move right")
-navigation.move_rlt(y=-0.5)
+navigation.move_rel(y=-0.5)
 
 # 90度左旋回　
 print("move right")
-navigation.move_rlt(yaw=1.57)
+navigation.move_rel(yaw=1.57)
 
 # 90度右旋回　
 print("move right")
-navigation.move_rlt(yaw=-1.57)
+navigation.move_rel(yaw=-1.57)
 
 # ナビゲーションする（絶対座標）
 # すべての引数を 0.0 にすると充電ドッグに乗り上げてしまう。
