@@ -1,0 +1,68 @@
+<!--
+  Kachaka-specific NavigateToPose tree.
+  Replans periodically and performs a low-speed backup before retrying
+  controller execution when path following fails.
+-->
+<root main_tree_to_execute="MainTree">
+  <BehaviorTree ID="MainTree">
+    <RecoveryNode number_of_retries="6" name="KachakaNavigateRecovery">
+
+      <PipelineSequence name="NavigateWithReplanning">
+
+        <RateController hz="2.0">
+          <RecoveryNode number_of_retries="1" name="ComputePathToPose">
+            <ComputePathToPose
+              goal="{goal}"
+              path="{path}"
+              planner_id="GridBased"/>
+            <ClearEntireCostmap
+              name="ClearGlobalCostmap-Context"
+              service_name="global_costmap/clear_entirely_global_costmap"/>
+          </RecoveryNode>
+        </RateController>
+
+        <RecoveryNode number_of_retries="1" name="FollowPath">
+          <FollowPath
+            path="{path}"
+            controller_id="FollowPath"/>
+
+          <ReactiveFallback name="ControllerRecoveryFallback">
+            <GoalUpdated/>
+
+            <Sequence name="BackUpThenClearLocalCostmap">
+              <BackUp
+                backup_dist="0.20"
+                backup_speed="0.05"/>
+              <ClearEntireCostmap
+                name="ClearLocalCostmap-AfterBackUp"
+                service_name="local_costmap/clear_entirely_local_costmap"/>
+            </Sequence>
+          </ReactiveFallback>
+        </RecoveryNode>
+
+      </PipelineSequence>
+
+      <ReactiveFallback name="SystemRecoveryFallback">
+        <GoalUpdated/>
+
+        <RoundRobin name="SystemRecoveryActions">
+
+          <Sequence name="ClearBothCostmaps">
+            <ClearEntireCostmap
+              name="ClearLocalCostmap-System"
+              service_name="local_costmap/clear_entirely_local_costmap"/>
+            <ClearEntireCostmap
+              name="ClearGlobalCostmap-System"
+              service_name="global_costmap/clear_entirely_global_costmap"/>
+          </Sequence>
+
+          <Wait wait_duration="3"/>
+
+          <Spin spin_dist="1.0"/>
+
+        </RoundRobin>
+      </ReactiveFallback>
+
+    </RecoveryNode>
+  </BehaviorTree>
+</root>

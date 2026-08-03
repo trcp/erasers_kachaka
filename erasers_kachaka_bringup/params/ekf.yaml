@@ -1,0 +1,29 @@
+/**:
+  ros__parameters:
+    frequency: 30.0
+    sensor_timeout: 0.2
+    two_d_mode: true
+
+    transform_time_offset: 0.0
+    transform_timeout: 0.0
+
+    print_diagnostics: true
+    debug: false
+    publish_acceleration: false
+    publish_tf: true
+
+    odom0: odometry/odometry_raw
+    odom0_queue_size: 10
+    odom0_nodelay: true
+    odom0_differential: false
+    odom0_relative: false
+    odom0_pose_use_child_frame: false
+
+    odom0_config:
+      [
+        false, false, false,
+        false, false, false,
+        true,  false, false,
+        false, false, true,
+        false, false, false
+      ]

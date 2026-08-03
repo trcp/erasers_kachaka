@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<robot name="erasers_kachaka" xmlns:xacro="http://ros.org/wiki/xacro">
+  <xacro:include filename="$(find erasers_kachaka_description)/urdf/_kachaka.urdf.xacro" />
+  <xacro:include filename="$(find kachaka_description)/urdf/_materials.urdf.xacro" />
+  <xacro:include filename="$(find kachaka_description)/urdf/_values.urdf.xacro" />
+  <xacro:arg name="shelf_type" default="2" />
+  <xacro:property name="shelf_type" value="$(arg shelf_type)" />
+
+  <xacro:if value="${int(shelf_type) != 0}">
+    <xacro:include filename="$(find kachaka_shelf_description)/urdf/shelf.urdf.xacro" />
+  </xacro:if>
+
+  <link name="base_footprint" />
+  <xacro:kachaka_robot parent="base_footprint">
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </xacro:kachaka_robot>
+
+  <xacro:if value="${int(shelf_type) != 0}">
+    <xacro:kachaka_shelf shelf_type="${shelf_type}" />
+  </xacro:if>
+</robot>

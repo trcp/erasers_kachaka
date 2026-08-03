@@ -20,19 +20,30 @@
 #include "kachaka-api.grpc.pb.h"
 
 namespace {
+
+bool IsAllowedDynamicTransform(
+    const std::string& parent_frame_id,
+    const std::string& child_frame_id) {
+  return (parent_frame_id == "base_link" && child_frame_id == "base_l_drive_wheel_link") ||
+         (parent_frame_id == "base_link" && child_frame_id == "base_r_drive_wheel_link") ||
+         (parent_frame_id == "base_link" && child_frame_id == "docking_link");
+}
+
 bool ConvertGrpcTfToRosTf(
     const kachaka_api::GetDynamicTransformResponse& grpc_msg,
     tf2_msgs::msg::TFMessage* msg, const std::string& frame_prefix = "") {
   msg->transforms.clear();
   msg->transforms.reserve(grpc_msg.transforms_size());
   for (const auto& transform_grpc : grpc_msg.transforms()) {
+    if (!IsAllowedDynamicTransform(transform_grpc.header().frame_id(),
+                                   transform_grpc.child_frame_id())) {
+      continue;
+    }
+
     geometry_msgs::msg::TransformStamped transform_ros;
     kachaka::grpc_ros2_bridge::converter::ConvertGrpcHeaderToRos2Header(
         transform_grpc.header(), &(transform_ros.header), frame_prefix);
 
-    // skipper
-    if (transform_ros.header.frame_id == "map") continue;
-    
     transform_ros.child_frame_id =
         frame_prefix + transform_grpc.child_frame_id();
     transform_ros.transform.translation.x = transform_grpc.translation().x();
@@ -73,7 +84,9 @@ void TfStreamClient::ReadStream() {
   while (reader->Read(&response)) {
     tf2_msgs::msg::TFMessage msg;
     ConvertGrpcTfToRosTf(response, &msg, frame_prefix_);
-    publisher_->publish(msg);
+    if (!msg.transforms.empty()) {
+      publisher_->publish(msg);
+    }
   }
   RCLCPP_INFO(node_->get_logger(), "dynamic tf server is stopped.");
 }
