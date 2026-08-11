@@ -189,7 +189,7 @@ class Nav2Navigation():
     
     Nav2のNavigateToPoseアクションとFollowWaypointsアクションを使用して、
     絶対座標/相対座標での移動、ウェイポイント登録と実行、手動制御などの機能を提供します。
-    TF2を使用した現在位置の取得や、ナビゲーション後の微調整PID制御も実装しています。
+    TF2を使用した現在位置の取得にも対応します。
     
     Attributes:
         __node (Node): ROS2ノードオブジェクト
@@ -205,7 +205,7 @@ class Nav2Navigation():
     """
     
     
-    def __init__(self, node:Node, namespace:str=os.environ.get("KACHAKA_NAME"), exploration:bool=False, wait_time=10, tf_buffer:Buffer=None):
+    def __init__(self, node:Node, namespace:str=os.environ.get("KACHAKA_NAME"), exploration:bool=True, wait_time=10, tf_buffer:Buffer=None, goal_response_timeout:float=30.0):
         """Nav2Navigationクラスのコンストラクタ
 
         Args:
@@ -215,12 +215,25 @@ class Nav2Navigation():
             wait_time (int, optional): アクションサーバー接続待機時間(秒). Defaults to 10.
             tf_buffer (Buffer, optional): TF2バッファオブジェクト. Noneの場合は新規作成.
                                         Defaults to None.
+            goal_response_timeout (float, optional): ゴール受付応答の待機時間(秒).
+                                                       Defaults to 30.0.
 
         Raises:
             RuntimeError: NavigateToPoseアクションサーバーに接続できない場合
         """
+        if not namespace:
+            raise ValueError("namespace must be specified")
+        if goal_response_timeout <= 0.0:
+            raise ValueError("goal_response_timeout must be greater than zero")
+
         # ノードインスタンスをプライベート変数に保存
         self.__node = node
+        self.__namespace = namespace
+        self.__frame_prefix = f'{namespace}_'
+        self.__map_frame = 'map'
+        self.__base_frame = f'{self.__frame_prefix}base_footprint'
+        self.__pose_topic = f'/{namespace}/navigation/pose'
+        self.__goal_response_timeout = goal_response_timeout
         
         # 現在のゴールハンドルと姿勢情報を初期化
         self.__current_goal_handle = None
@@ -233,7 +246,7 @@ class Nav2Navigation():
         self.use_tf_for_pose = exploration 
         
         # TFバッファの初期化（引数で指定がない場合は新規作成）
-        self.__tf_buffer = tf_buffer or Buffer()
+        self.__tf_buffer = tf_buffer if tf_buffer is not None else Buffer()
         
         # TFリスナーの初期化
         self.__tf_listener = TransformListener(self.__tf_buffer, self.__node)
@@ -268,12 +281,44 @@ class Nav2Navigation():
         Args:
             future (Future): ゴールハンドルのFutureオブジェクト
         """
-        # ゴールハンドルを取得して保存
-        self.__current_goal_handle = future.result()
+        try:
+            # ゴールハンドルを取得して保存
+            self.__current_goal_handle = future.result()
+        except Exception as e:
+            self.__node.get_logger().error(f"Send goal failed: {str(e)}")
+            self.__current_goal_handle = None
+            return
+
+        if self.__current_goal_handle is None:
+            self.__node.get_logger().error("Send goal returned no goal handle")
+            return
         
         # ゴールが拒否された場合のエラーログ出力
         if not self.__current_goal_handle.accepted:
             self.__node.get_logger().error("Goal rejected!")
+            self.__current_goal_handle = None
+            return
+
+        result_future = self.__current_goal_handle.get_result_async()
+        result_future.add_done_callback(self.__result_callback)
+
+
+    def __result_callback(self, future):
+        """非同期アクションが terminal 状態になったらゴールハンドルを解放する。"""
+        try:
+            future.result()
+        except Exception as e:
+            self.__node.get_logger().error(f"Navigation result failed: {str(e)}")
+        finally:
+            self.__current_goal_handle = None
+
+
+    def __context_is_valid(self) -> bool:
+        """ノードに紐づく ROS context が利用可能かを返す。"""
+        try:
+            return self.__node.context.ok()
+        except Exception:
+            return False
 
     
     def cancel(self) -> bool:
@@ -313,16 +358,20 @@ class Nav2Navigation():
         Note:
             explorationモードがTrueの場合はTFから姿勢を取得し、
             Falseの場合は/amcl_poseトピックから姿勢を取得します。
-            取得できない場合はブロッキング状態になります。
+            TFは取得できるまで待機し、トピックはgoal_response_timeout秒待機します。
         """
+        if not self.__context_is_valid():
+            raise RuntimeError("ROS context is invalid. Recreate the ROS node before requesting pose.")
+
         # TFを使用して姿勢を取得する場合
         if self.use_tf_for_pose:
-            while rclpy.ok():
+            while self.__context_is_valid():
                 # ROSコールバックを処理
-                rclpy.spin_once(self.__node, timeout_sec=0.1)
                 try:
-                    # mapからbase_linkへのTF変換を取得
-                    transform = self.__tf_buffer.lookup_transform('map', 'base_link', rclpy.time.Time())
+                    rclpy.spin_once(self.__node, timeout_sec=0.1)
+                    # mapからprefix付きbase_footprintへのTF変換を取得
+                    transform = self.__tf_buffer.lookup_transform(
+                        self.__map_frame, self.__base_frame, rclpy.time.Time())
                     
                     # TF変換結果をPoseStampedに変換
                     pose = PoseStamped()
@@ -332,10 +381,15 @@ class Nav2Navigation():
                     pose.pose.position.z = transform.transform.translation.z
                     pose.pose.orientation = transform.transform.rotation
                     return pose
-                except Exception as e:
+                except Exception:
                     continue
+
+            raise RuntimeError(
+                "ROS context became invalid while waiting for current pose TF: "
+                f"{self.__map_frame} -> {self.__base_frame}")
         # トピックから姿勢を取得する場合
         else:
+            deadline = time.monotonic() + self.__goal_response_timeout
             self.__pose = None
             
             # 一時的なサブスクライバーのコールバック関数
@@ -346,13 +400,21 @@ class Nav2Navigation():
             with TemporarySubscriber(
                 self.__node,
                 msg=PoseWithCovarianceStamped,
-                topic=f'/{NS}/pose',
+                topic=self.__pose_topic,
                 qos_profile=10,
                 cb=__cb
             ):
                 # 姿勢データが取得できるまで待機
-                while rclpy.ok() and self.__pose is None:
-                    rclpy.spin_once(self.__node, timeout_sec=0.1)
+                while (self.__context_is_valid() and self.__pose is None
+                       and time.monotonic() < deadline):
+                    try:
+                        rclpy.spin_once(self.__node, timeout_sec=0.1)
+                    except Exception:
+                        break
+
+                if self.__pose is None:
+                    raise RuntimeError(
+                        f"Current pose topic is unavailable: {self.__pose_topic}")
                     
                 # 取得した姿勢をPoseStampedに変換
                 pose = PoseStamped()
@@ -377,11 +439,16 @@ class Nav2Navigation():
             
         Note:
             consider_angleがFalseの場合、目標位置への方向を自動計算して姿勢を決定します。
-            ナビゲーション完了後、PID制御を使用して角度の微調整を行います。
+            Nav2 Action resultの成功・失敗をそのままbool値として返します。
         """
+        if not self.__context_is_valid():
+            self.__node.get_logger().error(
+                "ROS context is invalid. Recreate the ROS node before sending a navigation goal.")
+            return False
+
         # 目標姿勢メッセージの作成
         goal_pose = PoseStamped()
-        goal_pose.header.frame_id = "map"
+        goal_pose.header.frame_id = self.__map_frame
         goal_pose.header.stamp = self.__node.get_clock().now().to_msg()
         goal_pose.pose.position.x = x
         goal_pose.pose.position.y = y
@@ -393,7 +460,11 @@ class Nav2Navigation():
             q = quaternion_from_euler(0, 0, yaw)
         else:
             # 現在位置から目標位置への方向を計算
-            current_pose = self.get_current_pose()
+            try:
+                current_pose = self.get_current_pose()
+            except RuntimeError as e:
+                self.__node.get_logger().error(f"Failed to get current pose: {str(e)}")
+                return False
             current_x = current_pose.pose.position.x
             current_y = current_pose.pose.position.y
             delta_x = x - current_x
@@ -410,25 +481,55 @@ class Nav2Navigation():
         # アクションゴールメッセージを作成
         goal_msg = NavigateToPose.Goal(pose=goal_pose)
         
+        try:
+            action_server_available = self.__action_client.wait_for_server(
+                timeout_sec=self.__goal_response_timeout)
+        except Exception as e:
+            self.__node.get_logger().error(
+                f"Failed to check NavigateToPose action server: {str(e)}")
+            return False
+
+        if not action_server_available:
+            self.__node.get_logger().error(
+                f"NavigateToPose action server is unavailable: "
+                f"/{self.__namespace}/navigation/navigate_to_pose")
+            return False
+
         # 非同期でゴールを送信
-        future = self.__action_client.send_goal_async(goal_msg)
+        try:
+            future = self.__action_client.send_goal_async(goal_msg)
+        except Exception as e:
+            self.__node.get_logger().error(f"Failed to send navigation goal: {str(e)}")
+            return False
 
         # 結果を待機する場合
         if wait:
             try:
                 # ゴール送信結果を待機
-                rclpy.spin_until_future_complete(self.__node, future, timeout_sec=10.0)
+                rclpy.spin_until_future_complete(
+                    self.__node, future, timeout_sec=self.__goal_response_timeout)
                 if not future.done():
-                    self.__node.get_logger().error("Send goal timed out")
+                    self.__node.get_logger().error(
+                        f"Send goal timed out after {self.__goal_response_timeout:.1f} seconds")
                     return False
 
                 # ゴールハンドルを取得
-                goal_handle = future.result()
+                try:
+                    goal_handle = future.result()
+                except Exception as e:
+                    self.__node.get_logger().error(f"Send goal failed: {str(e)}")
+                    return False
+
+                if goal_handle is None:
+                    self.__node.get_logger().error("Send goal returned no goal handle")
+                    return False
+
                 self.__current_goal_handle = goal_handle
 
                 # ゴールが拒否された場合
                 if not goal_handle.accepted:
                     self.__node.get_logger().error("Goal rejected by server")
+                    self.__current_goal_handle = None
                     return False
 
                 # 実行結果を待機
@@ -444,84 +545,13 @@ class Nav2Navigation():
                 result = result_future.result()
                 if result is None:
                     self.__node.get_logger().error("Action result is None")
+                    self.__current_goal_handle = None
                     return False
 
                 # ステータスを確認
                 status = result.status
+                self.__current_goal_handle = None
                 if status == GoalStatus.STATUS_SUCCEEDED:
-
-                    # PID制御パラメータ設定
-                    KP = 0.8    # 比例ゲイン
-                    KI = 0.05   # 積分ゲイン
-                    KD = 0.2    # 微分ゲイン
-                    MAX_ANGULAR = 0.5  # 最大角速度[rad/s]
-                    MIN_ANGULAR = 0.05 # 最小角速度[rad/s]
-                    TOLERANCE = math.radians(1.0)  # 許容誤差[rad]
-                    DT = 0.1  # 制御周期[s]
-
-                    # PID制御変数の初期化
-                    integral = 0.0
-                    prev_error = 0.0
-                    start_time = time.time()
-                    last_time = start_time
-                    max_adjust_time = 15.0
-
-                    try:
-                        # 角度調整ループ
-                        while (time.time() - start_time) < max_adjust_time and rclpy.ok():
-                            current_time = time.time()
-                            dt = current_time - last_time
-                            if dt < DT:
-                                continue
-                            
-                            # 現在姿勢を取得
-                            current_pose = self.get_current_pose()
-                            current_ori = current_pose.pose.orientation
-                            current_q = [current_ori.x, current_ori.y, current_ori.z, current_ori.w]
-                            _, _, current_yaw = euler_from_quaternion(current_q)
-
-                            # 角度誤差を計算（正規化）
-                            error = yaw - current_yaw
-                            error = math.atan2(math.sin(error), math.cos(error))
-
-                            # PID計算
-                            P = KP * error
-                            integral += KI * error * dt
-                            derivative = KD * (error - prev_error) / dt
-
-                            # 積分項の制限（アンチワインドアップ）
-                            integral = max(min(integral, MAX_ANGULAR), -MAX_ANGULAR)
-
-                            # 角速度を計算
-                            angular_z = P + integral + derivative
-
-                            # 角速度を制限
-                            angular_z = max(min(angular_z, MAX_ANGULAR), -MAX_ANGULAR)
-                            
-                            # 許容誤差以下の場合停止
-                            if abs(error) < TOLERANCE:
-                                angular_z = 0.0
-                                break
-                            # 最小速度以下の場合でもある程度の誤差があれば最小速度を維持
-                            elif abs(angular_z) < MIN_ANGULAR and abs(error) < math.radians(5):
-                                angular_z = math.copysign(MIN_ANGULAR, angular_z)
-
-                            # 速度指令を発行
-                            twist = Twist()
-                            twist.angular.z = angular_z
-                            self.__twist_publisher.publish(twist)
-
-                            # 前回誤差を更新
-                            prev_error = error
-                            last_time = current_time
-
-                        else:
-                            self.__node.get_logger().warn("角度調整タイムアウト")
-                    finally:
-                        # 最終的に停止指令を発行
-                        twist = Twist()
-                        self.__twist_publisher.publish(twist)
-
                     return True
                 else:
                     self.__node.get_logger().warn(f"ナビゲーション失敗 ステータスコード: {status}")
@@ -560,7 +590,11 @@ class Nav2Navigation():
             内部的にはmove_abs()を呼び出して移動を実行します。
         """
         # 現在姿勢を取得
-        current_pose = self.get_current_pose()
+        try:
+            current_pose = self.get_current_pose()
+        except RuntimeError as e:
+            self.__node.get_logger().error(f"Failed to get current pose: {str(e)}")
+            return False
         current_x = current_pose.pose.position.x
         current_y = current_pose.pose.position.y
         current_orientation = current_pose.pose.orientation
@@ -595,7 +629,7 @@ class Nav2Navigation():
         """
         # ウェイポイントメッセージを作成
         waypoint = PoseStamped()
-        waypoint.header.frame_id = "map"
+        waypoint.header.frame_id = self.__map_frame
         waypoint.header.stamp = self.__node.get_clock().now().to_msg()
         waypoint.pose.position.x = x
         waypoint.pose.position.y = y
@@ -729,7 +763,10 @@ class Nav2Navigation():
         # ウェイポイントクライアントが存在しない場合、再接続を試みる
         if self.__waypoints_client is None:
             try:
-                self.__waypoints_client = ActionClient(self.__node, FollowWaypoints, "/follow_waypoints")
+                self.__waypoints_client = ActionClient(
+                    self.__node,
+                    FollowWaypoints,
+                    f"/{self.__namespace}/navigation/follow_waypoints")
                 if not self.__waypoints_client.wait_for_server(timeout_sec=3.0):
                     return False
             except Exception as e:
@@ -756,6 +793,7 @@ class Nav2Navigation():
                 
                 # ゴールが拒否された場合
                 if not goal_handle.accepted:
+                    self.__current_goal_handle = None
                     return False
                 
                 # 結果を待機
@@ -769,10 +807,13 @@ class Nav2Navigation():
                 # 結果を取得
                 result = result_future.result()
                 if result is None:
+                    self.__current_goal_handle = None
                     return False
                     
                 # 成功ステータスを返す
-                return result.status == GoalStatus.STATUS_SUCCEEDED
+                status = result.status
+                self.__current_goal_handle = None
+                return status == GoalStatus.STATUS_SUCCEEDED
             except Exception as e:
                 self.__node.get_logger().error(f"Waypoints execution failed: {str(e)}")
                 return False

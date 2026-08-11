@@ -26,6 +26,7 @@ class Kachaka():
         self.volume = self.volume.volume
 
         try:
-            self.navigation = Nav2Navigation(self.ros_node, KACHAKA_NAME, buffer)
+            self.navigation = Nav2Navigation(
+                self.ros_node, KACHAKA_NAME, exploration=True, tf_buffer=buffer)
         except RuntimeError:
             self.ros_node.get_logger().error('navigation is not running. can not use navigation command.')

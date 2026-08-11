@@ -1,7 +1,9 @@
 <!--
   Kachaka-specific NavigateToPose tree.
-  Replans periodically and performs a low-speed backup before retrying
-  controller execution when path following fails.
+
+  Normal navigation uses periodic replanning and contextual costmap clears.
+  Transient obstacles are given time to move away before a collision-checked,
+  low-speed backup is attempted as a later system recovery.
 -->
 <root main_tree_to_execute="MainTree">
   <BehaviorTree ID="MainTree">
@@ -9,7 +11,7 @@
 
       <PipelineSequence name="NavigateWithReplanning">
 
-        <RateController hz="2.0">
+        <RateController hz="1.0">
           <RecoveryNode number_of_retries="1" name="ComputePathToPose">
             <ComputePathToPose
               goal="{goal}"
@@ -25,19 +27,9 @@
           <FollowPath
             path="{path}"
             controller_id="FollowPath"/>
-
-          <ReactiveFallback name="ControllerRecoveryFallback">
-            <GoalUpdated/>
-
-            <Sequence name="BackUpThenClearLocalCostmap">
-              <BackUp
-                backup_dist="0.20"
-                backup_speed="0.05"/>
-              <ClearEntireCostmap
-                name="ClearLocalCostmap-AfterBackUp"
-                service_name="local_costmap/clear_entirely_local_costmap"/>
-            </Sequence>
-          </ReactiveFallback>
+          <ClearEntireCostmap
+            name="ClearLocalCostmap-Context"
+            service_name="local_costmap/clear_entirely_local_costmap"/>
         </RecoveryNode>
 
       </PipelineSequence>
@@ -56,9 +48,14 @@
               service_name="global_costmap/clear_entirely_global_costmap"/>
           </Sequence>
 
-          <Wait wait_duration="3"/>
+          <Wait wait_duration="3.0"/>
 
-          <Spin spin_dist="1.0"/>
+          <BackUp
+            backup_dist="0.10"
+            backup_speed="0.04"
+            time_allowance="4.0"/>
+
+          <Spin spin_dist="0.78"/>
 
         </RoundRobin>
       </ReactiveFallback>

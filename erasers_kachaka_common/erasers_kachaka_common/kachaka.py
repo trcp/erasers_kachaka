@@ -170,10 +170,10 @@ class Camera():
             for (msg_type, topic_name), msg in zip(topic_list, msgs):
                 if 'front_camera' in topic_name:
                     self.__front_camera_image_msg = msg
-                    self.__front_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'bgr8')
+                    self.__front_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'rgb8')
                 elif 'back_camera' in topic_name:
                     self.__back_camera_image_msg = msg
-                    self.__back_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'bgr8')
+                    self.__back_camera_image = self.__bridge.imgmsg_to_cv2(msg, 'rgb8')
                 elif 'tof_camera' in topic_name:
                     self.__tof_camera_image_msg = msg
                     self.__tof_camera_image = self.__bridge.imgmsg_to_cv2(msg, '16UC1')
@@ -208,7 +208,7 @@ class Camera():
                     axes = [axes]
                 
                 for ax, image in zip(axes, valid_images):
-                    ax.imshow(image) # BGRからRGBに変換
+                    ax.imshow(image) # rgbからRGBに変換
                     ax.axis('off') # 軸を非表示に
 
                 plt.show()
@@ -250,7 +250,7 @@ class Camera():
             self.__node.get_logger().error('Failure get front camera')
             return self.__front_camera_image
         
-        self.__front_camera_image = self.__bridge.imgmsg_to_cv2(self.__front_camera_image_msg, 'bgr8')
+        self.__front_camera_image = self.__bridge.imgmsg_to_cv2(self.__front_camera_image_msg, 'rgb8')
         if preview:
             plt.figure("Front Camera Preview") 
             plt.imshow(self.__front_camera_image)
@@ -291,7 +291,7 @@ class Camera():
             self.__node.get_logger().error('Failure get back camera')
             return self.__back_camera_image
         
-        self.__back_camera_image = self.__bridge.imgmsg_to_cv2(self.__back_camera_image_msg, 'bgr8')
+        self.__back_camera_image = self.__bridge.imgmsg_to_cv2(self.__back_camera_image_msg, 'rgb8')
         if preview:
             plt.figure("back Camera Preview") 
             plt.imshow(self.__back_camera_image)
