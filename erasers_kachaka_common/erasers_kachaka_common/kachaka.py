@@ -6,7 +6,7 @@ import rclpy
 
 from sensor_msgs.msg import Image
 from std_msgs.msg import Float32, UInt8, Int8
-from std_srvs.srv import SetBool
+from std_srvs.srv import SetBool, Trigger
 
 from cv_bridge import CvBridge
 
@@ -400,9 +400,11 @@ class Volume():
         self.__ns = NS
 
         self.__pub = self.__node.create_publisher(Int8, f'/{self.__ns}/volume', 10)
+        self.__get_volume_client = self.__node.create_client(
+            Trigger, f'/{self.__ns}/get_current_volume')
     
 
-    def volume(self, volume:int=10):
+    def set_volume(self, volume:int=10):
         """
         Kachaka のボリュームを制御します。
 
@@ -414,3 +416,34 @@ class Volume():
 
         self.__pub.publish(msg)
         rclpy.spin_once(self.__node, timeout_sec=1.0)
+
+
+    def get_current_volume(self) -> int:
+        """現在の Kachaka スピーカーボリュームを整数で取得します。
+
+        Returns:
+            int: 現在のボリューム値。
+
+        Raises:
+            RuntimeError: サービスが利用できない場合、サービス呼び出しが
+                タイムアウトした場合、または応答が失敗を示す場合。
+            ValueError: サービス応答に整数として解釈できない値が含まれる場合。
+        """
+        if not self.__get_volume_client.wait_for_service(timeout_sec=5.0):
+            raise RuntimeError('get_current_volume service is unavailable')
+
+        future = self.__get_volume_client.call_async(Trigger.Request())
+        rclpy.spin_until_future_complete(self.__node, future, timeout_sec=10.0)
+        if not future.done():
+            raise RuntimeError('get_current_volume service call timed out')
+
+        response = future.result()
+        if response is None or not response.success:
+            message = response.message if response is not None else 'empty response'
+            raise RuntimeError(f'Failed to get current volume: {message}')
+        try:
+            return int(response.message)
+        except (TypeError, ValueError) as error:
+            raise ValueError(
+                f'Invalid volume returned by get_current_volume: {response.message!r}'
+            ) from error

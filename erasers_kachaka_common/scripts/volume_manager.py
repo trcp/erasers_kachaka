@@ -4,6 +4,7 @@ import rclpy
 
 from rcl_interfaces.msg import SetParametersResult, ParameterDescriptor, IntegerRange
 from std_msgs.msg import Int8
+from std_srvs.srv import Trigger
 
 from kachaka_api import KachakaApiClient
 
@@ -31,6 +32,8 @@ class VolumeManager(Node):
         self.kachaka.set_speaker_volume(self.param_volume)
 
         self.sub = self.create_subscription(Int8, 'volume', self.cb, 10)
+        self.get_volume_srv = self.create_service(
+            Trigger, 'get_current_volume', self.get_current_volume)
     
 
     def _params_cb(self, params):
@@ -49,6 +52,19 @@ class VolumeManager(Node):
             if not r.success:
                 self.get_logger().warn('This volume value is support Kachaka Pro only.')
         else: self.get_logger().warn('This volume value %d is out of range.'%msg.data)
+
+    def get_current_volume(self, request: Trigger.Request, response: Trigger.Response):
+        """現在の Kachaka スピーカーボリュームを取得して返す。"""
+        del request
+        try:
+            volume = int(self.kachaka.get_speaker_volume())
+            response.success = True
+            response.message = str(volume)
+        except Exception as error:
+            response.success = False
+            response.message = str(error)
+            self.get_logger().error(f'Failed to get current volume: {error}')
+        return response
 
 def main():
     rclpy.init()

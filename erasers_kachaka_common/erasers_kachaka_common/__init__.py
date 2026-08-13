@@ -23,7 +23,6 @@ class Kachaka():
         self.camera = Camera(self.ros_node)
         self.torch = Torch(self.ros_node)
         self.volume = Volume(self.ros_node)
-        self.volume = self.volume.volume
 
         try:
             self.navigation = Nav2Navigation(
