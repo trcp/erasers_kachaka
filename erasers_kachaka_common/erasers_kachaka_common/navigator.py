@@ -260,6 +260,10 @@ class Nav2Navigation():
         # 手動制御用のTwistパブリッシャーの作成
         self.__twist_publisher = self.__node.create_publisher(Twist, f'/{namespace}/manual_control/cmd_vel', 10)
 
+        # 初期位置設定用のパブリッシャー
+        self.__initial_pose_publisher = self.__node.create_publisher(
+            PoseWithCovarianceStamped, f'/{namespace}/navigation/initialpose', 10)
+
         # ナビゲーションアクションサーバーの接続確認
         if not self.__action_client.wait_for_server(timeout_sec=wait_time):
             self.__node.get_logger().fatal("Nav2 action server not available...")
@@ -349,11 +353,12 @@ class Nav2Navigation():
         return False
 
     
-    def get_current_pose(self) -> PoseStamped:
+    def get_current_pose(self, xyt: bool = True) -> PoseStamped | List[float]:
         """現在のロボットの位置姿勢を取得
 
         Returns:
-            PoseStamped: map座標系における現在の姿勢
+            PoseStamped | List[float]: map座標系における現在の姿勢。
+                xyt=Trueの場合は [x, y, yaw] を返します。
             
         Note:
             explorationモードがTrueの場合はTFから姿勢を取得し、
@@ -380,6 +385,14 @@ class Nav2Navigation():
                     pose.pose.position.y = transform.transform.translation.y
                     pose.pose.position.z = transform.transform.translation.z
                     pose.pose.orientation = transform.transform.rotation
+                    if xyt:
+                        yaw = euler_from_quaternion([
+                            pose.pose.orientation.x,
+                            pose.pose.orientation.y,
+                            pose.pose.orientation.z,
+                            pose.pose.orientation.w,
+                        ])[2]
+                        return [pose.pose.position.x, pose.pose.position.y, yaw]
                     return pose
                 except Exception:
                     continue
@@ -420,7 +433,51 @@ class Nav2Navigation():
                 pose = PoseStamped()
                 pose.header = self.__pose.header
                 pose.pose = self.__pose.pose.pose
+            if xyt:
+                yaw = euler_from_quaternion([
+                    pose.pose.orientation.x,
+                    pose.pose.orientation.y,
+                    pose.pose.orientation.z,
+                    pose.pose.orientation.w,
+                ])[2]
+                return [pose.pose.position.x, pose.pose.position.y, yaw]
             return pose
+
+
+    def set_initial_pose(
+        self, x: float=0.0, y: float=0.0, yaw: float=0.0, ref_frame: str = 'map'
+    ) -> None:
+        """指定した座標を初期位置として送信する。
+
+        Args:
+            x (float): 初期位置の X 座標。単位は m です。
+            y (float): 初期位置の Y 座標。単位は m です。
+            yaw (float): 初期姿勢の yaw 角。単位は rad です。
+                通常は ``[-pi, pi]`` の範囲で指定します。
+            ref_frame (str, optional): X、Y、yaw の基準座標系。
+                通常は ``'map'`` を指定します。Defaults to ``'map'``.
+
+        Raises:
+            ValueError: ``ref_frame`` が空文字列の場合。
+
+        Note:
+            publish は非同期で行われるため、このメソッドは受信側の
+            自己位置推定が初期位置を受理したことを待たずに戻ります。
+        """
+        if not ref_frame:
+            raise ValueError("ref_frame must not be empty")
+
+        pose = PoseWithCovarianceStamped()
+        pose.header.frame_id = ref_frame
+        pose.header.stamp = self.__node.get_clock().now().to_msg()
+        pose.pose.pose.position.x = x
+        pose.pose.pose.position.y = y
+        quaternion = quaternion_from_euler(0.0, 0.0, yaw)
+        pose.pose.pose.orientation.x = quaternion[0]
+        pose.pose.pose.orientation.y = quaternion[1]
+        pose.pose.pose.orientation.z = quaternion[2]
+        pose.pose.pose.orientation.w = quaternion[3]
+        self.__initial_pose_publisher.publish(pose)
 
     
     def move_abs(self, x:float=0.0, y:float=0.0, yaw:float=0.0, wait:bool=True, consider_angle:bool=True) -> bool:
@@ -461,7 +518,7 @@ class Nav2Navigation():
         else:
             # 現在位置から目標位置への方向を計算
             try:
-                current_pose = self.get_current_pose()
+                current_pose = self.get_current_pose(xyt=False)
             except RuntimeError as e:
                 self.__node.get_logger().error(f"Failed to get current pose: {str(e)}")
                 return False
@@ -591,7 +648,7 @@ class Nav2Navigation():
         """
         # 現在姿勢を取得
         try:
-            current_pose = self.get_current_pose()
+            current_pose = self.get_current_pose(xyt=False)
         except RuntimeError as e:
             self.__node.get_logger().error(f"Failed to get current pose: {str(e)}")
             return False
@@ -679,7 +736,7 @@ class Nav2Navigation():
             yaw (float, optional): 反時計回りの回転量(rad). Defaults to 0.0.
         """
         # 現在姿勢を取得
-        current_pose = self.get_current_pose()
+        current_pose = self.get_current_pose(xyt=False)
         current_x = current_pose.pose.position.x
         current_y = current_pose.pose.position.y
         current_orientation = current_pose.pose.orientation
